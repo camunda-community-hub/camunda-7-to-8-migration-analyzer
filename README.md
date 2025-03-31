@@ -1,26 +1,22 @@
-# Backend Diagram Converter
+# Migration Analyzer
 
-This project can be used to perform a diagram migration and give you advice on
-how you can transform your diagram.
+The migration analyzer can do tasks for you:
 
-## Setup
+* Analyze Camunda 7 models (BPMN & DMN) to find tasks you would need to do to migrate them to Camunda 8
+* Convert those models
 
-This project contains some modules:
+The actual convertion can be extended if you have special needs.
 
-- [Core](./core): The core component of diagram migration. Here, all migration
-  logic is implemented
-- [Webapp](./webapp): The webapp that can be run to have an interactive
-  migration.
-- [CLI](./cli): The CLI implementation of the migration tool. Can be used to
-  perform migration on the local machine
+## How-to use
 
-## Installation
+You can use the migration analyzer in different ways:
 
-- WebApp: access the [Installation guide](./webapp/README.md). A Docker image is available.
-- CLI: access the [README](./cli/README.md). A library is available.
+- Local Webapp: Web-based wizard to use the migration analyzer. Refer to the [Installation guide](./webapp/README.md). A Docker image is available.
+- CLI: A Command-Line-Interface for the migration analyzer. Refer to the [CLI documentation](./cli/README.md). A library is available.
+- SaaS: Access the migration analyzer in a free hosted version: https://diagram-converter.consulting-sandbox.camunda.cloud/. We don't store any of your data.
 
-## Build
-Build all modules by running on the root of this repo:
+
+## How-to build
 
 ```shell
 mvn clean package

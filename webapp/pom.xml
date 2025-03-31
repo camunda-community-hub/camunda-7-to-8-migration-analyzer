@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>backend-diagram-converter-parent</artifactId>
-    <groupId>org.camunda.community.migration</groupId>
-    <version>0.11.2-SNAPSHOT</version>
+	  <groupId>org.camunda.community.migration</groupId>
+	  <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
+	  <version>0.2.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>backend-diagram-converter-webapp</artifactId>
+  <artifactId>camunda-7-to-8-migration-analyzer-webapp</artifactId>
 
   <dependencies>
     <dependency>
@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>org.camunda.community.migration</groupId>
-      <artifactId>backend-diagram-converter-core</artifactId>
+      <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -120,7 +120,7 @@
             <phase>deploy</phase>
             <configuration>
               <image>
-                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/diagram-converter:${project.version}</name>
+                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</name>
               </image>
             </configuration>
           </execution>
@@ -132,7 +132,7 @@
             <phase>deploy</phase>
             <configuration>
               <image>
-                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/diagram-converter</name>
+                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer</name>
               </image>
             </configuration>
           </execution>
