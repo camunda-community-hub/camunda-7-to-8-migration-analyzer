@@ -16,6 +16,7 @@
     <module>core</module>
     <module>webapp</module>
     <module>cli</module>
+    <module>extension-example</module>
   </modules>
   
 

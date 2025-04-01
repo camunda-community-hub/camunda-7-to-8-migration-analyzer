@@ -116,28 +116,3 @@ Options:
 ```
 java -Dfile.encoding=UTF-8 -jar backend-diagram-converter-cli-v.v.v.jar engine http://localhost:8080/engine-rest
 ```
-
-## Download
-
-There is a prepackaged jar file available in the Camunda Artifactory at
-[https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions/org/camunda/community/migration/backend-diagram-converter-cli/](https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions/org/camunda/community/migration/backend-diagram-converter-cli/)
-
-Enter the folder with the latest version and download
-`backend-diagram-converter-cli-v.v.v.jar`.
-
-You can start the jar file from the command line with
-
-```shell
-java -jar backend-diagram-converter-cli-v.v.v.jar --help
-```
-
-## Compile from source
-
-To get a functioning `.jar` file, run
-
-```shell
-mvn clean package
-```
-
-Afterwards, the file can be found in `target` with the name
-`backend-diagram-converter-cli.jar` as shown before.

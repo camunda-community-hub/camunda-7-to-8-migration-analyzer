@@ -1,6 +1,6 @@
-# Diagram Converter Core
+# Migration Analyzer Core
 
-This is the core module of the diagram converter, containing the `BpmnConverter` plus its factory, the `BpmnConverterFactory`.
+This is the core module of the diagram converter, containing the `DiagramConverter` plus its factory, the `DiagramConverterFactory`.
 
 ## How does it work?
 
@@ -17,13 +17,13 @@ Works in 2 phases:
   * this is done in another visitor pattern, the interface to use is `Conversion`
   * the diagram becomes a Camunda 8 diagram
 
-## How can I use it?
+## How can I use it from Java?
 
 You can bootstrap the `BpmnConverter` in an easy way:
 
 ```java
 
-BpmnConverter converter = BpmnConverterFactory.getInstance().get();
+DiagramConverter converter = DiagramConverterFactory.getInstance().get();
 ```
 
 This will return a converter that is bootstrapped using SPI for `DomElementVisitor`, `Conversion` and `NotificationService`.
@@ -41,7 +41,7 @@ List<DomElementVisitor> visitors = loadDomElementVisitors();
 List<Conversion> conversions = loadConversions();
 NotificationService notificationService = laodNotificationService();
 
-BpmnConverter converter = new BpmnConverter(visitors, conversions, notificationService);
+DiagramConverter converter = new DiagramConverter(visitors, conversions, notificationService);
 ```
 
 Next, you need `ConverterProperties`. They control the way the converter will handle several aspects of the conversion.
@@ -85,8 +85,8 @@ converter.convert(modelInstance, properties);
 BpmnDiagramCheckResult result = converter.check(modelInstance, properties);
 ```
 
-## How can I extend it?
+## How can I extend diagram conversion?
 
 Beside the way of using custom bootstrapping mechanisms, the easiest way to extend is by using the capabilities of the underlying SPI.
 
-You can find an example in the `/example` section of the root project.
+You can find an example in the `/extension-example` section of the root project.
