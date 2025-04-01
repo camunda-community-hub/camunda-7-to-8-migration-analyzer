@@ -14,6 +14,86 @@ import { Download, Launch } from "@carbon/react/icons";
 function App() {
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
+  const [xlsTemplate, setXlsTemplate] = useState();
+  const [fileResults, setFileResults] = useState();
+  const [zip, setZip] = useState();
+
+  async function analyzeAndConvert() {
+    setStep(1);
+    console.log(files);
+
+    const formData = new FormData();
+    files.forEach((file) => formData.append("file", file));
+
+    // get XLS template
+    setXlsTemplate(
+      await fetch("/check", {
+        body: formData,
+        method: "POST",
+        headers: {
+          Accept:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      })
+    );
+
+    // get individual file results
+    setFileResults(
+      await Promise.all(
+        files.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          return await fetch("/convert", {
+            body: formData,
+            method: "POST",
+          });
+        })
+      )
+    );
+
+    // get ZIP file result
+    setZip(
+      await fetch("/convertBatch", {
+        body: formData,
+        method: "POST",
+      })
+    );
+
+    setStep(2);
+  }
+
+  async function download(response) {
+    console.log("should download response", response);
+
+    // Extract filename from the Content-Disposition header
+    const contentDisposition = response.headers.get("Content-Disposition");
+    let filename = "downloaded-file"; // Default filename
+
+    if (contentDisposition) {
+      const match = contentDisposition.match(
+        /filename\*?=(?:UTF-8'')?["']?([^"';]*)["']?/i
+      );
+      if (match) {
+        filename = decodeURIComponent(match[1]); // Decode if necessary
+      }
+    }
+
+    // Convert response to blob
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Create and trigger download link
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Clean up the object URL
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="container">
@@ -86,7 +166,12 @@ function App() {
               <p>Data privacy information for users</p>
             </section>
             <div>
-              <Button kind="primary" size="md">
+              <Button
+                kind="primary"
+                size="md"
+                onClick={analyzeAndConvert}
+                disabled={files.length === 0}
+              >
                 Analyze and convert
               </Button>
             </div>
@@ -103,8 +188,14 @@ function App() {
               />
             </section>
             <section>
-              <FileUploaderItem name="xxx.bpmn" status="uploading" size="sm" />
-              <FileUploaderItem name="xxx.bpmn" status="uploading" size="sm" />
+              {files.map((file, idx) => (
+                <FileUploaderItem
+                  key={file.name + "-" + idx}
+                  name={file.name}
+                  status="uploading"
+                  size="sm"
+                />
+              ))}
             </section>
             <hr />
             <section>
@@ -133,7 +224,12 @@ function App() {
                 Once your files are analyzed, you can download the template to
                 see the results. You will see a breakdown of XXXXXXX
               </p>
-              <Button kind="primary" size="md" renderIcon={Download}>
+              <Button
+                kind="primary"
+                size="md"
+                renderIcon={Download}
+                onClick={() => download(xlsTemplate)}
+              >
                 Download XLS template
               </Button>
             </section>
@@ -146,7 +242,12 @@ function App() {
               </p>
               <FileUploaderItem name="xxx.bpmn" status="complete" size="sm" />
               <FileUploaderItem name="xxx.bpmn" status="complete" size="sm" />
-              <Button kind="tertiary" size="md" renderIcon={Download}>
+              <Button
+                kind="tertiary"
+                size="md"
+                renderIcon={Download}
+                onClick={() => download(zip)}
+              >
                 Download all converted models as zip
               </Button>
             </section>
