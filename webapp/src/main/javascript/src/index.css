@@ -32,6 +32,10 @@ section {
   p {
     font-size: inherit;
   }
+
+  button.cds--btn {
+    max-inline-size: initial;
+  }
 }
 
 .container {

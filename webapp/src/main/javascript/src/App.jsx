@@ -139,7 +139,12 @@ function App() {
                 multiple
                 labelText="Click or drag file to this area to upload"
                 onAddFiles={(evt) => {
-                  setFiles((prevFiles) => [...prevFiles, ...evt.target.files]);
+                  setFiles((prevFiles) => [
+                    ...prevFiles,
+                    ...(evt.target.files
+                      ? evt.target.files
+                      : evt.dataTransfer.files),
+                  ]);
                 }}
               />
               {files.map((file, idx) => (
@@ -237,19 +242,14 @@ function App() {
                 Here are the converted models that you can download individually
                 or as a Zip file
               </p>
-              <section>
-                {files.map((file, idx) => (
-                  <div
-                    key={file.name + "-" + idx}
-                    className="individualDownload"
-                  >
-                    <span>{file.name}</span>
-                    <button onClick={() => download(fileResults[idx])}>
-                      <Download />
-                    </button>
-                  </div>
-                ))}
-              </section>
+              {files.map((file, idx) => (
+                <div key={file.name + "-" + idx} className="individualDownload">
+                  <span>{file.name}</span>
+                  <button onClick={() => download(fileResults[idx])}>
+                    <Download />
+                  </button>
+                </div>
+              ))}
               <Button
                 kind="tertiary"
                 size="md"
@@ -261,12 +261,7 @@ function App() {
             </section>
             <hr />
             <section>
-              <Button
-                kind="tertiary"
-                size="md"
-                renderIcon={Download}
-                onClick={() => setStep(3)}
-              >
+              <Button kind="tertiary" size="md" onClick={() => setStep(3)}>
                 Be Prepared!
               </Button>
             </section>
