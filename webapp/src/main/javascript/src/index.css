@@ -1,13 +1,94 @@
-@import "https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css";
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
 
-/* Apply IBM Plex Sans globally */
-@layer base {
-  body {
-    @apply font-sans text-gray-900;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f4f4f4;
+}
+
+section {
+  margin: 2rem 0;
+  font-size: 0.9rem;
+
+  h4 {
+    text-decoration: underline;
+    font-size: inherit;
+  }
+
+  p {
+    font-size: inherit;
+  }
+
+  button.cds--btn {
+    max-inline-size: initial;
+  }
+}
+
+.container {
+  display: flex;
+  margin: auto;
+  background-color: #f4f4f4;
+  width: 900px;
+  flex-direction: column;
+}
+
+h1 {
+  margin: 50px;
+  font-size: 24px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.whiteBox {
+  padding: 2rem;
+  background-color: white;
+  margin-bottom: 40px;
+
+  h2 {
+    margin-bottom: 0.8em;
+    font-size: 1.2em;
+  }
+
+  p {
+    font-size: 0.9em;
+  }
+}
+
+.fileUploadBox {
+  margin: 2rem auto;
+  width: 400px;
+}
+
+.individualDownload {
+  background-color: rgb(244, 244, 244);
+  height: 32px;
+  width: 320px;
+  padding-left: 16px;
+  padding-right: 8px;
+  margin-bottom: 8px;
+  line-height: 32px;
+
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    border: none;
+    color: blue;
+    background: transparent;
+    cursor: pointer;
   }
 }

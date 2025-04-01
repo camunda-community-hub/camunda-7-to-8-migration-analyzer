@@ -1,6 +1,6 @@
-const fs = require('node:fs');
-const { glob } = require('glob');
-const path = require('path');
+const fs = require("node:fs");
+const { glob } = require("glob");
+const path = require("path");
 
 const copyFilesRecursively = (source, target) => {
   const stat = fs.statSync(source);
@@ -18,11 +18,21 @@ const copyFilesRecursively = (source, target) => {
     console.log(`Copying ${source} to ${target}`);
     fs.copyFileSync(source, target);
   }
-}
+};
+
+const targetPath = path.join("..", "resources", "static");
+fs.rmSync(targetPath, { recursive: true, force: true });
+fs.mkdirSync(targetPath);
+
 // Use glob to support patterns
-glob(path.join('dist', '*')).then((files) => {
-    files.forEach(file => {
-    const targetPath = path.join('..', 'resources', 'static', path.basename(file));
+glob(path.join("dist", "*")).then((files) => {
+  files.forEach((file) => {
+    const targetPath = path.join(
+      "..",
+      "resources",
+      "static",
+      path.basename(file)
+    );
     copyFilesRecursively(file, targetPath);
   });
 });
