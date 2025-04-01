@@ -68,3 +68,23 @@ h1 {
   margin: 2rem auto;
   width: 400px;
 }
+
+.individualDownload {
+  background-color: rgb(244, 244, 244);
+  height: 32px;
+  width: 320px;
+  padding-left: 16px;
+  padding-right: 8px;
+  margin-bottom: 8px;
+  line-height: 32px;
+
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    border: none;
+    color: blue;
+    background: transparent;
+    cursor: pointer;
+  }
+}

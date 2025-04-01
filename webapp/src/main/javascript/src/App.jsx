@@ -20,7 +20,6 @@ function App() {
 
   async function analyzeAndConvert() {
     setStep(1);
-    console.log(files);
 
     const formData = new FormData();
     files.forEach((file) => formData.append("file", file));
@@ -64,8 +63,6 @@ function App() {
   }
 
   async function download(response) {
-    console.log("should download response", response);
-
     // Extract filename from the Content-Disposition header
     const contentDisposition = response.headers.get("Content-Disposition");
     let filename = "downloaded-file"; // Default filename
@@ -240,8 +237,19 @@ function App() {
                 Here are the converted models that you can download individually
                 or as a Zip file
               </p>
-              <FileUploaderItem name="xxx.bpmn" status="complete" size="sm" />
-              <FileUploaderItem name="xxx.bpmn" status="complete" size="sm" />
+              <section>
+                {files.map((file, idx) => (
+                  <div
+                    key={file.name + "-" + idx}
+                    className="individualDownload"
+                  >
+                    <span>{file.name}</span>
+                    <button onClick={() => download(fileResults[idx])}>
+                      <Download />
+                    </button>
+                  </div>
+                ))}
+              </section>
               <Button
                 kind="tertiary"
                 size="md"
@@ -249,6 +257,17 @@ function App() {
                 onClick={() => download(zip)}
               >
                 Download all converted models as zip
+              </Button>
+            </section>
+            <hr />
+            <section>
+              <Button
+                kind="tertiary"
+                size="md"
+                renderIcon={Download}
+                onClick={() => setStep(3)}
+              >
+                Be Prepared!
               </Button>
             </section>
           </>
