@@ -12,7 +12,7 @@ The actual convertion can be extended if you have special needs.
 You can use the migration analyzer in different ways:
 
 - Web application: Local installation of a web-based wizard to use the migration analyzer. Technically a Java Spring application.
-- CLI: A Command-Line-Interface for the migration analyzer. Technically a Java Spring application.
+- CLI: A Command-Line-Interface for the migration analyzer. Technically a Java application.
 - SaaS: Access the migration analyzer in a free hosted version: https://diagram-converter.consulting-sandbox.camunda.cloud/. We don't store any of your data there!
 
 ### Web application
