@@ -49,10 +49,21 @@ jobs:
           maven-auto-release-after-close: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
         id: release
-      - name: Push Webapp Docker image to ghcr.io
-        run: docker push -a -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer
-      - name: Push Webapp Docker image to Docker Hub
-        run: docker push -a -q camundacommunityhub/migration-analyzer
+      - name: Extract version from pom.xml
+        id: project-version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Push Webapp Docker image for current version to ghcr.io
+        run: docker push -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${{ steps.project-version.outputs.version }}
+      - name: Push Webapp Docker image for current version to Docker Hub
+        run: docker push -q camundacommunityhub/migration-analyzer:${{ steps.project-version.outputs.version }}
+      - if: github.event.release
+        name: Push Webapp Docker image for LATEST to ghcr.io (only on release)
+        run: docker push -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
+      - if: github.event.release
+        name: Push Webapp Docker image for LATEST to Docker Hub (only on release)
+        run: docker push -q camundacommunityhub/migration-analyzer:latest
       - if: github.event.release
         name: Attach Java artifacts to GitHub Release (Release only)
         uses: actions/upload-release-asset@v1
