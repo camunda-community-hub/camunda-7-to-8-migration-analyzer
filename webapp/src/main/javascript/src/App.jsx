@@ -95,7 +95,7 @@ function App() {
   return (
     <div className="container">
       <h1>
-        Seamlessly analyze your BPMN models. Get detailed insights and
+        Seamlessly analyze your Camunda 7 models for your Camunda 8 migration. Get detailed insights and
         ready-to-use templates in just a few clicks
       </h1>
       <div className="whiteBox">
@@ -135,7 +135,7 @@ function App() {
           <>
             <div className="fileUploadBox">
               <FileUploaderDropContainer
-                accept={[".bpmn", ".zip"]}
+                accept={[".bpmn", ".dmn", ".zip"]}
                 multiple
                 labelText="Click or drag file to this area to upload"
                 onAddFiles={(evt) => {
@@ -163,7 +163,7 @@ function App() {
             </div>
             <section>
               <h4>Instructions:</h4>
-              <p>Upload your BPMN models.</p>
+              <p>Upload your BPMN and models.</p>
               <p>Here are some FAQ's about the product.</p>
               <p>Data privacy information for users</p>
             </section>
