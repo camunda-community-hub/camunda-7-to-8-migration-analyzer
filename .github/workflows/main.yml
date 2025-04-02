@@ -49,8 +49,10 @@ jobs:
           maven-auto-release-after-close: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
         id: release
-      - name: Push all diagram converter images
+      - name: Push Webapp Docker image to ghcr.io
         run: docker push -a -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer
+      - name: Push Webapp Docker image to Docker Hub
+        run: docker push -a -q camundacommunityhub/migration-analyzer
       - if: github.event.release
         name: Attach Java artifacts to GitHub Release (Release only)
         uses: actions/upload-release-asset@v1
@@ -59,8 +61,28 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
-          asset_name: camunda-7-to-8-migration-analyzer.zip
+          asset_name: camunda-7-to-8-migration-analyzer-mvn-deployment-artifacts.zip
           asset_content_type: application/zip
+      - if: github.event.release
+        name: Upload Webapp JAR
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./webapp/target/camunda-7-to-8-migration-analyzer-webapp.jar
+          asset_name: camunda-7-to-8-migration-analyzer-webapp.jar
+          asset_content_type: application/java-archive
+      - if: github.event.release
+        name: Upload CLI jar
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./cli/target/camunda-7-to-8-migration-analyzer-cli.jar
+          asset_name: camunda-7-to-8-migration-analyzer-cli.jar
+          asset_content_type: application/java-archive
       - name: Publish Unit Test Results
         id: publish
         uses: EnricoMi/publish-unit-test-result-action@v2

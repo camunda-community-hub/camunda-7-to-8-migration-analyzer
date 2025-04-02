@@ -5,7 +5,7 @@ The migration analyzer can do tasks for you:
 * Analyze Camunda 7 models (BPMN & DMN) to find tasks you would need to do to migrate them to Camunda 8
 * Convert those models
 
-The actual convertion can be extended if you have special needs.
+The actual conversion can be extended if you have special needs.
 
 ## Installation
 
@@ -40,7 +40,7 @@ docker pull ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-ana
 2. Run the image and expose the port 8080:
 
 ```shell
-docker run --name migration-analyzer -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
+docker run -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
 ```
 
 4. Access the web application: http://localhost:8080/
