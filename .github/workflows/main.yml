@@ -35,6 +35,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract version from pom.xml
+        id: project-version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"  
       - name: Deploy SNAPSHOT / Release
         uses: camunda-community-hub/community-action-maven-release@v1
         with:
@@ -49,11 +54,6 @@ jobs:
           maven-auto-release-after-close: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
         id: release
-      - name: Extract version from pom.xml
-        id: project-version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Push Webapp Docker image for current version to ghcr.io
         run: docker push -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${{ steps.project-version.outputs.version }}
       - name: Push Webapp Docker image for current version to Docker Hub
