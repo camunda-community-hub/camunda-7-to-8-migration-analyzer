@@ -113,7 +113,7 @@
             </goals>
           </execution>
           <execution>
-            <id>build-version</id>
+            <id>ghcr-image-version</id>
             <goals>
               <goal>build-image-no-fork</goal>
             </goals>
@@ -125,7 +125,31 @@
             </configuration>
           </execution>
           <execution>
-            <id>build-latest</id>
+            <id>ghcr-image-latest</id>
+            <goals>
+              <goal>build-image-no-fork</goal>
+            </goals>
+            <phase>deploy</phase>
+            <configuration>
+              <image>
+                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer</name>
+              </image>
+            </configuration>
+          </execution>
+          <execution>
+            <id>dockerhub-image-version</id>
+            <goals>
+              <goal>build-image-no-fork</goal>
+            </goals>
+            <phase>deploy</phase>
+            <configuration>
+              <image>
+                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</name>
+              </image>
+            </configuration>
+          </execution>
+          <execution>
+            <id>dockerhub-image-latest</id>
             <goals>
               <goal>build-image-no-fork</goal>
             </goals>
