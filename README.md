@@ -22,44 +22,51 @@ You can use the migration analyzer in different ways:
 Requirements:
 - Java >= 17
 
-1. Download the latest migration analyzer as ZIP archive: TODO
-2. Unzip TODO
-3. Run TODO
-4. Access the web application: http://localhost:8080/
+Steps: 
+
+1. Download the latest migration analyzer web application: [camunda-7-to-8-migration-analyzer-webapp.jar])(https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/camunda-7-to-8-migration-analyzer-webapp.jar)
+2. Run the application (point your command line to the directory you downloaded the above jar into): `java -jar camunda-7-to-8-migration-analyzer-webapp.jar`
+3. Access the web application: http://localhost:8080/
+
+You can adjust the port if you need to run it on a different port, for example:
+
+```bash
+java -Dserver.port=8090 -jar camunda-7-to-8-migration-analyzer-webapp.jar
+```
 
 #### Docker
 
 You can also run the migration analyzer via Docker.
 
-1. Pull the latest version:
+Pull the latest version:
 
 ```shell
 docker pull ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
 ```
 
-2. Run the image and expose the port 8080:
+Run the image and expose the port 8080:
 
 ```shell
 docker run -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
 ```
 
-4. Access the web application: http://localhost:8080/
+Access the web application: http://localhost:8080/
 
 
 ### CLI
 
 The CLI is technically a single jar Java application. 
 
-1. [Download camunda-7-to-8-migration-analyzer-cli.jar](https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions/org/camunda/community/migration/camunda-7-to-8-migration-analyzer-cli/  TODO  )
-2. Start CLI application:
+1. Download the latest migration analyzer CLI application: [camunda-7-to-8-migration-analyzer-cli.jar])(https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/camunda-7-to-8-migration-analyzer-cli.jar)
+2. Start it:
 
 ```shell
-java -jar backend-diagram-converter-cli-TODO.jar --help
+java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
 ```
 
 ## Building from source
 
-You can checkout this project and build from sources:
+You can build this project from the sources using Maven:
 
 ```shell
 mvn clean package
