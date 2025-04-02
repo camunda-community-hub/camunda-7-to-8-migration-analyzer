@@ -25,7 +25,7 @@ fs.rmSync(targetPath, { recursive: true, force: true });
 fs.mkdirSync(targetPath);
 
 // Use glob to support patterns
-glob(path.join("dist", "*")).then((files) => {
+glob("dist/*").then((files) => {
   files.forEach((file) => {
     const targetPath = path.join(
       "..",
