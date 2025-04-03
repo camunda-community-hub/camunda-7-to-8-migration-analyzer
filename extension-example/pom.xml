@@ -3,7 +3,7 @@
 
   <groupId>org.camunda.community.migration</groupId>
   <artifactId>camunda-7-to-8-migration-analyzer-extension-example</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.2.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.camunda.community.migration</groupId>
       <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
-	  <version>0.2.0-alpha7-SNAPSHOT</version>
+	  <version>0.2.0-alpha8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
