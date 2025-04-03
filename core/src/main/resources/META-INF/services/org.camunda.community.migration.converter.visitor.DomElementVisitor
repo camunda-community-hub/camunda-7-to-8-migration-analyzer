@@ -155,3 +155,5 @@ org.camunda.community.migration.converter.visitor.impl.dmn.TextVisitor
 org.camunda.community.migration.converter.visitor.impl.dmn.InputEntryVisitor
 org.camunda.community.migration.converter.visitor.impl.dmn.OutputEntryVisitor
 org.camunda.community.migration.converter.visitor.impl.dmn.LiteralExpressionVisitor
+org.camunda.community.migration.converter.visitor.impl.dmn.OutputValuesVisitor
+org.camunda.community.migration.converter.visitor.impl.dmn.InputValuesVisitor
