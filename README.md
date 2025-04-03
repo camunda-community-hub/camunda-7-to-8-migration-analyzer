@@ -22,7 +22,7 @@ You can use the migration analyzer in different ways:
 Requirements:
 - Java >= 17
 
-Steps: 
+Steps:
 
 1. Download the latest migration analyzer web application: [camunda-7-to-8-migration-analyzer-webapp.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-webapp.jar)
 2. Run the application (point your command line to the directory you downloaded the above jar into): `java -jar camunda-7-to-8-migration-analyzer-webapp.jar`
@@ -55,7 +55,7 @@ Access the web application: http://localhost:8080/
 
 ### CLI
 
-The CLI is technically a single jar Java application. 
+The CLI is technically a single jar Java application.
 
 1. Download the latest migration analyzer CLI application: [camunda-7-to-8-migration-analyzer-cli.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-cli.jar)
 2. Start it:
