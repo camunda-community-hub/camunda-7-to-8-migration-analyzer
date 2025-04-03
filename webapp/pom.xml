@@ -120,48 +120,18 @@
             <phase>deploy</phase>
             <configuration>
               <image>
-                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</name>
+               <tags>
+                  <!-- Building all tags here, and only pushing the right one via the Github Action -->
+                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</tag>
+                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest</tag>
+                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:SNAPSHOT</tag>
+                  <tag>camundacommunityhub/migration-analyzer:${project.version}</tag>
+                  <tag>camundacommunityhub/migration-analyzer:latest</tag>
+                  <tag>camundacommunityhub/migration-analyzer:SNAPSHOT</tag>
+                </tags>
               </image>
             </configuration>
-          </execution>
-          <execution>
-            <id>dockerhub-image-version</id>
-            <goals>
-              <goal>build-image-no-fork</goal>
-            </goals>
-            <phase>deploy</phase>
-            <configuration>
-              <image>
-                <name>camundacommunityhub/migration-analyzer:${project.version}</name>
-              </image>
-            </configuration>
-          </execution>
-
-          <!-- latest tags -->
-          <execution>
-            <id>ghcr-image-latest</id>
-            <goals>
-              <goal>build-image-no-fork</goal>
-            </goals>
-            <phase>deploy</phase>
-            <configuration>
-              <image>
-                <name>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest</name>
-              </image>
-            </configuration>
-          </execution>
-          <execution>
-            <id>dockerhub-image-latest</id>
-            <goals>
-              <goal>build-image-no-fork</goal>
-            </goals>
-            <phase>deploy</phase>
-            <configuration>
-              <image>
-                <name>camundacommunityhub/migration-analyzer:latest</name>
-              </image>
-            </configuration>
-          </execution>
+          </execution>       
         </executions>
       </plugin>
     </plugins>

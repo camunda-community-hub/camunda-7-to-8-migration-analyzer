@@ -49,15 +49,23 @@ jobs:
           maven-auto-release-after-close: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
         id: release
-      - name: Push Webapp Docker image for current version to ghcr.io
-        run: docker push -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${{ github.event.release.tag_name }}
-      - name: Push Webapp Docker image for current version to Docker Hub
-        run: docker push -q camundacommunityhub/migration-analyzer:${{ github.event.release.tag_name }}
+      - if: github.event.release == null
+        name: Push Docker image Webapp -> ghcr.io | SNAPSHOT
+        run: docker push ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:SNAPSHOT
+      - if: github.event.release == null
+        name: Push Docker image Webapp -> DockerHub | SNAPSHOT
+        run: docker push camundacommunityhub/migration-analyzer:SNAPSHOT
       - if: github.event.release
-        name: Push Webapp Docker image for LATEST to ghcr.io (only on release)
+        name: Push Docker image Webapp -> ghcr.io | RELEASE VERSION
+        run: docker push ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${{ github.event.release.tag_name }}
+      - if: github.event.release
+        name: Push Docker image Webapp -> DockerHub | RELEASE VERSION
+        run: docker push camundacommunityhub/migration-analyzer:${{ github.event.release.tag_name }}
+      - if: github.event.release
+        name: Push Docker image Webapp -> ghcr.io | LATEST (only on release)
         run: docker push -q ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
       - if: github.event.release
-        name: Push Webapp Docker image for LATEST to Docker Hub (only on release)
+        name:  Push Docker image Webapp -> DockerHub | LATEST (only on release)
         run: docker push -q camundacommunityhub/migration-analyzer:latest
       - if: github.event.release
         name: Attach Java artifacts to GitHub Release (Release only)
