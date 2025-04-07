@@ -72,7 +72,7 @@ public class DiagramConverterTest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"first.dmn"})
+  @CsvSource(value = {"first.dmn","testing-dmn.dmn"})
   public void shouldConvertDmn(String dmnFile) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
     ConverterProperties properties = ConverterPropertiesFactory.getInstance().get();
