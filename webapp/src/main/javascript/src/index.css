@@ -21,12 +21,13 @@ body {
 }
 
 section {
-  margin: 2rem 0;
-  font-size: 0.9rem;
+  margin: 18px 0;
 
   h4 {
     text-decoration: underline;
-    font-size: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
   }
 
   p {
@@ -42,8 +43,9 @@ section {
   display: flex;
   margin: auto;
   background-color: #f4f4f4;
-  width: 900px;
+  width: 1184px;
   flex-direction: column;
+  padding-top: 32px;
 }
 
 h1 {
@@ -54,23 +56,31 @@ h1 {
 }
 
 .whiteBox {
-  padding: 2rem;
+  padding: 16px 24px;
   background-color: white;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   h2 {
-    margin-bottom: 0.8em;
-    font-size: 1.2em;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
   }
 
   p {
-    font-size: 0.9em;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+    margin-bottom: 8px;
   }
 }
 
+.whiteBox.centered {
+  padding: 24px 198px;
+}
+
 .fileUploadBox {
-  margin: 2rem auto;
-  width: 400px;
+  margin: 8px 0;
 }
 
 .individualDownload {
@@ -91,4 +101,13 @@ h1 {
     background: transparent;
     cursor: pointer;
   }
+}
+
+.progressindicators {
+  padding: 16px 0;
+  margin-bottom: 18px;
+}
+
+.analyzeButton {
+  margin-top: 40px;
 }
