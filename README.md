@@ -16,28 +16,28 @@ The conversion process can be extended to accommodate special requirements.
   - [CLI](#cli)
   - [Building from Source](#building-from-source) or [Embedding into your own Java Application](#embedding-into-your-own-java-applications)
   - [License](#license)
-- [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) - Refer to the Camunda Migration Guide.
+- [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) (Refers to the Camunda Migration Guide.)
 - [How to Extend](#how-to-extend-diagram-conversion)
 
 ## Installation
 
 You can use the Migration Analyzer in the following ways:
 
-- **Web Application**: A locally installed web-based wizard for the Migration Analyzer, implemented as a Java Spring application.
+- **Web Interface**: A locally installed web-based wizard for the Migration Analyzer, implemented as a Java Spring application. This can be installed
+  - locally as Java jar,
+  - using Docker, or
+  - consumed as SaaS from our free hosted version.
 - **CLI**: A Command-Line Interface for the Migration Analyzer, implemented as a Java application.
-- **SaaS**: A free hosted version of the Migration Analyzer is available at [https://diagram-converter.consulting-sandbox.camunda.cloud/](https://diagram-converter.consulting-sandbox.camunda.cloud/).
 
 ### SaaS
 
 A free hosted version of the Migration Analyzer is available at [https://diagram-converter.consulting-sandbox.camunda.cloud/](https://diagram-converter.consulting-sandbox.camunda.cloud/). 
 
-Note thaty our models are **not** stored on this platform, and given there is https on transit, your models are safe.
+Note that your models are **not** stored on this platform, and given there is https on transit, your models are safe. However, we don't give any gurantees on this free SaaS version.
 
-### Web Application
+### Local Java Installation
 
 You can also install the web application locally.
-
-#### Local Java Installation
 
 **Requirements**:
 - Java 17 or higher
@@ -59,7 +59,7 @@ To run the application on a different port, use the following command:
 java -Dserver.port=8090 -jar camunda-7-to-8-migration-analyzer-webapp.jar
 ```
 
-#### Docker
+### Docker
 
 You can also run the Migration Analyzer using Docker.
 
@@ -89,8 +89,8 @@ The CLI is a standalone Java application.
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
    ```
-
-The typical way is to run it in `local` mode and reference your BPMN model file: 
+  
+  The typical way is to run it in `local` mode and reference your BPMN model file: 
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn
    ```
@@ -114,7 +114,7 @@ You can also embed the core diagram conversion as library into your own Java app
 
 ## How to Extend Diagram Conversion?
 
-You can extend diagram conversion by leveraging the SPI. You can find an example in the [`/extension-example`](extension example project).
+You can extend diagram conversion by leveraging the SPI. You can find an example in the [extension example project](extension-example/).
 
 ## License
 
