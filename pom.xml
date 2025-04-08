@@ -17,7 +17,7 @@
     <module>webapp</module>
     <module>cli</module>
   </modules>
-  
+
 
   <properties>
     <encoding>UTF-8</encoding>
@@ -29,6 +29,7 @@
 
     <version.zeebe>8.7.1</version.zeebe>
     <version.zeebe-process-test-extension-testcontainer>8.7.0</version.zeebe-process-test-extension-testcontainer>
+    <version.zeebe>8.7.0</version.zeebe>
     <version.camunda.platform>7.23.0</version.camunda.platform>
     <version.jsoup>1.19.1</version.jsoup>
     <version.spring-boot>3.4.4</version.spring-boot>
@@ -36,9 +37,6 @@
     <version.commons-io>2.19.0</version.commons-io>
     <version.slack-api-client>1.45.3</version.slack-api-client>
     <version.opencsv>5.10</version.opencsv>
-    <version.operate-client>8.3.0.1</version.operate-client>
-    <version.camunda-bpm-assert>15.0.0</version.camunda-bpm-assert>
-    <version.jaxb-api>2.3.1</version.jaxb-api>
     <version.grpc>1.71.0</version.grpc>
     <version.protobuf>3.25.6</version.protobuf>
     <version.guava>33.4.7-jre</version.guava>
@@ -46,20 +44,15 @@
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.okio>3.11.0</version.okio>
     <version.archunit>1.4.0</version.archunit>
+    <version.okio>3.10.2</version.okio>
+    <version.apache-poi>5.4.1</version.apache-poi>
 
-    <plugin.version.function-maven-plugin>0.11.1</plugin.version.function-maven-plugin>
     <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
-    <plugin.version.maven-install-plugin>3.1.4</plugin.version.maven-install-plugin>
-    <plugin.version.maven-resources-plugin>3.3.1</plugin.version.maven-resources-plugin>
-    <plugin.version.maven-shade-plugin>3.6.0</plugin.version.maven-shade-plugin>
     <plugin.version.maven-surefire-plugin>3.5.3</plugin.version.maven-surefire-plugin>
     <plugin.version.spotless-maven-plugin>2.44.3</plugin.version.spotless-maven-plugin>
     <plugin.version.maven-compiler-plugin>3.14.0</plugin.version.maven-compiler-plugin>
-    <plugin.version.native-maven-plugin>0.10.6</plugin.version.native-maven-plugin>
-    <plugin.version.maven-depdendency-plugin>3.8.1</plugin.version.maven-depdendency-plugin>
     <plugin.version.maven-site-plugin>3.21.0</plugin.version.maven-site-plugin>
     <plugin.version.maven-assembly-plugin>3.7.1</plugin.version.maven-assembly-plugin>
-    <plugin.version.maven-release-plugin>3.1.1</plugin.version.maven-release-plugin>
     <plugin.version.frontend-maven-plugin>1.15.1</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.3.1</plugin.version.maven-source-plugin>
   </properties>
@@ -208,6 +201,16 @@
         <version>3.49.2</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>${version.apache-poi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>${version.apache-poi}</version>
+      </dependency>
+      <dependency>
         <groupId>org.camunda.community.migration</groupId>
         <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
         <version>${project.version}</version>
@@ -230,11 +233,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nexus-staging-maven-plugin</artifactId>
-          <version>1.7.0</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>${plugin.version.maven-source-plugin}</version>
@@ -252,25 +250,11 @@
           <artifactId>maven-assembly-plugin</artifactId>
           <version>${plugin.version.maven-assembly-plugin}</version>
         </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>${plugin.version.maven-resources-plugin}</version>
-        </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>${plugin.version.maven-site-plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>${plugin.version.maven-depdendency-plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.graalvm.buildtools</groupId>
-          <artifactId>native-maven-plugin</artifactId>
-          <version>${plugin.version.native-maven-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -295,16 +279,6 @@
               <createdDate>${maven.build.timestamp}</createdDate>
             </image>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>${plugin.version.maven-install-plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>${plugin.version.maven-shade-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -343,6 +317,7 @@
                 <includes>
                   <include>*.md</include>
                   <include>.gitignore</include>
+                  <include>pom.xml</include>
                 </includes>
                 <trimTrailingWhitespace />
                 <endWithNewline />
@@ -357,16 +332,6 @@
             </java>
             <pom />
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.google.cloud.functions</groupId>
-          <artifactId>function-maven-plugin</artifactId>
-          <version>${plugin.version.function-maven-plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>${plugin.version.maven-release-plugin}</version>
         </plugin>
         <plugin>
           <groupId>com.github.eirslett</groupId>
