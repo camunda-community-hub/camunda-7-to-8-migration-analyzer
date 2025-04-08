@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import {
-  FileUploaderDropContainer,
   FileUploaderItem,
   ProgressIndicator,
   ProgressStep,
@@ -10,6 +9,8 @@ import {
 } from "@carbon/react";
 
 import { Download, Launch, TrashCan } from "@carbon/react/icons";
+import DropZone from "./DropZone";
+import FileItem from "./FileItem";
 
 function App() {
   const [step, setStep] = useState(0);
@@ -136,30 +137,22 @@ function App() {
               <h4>Instructions:</h4>
               <p>
                 Upload your BPMN models. You can upload single Models or
-                multiple once your models are uploded go ahead and Analyze and
-                convert.
+                multiple once your models are uploded
+                <br />
+                go ahead and Analyze and convert.
               </p>
             </section>
             <div className="fileUploadBox">
-              <FileUploaderDropContainer
-                accept={[".bpmn", ".dmn", ".zip"]}
-                multiple
-                labelText="Click or drag file to this area to upload"
-                onAddFiles={(evt) => {
-                  setFiles((prevFiles) => [
-                    ...prevFiles,
-                    ...(evt.target.files
-                      ? evt.target.files
-                      : evt.dataTransfer.files),
-                  ]);
+              <DropZone
+                onFiles={(files) => {
+                  setFiles((prevFiles) => [...prevFiles, ...files]);
                 }}
               />
               {files.map((file, idx) => (
-                <FileUploaderItem
+                <FileItem
                   key={file.name + "-" + idx}
                   name={file.name}
                   status="edit"
-                  size="sm"
                   onDelete={() => {
                     setFiles((prevFiles) =>
                       prevFiles.filter((prevFile) => prevFile !== file)
@@ -193,17 +186,16 @@ function App() {
               </p>
             </section>
             <div className="fileUploadBox">
-              <FileUploaderDropContainer
-                accept={[".bpmn", ".dmn", ".zip"]}
-                multiple
-                labelText="Click or drag file to this area to upload"
+              <DropZone
+                onFiles={() => {
+                  // do nothing while upload is processing
+                }}
               />
               {files.map((file, idx) => (
-                <FileUploaderItem
+                <FileItem
                   key={file.name + "-" + idx}
                   name={file.name}
                   status="uploading"
-                  size="sm"
                 />
               ))}
             </div>

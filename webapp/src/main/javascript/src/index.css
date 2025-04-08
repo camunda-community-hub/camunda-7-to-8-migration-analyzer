@@ -111,3 +111,65 @@ h1 {
 .analyzeButton {
   margin-top: 40px;
 }
+
+.DropZone {
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  height: 140px;
+  margin-bottom: 8px;
+
+  text-align: center;
+  padding: 16px;
+
+  cursor: pointer;
+
+  img {
+    margin-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 4px;
+  }
+  p {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: rgba(0, 0, 0, 0.55);
+  }
+}
+
+.FileItem {
+  height: 22px;
+  background-color: #fafafa;
+  margin-bottom: 12px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
+    img {
+      margin-left: 4px;
+      margin-right: 8px;
+    }
+
+    span {
+      font-size: 14px;
+      color: #1890ff;
+    }
+  }
+
+  .right {
+    button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+    }
+  }
+}
