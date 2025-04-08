@@ -1,73 +1,121 @@
 # Migration Analyzer
 
-The migration analyzer can do tasks for you:
+The Migration Analyzer:
 
-* Analyze Camunda 7 models (BPMN & DMN) to find tasks you would need to do to migrate them to Camunda 8
-* Convert those models
+- Analyzes Camunda 7 models (BPMN & DMN) to identify tasks required for migration to Camunda 8.
+- Converts those models.
 
-The actual conversion can be extended if you have special needs.
+The conversion process can be extended to accommodate special requirements.
+
+## Table of Contents
+
+- [Installation](#installation)
+  - [SaaS](#saas)
+  - [Local Java Installation](#local-java-installation)
+  - [Docker](#docker)
+  - [CLI](#cli)
+  - [Building from Source](#building-from-source) or [Embedding into your own Java Application](#embedding-into-your-own-java-applications)
+  - [License](#license)
+- [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) - Refer to the Camunda Migration Guide.
+- [How to Extend](#how-to-extend-diagram-conversion)
 
 ## Installation
 
-You can use the migration analyzer in different ways:
+You can use the Migration Analyzer in the following ways:
 
-- Web application: Local installation of a web-based wizard to use the migration analyzer. Technically a Java Spring application.
-- CLI: A Command-Line-Interface for the migration analyzer. Technically a Java application.
-- SaaS: Access the migration analyzer in a free hosted version: https://diagram-converter.consulting-sandbox.camunda.cloud/. We don't store any of your data there!
+- **Web Application**: A locally installed web-based wizard for the Migration Analyzer, implemented as a Java Spring application.
+- **CLI**: A Command-Line Interface for the Migration Analyzer, implemented as a Java application.
+- **SaaS**: A free hosted version of the Migration Analyzer is available at [https://diagram-converter.consulting-sandbox.camunda.cloud/](https://diagram-converter.consulting-sandbox.camunda.cloud/).
 
-### Web application
+### SaaS
 
-#### Local installation
+A free hosted version of the Migration Analyzer is available at [https://diagram-converter.consulting-sandbox.camunda.cloud/](https://diagram-converter.consulting-sandbox.camunda.cloud/). 
 
-Requirements:
-- Java >= 17
+Note thaty our models are **not** stored on this platform, and given there is https on transit, your models are safe.
 
-Steps: 
+### Web Application
 
-1. Download the latest migration analyzer web application: [camunda-7-to-8-migration-analyzer-webapp.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-webapp.jar)
-2. Run the application (point your command line to the directory you downloaded the above jar into): `java -jar camunda-7-to-8-migration-analyzer-webapp.jar`
-3. Access the web application: http://localhost:8080/
+You can also install the web application locally.
 
-You can adjust the port if you need to run it on a different port, for example:
+#### Local Java Installation
 
-```bash
+**Requirements**:
+- Java 17 or higher
+
+**Steps**:
+
+1. Download the latest Migration Analyzer web application: [camunda-7-to-8-migration-analyzer-webapp.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-webapp.jar).
+2. Run the application. Navigate to the directory where the `.jar` file was downloaded and execute the following command:
+
+   ```shell
+   java -jar camunda-7-to-8-migration-analyzer-webapp.jar
+   ```
+
+3. Access the web application at [http://localhost:8080/](http://localhost:8080/).
+
+To run the application on a different port, use the following command:
+
+```shell
 java -Dserver.port=8090 -jar camunda-7-to-8-migration-analyzer-webapp.jar
 ```
 
 #### Docker
 
-You can also run the migration analyzer via Docker.
+You can also run the Migration Analyzer using Docker.
 
-Pull the latest version:
+1. Pull the latest version of the Docker image:
 
-```shell
-docker pull ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
-```
+   ```shell
+   docker pull ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
+   ```
 
-Run the image and expose the port 8080:
+2. Run the Docker container and expose port 8080:
 
-```shell
-docker run -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
-```
+   ```shell
+   docker run -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
+   ```
 
-Access the web application: http://localhost:8080/
+3. Access the web application at [http://localhost:8080/](http://localhost:8080/).
 
+### CLI (Command Line Interface)
 
-### CLI
+The CLI is a standalone Java application.
 
-The CLI is technically a single jar Java application. 
+**Steps**:
 
-1. Download the latest migration analyzer CLI application: [camunda-7-to-8-migration-analyzer-cli.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-cli.jar)
-2. Start it:
+1. Download the latest Migration Analyzer CLI application: [camunda-7-to-8-migration-analyzer-cli.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-cli.jar).
+2. Run the CLI with the following command:
 
-```shell
-java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
-```
+   ```shell
+   java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
+   ```
 
-## Building from source
+The typical way is to run it in `local` mode and reference your BPMN model file: 
+   ```shell
+   java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn
+   ```
 
-You can build this project from the sources using Maven:
+### Building from Source
 
-```shell
-mvn clean package
-```
+You can build this project from source using Maven.
+
+**Steps**:
+
+1. Clone the repository.
+2. Run the following command to build the project:
+
+   ```shell
+   mvn clean package
+   ```
+
+### Embedding into your own Java Applications
+
+You can also embed the core diagram conversion as library into your own Java application. This is [explained here](core/README.md).
+
+## How to Extend Diagram Conversion?
+
+You can extend diagram conversion by leveraging the SPI. You can find an example in the [`/extension-example`](extension example project).
+
+## License
+
+This project is licensed under the [Apache License, Version 2.0](LICENSE).
