@@ -1,8 +1,6 @@
 import { useState } from "react";
 
 import {
-  FileUploaderDropContainer,
-  FileUploaderItem,
   ProgressIndicator,
   ProgressStep,
   Button,
@@ -10,19 +8,40 @@ import {
 } from "@carbon/react";
 
 import { Download, Launch } from "@carbon/react/icons";
+import DropZone from "./DropZone";
+import FileItem from "./FileItem";
 
 function App() {
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [xlsTemplate, setXlsTemplate] = useState();
+  const [csvTemplate, setCsvTemplate] = useState();
   const [fileResults, setFileResults] = useState();
   const [zip, setZip] = useState();
+  const [hasValidFiles, setHasValidFiles] = useState(true);
 
   async function analyzeAndConvert() {
     setStep(1);
 
+    const fileResults = await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        return await fetch("/convert", {
+          body: formData,
+          method: "POST",
+        });
+      })
+    );
+
+    const validFiles = files.filter(
+      (_, idx) => fileResults[idx].status === 200
+    );
+    setHasValidFiles(validFiles.length > 0);
+
     const formData = new FormData();
-    files.forEach((file) => formData.append("file", file));
+    validFiles.forEach((file) => formData.append("file", file));
 
     // get XLS template
     setXlsTemplate(
@@ -36,20 +55,19 @@ function App() {
       })
     );
 
-    // get individual file results
-    setFileResults(
-      await Promise.all(
-        files.map(async (file) => {
-          const formData = new FormData();
-          formData.append("file", file);
-
-          return await fetch("/convert", {
-            body: formData,
-            method: "POST",
-          });
-        })
-      )
+    // get XLS template
+    setCsvTemplate(
+      await fetch("/check", {
+        body: formData,
+        method: "POST",
+        headers: {
+          Accept: "text/csv",
+        },
+      })
     );
+
+    // get individual file results
+    setFileResults(fileResults);
 
     // get ZIP file result
     setZip(
@@ -94,65 +112,64 @@ function App() {
 
   return (
     <div className="container">
-      <h1>
-        Seamlessly analyze your Camunda 7 models for your Camunda 8 migration. Get detailed insights and
-        ready-to-use templates in just a few clicks
-      </h1>
       <div className="whiteBox">
         <div>
           <div>
-            <h2>This is some copy</h2>
+            <h2>Analyze your Models</h2>
             <p>
-              {step === 0
-                ? "This copy will talk about what Analyzing and converting mean for them as the first step of the migration process"
-                : "Breaking down a lengthy or unfamiliar form task into multiple steps that the user is then guided through."}
+              Understand your BPMN models before migrating. Identify gaps,
+              assess effort, and convert compatible elements.
+              <br />
+              <br />
+              If you would prefer to use a local version of this tool please{" "}
+              <a href="https://google.com">download it here</a>
+            </p>
+            <p>
+              <a href="https://legal.camunda.com/licensing-and-other-legal-terms#trial-and-free">
+                See here for Data privacy information
+              </a>
             </p>
           </div>
         </div>
       </div>
-      <div className="whiteBox">
-        <ProgressIndicator spaceEqually>
-          <ProgressStep
-            current={step === 0}
-            complete={step > 0}
-            label="Upload your models"
-            description="Step 1"
-          />
-          <ProgressStep
-            current={step === 1 || step === 2}
-            complete={step > 2}
-            label="Analyze your models"
-            description="Step 2"
-          />
-          <ProgressStep
-            current={step === 3}
-            label="Prepare for xxxxx"
-            description="Step 3"
-          />
-        </ProgressIndicator>
+      <div className="whiteBox centered">
+        <div className="progressindicators">
+          <ProgressIndicator spaceEqually>
+            <ProgressStep
+              current={step < 2}
+              complete={step > 1}
+              label="Upload Models"
+            />
+            <ProgressStep
+              current={step === 2}
+              complete={step > 2}
+              label="Analyze Models"
+            />
+          </ProgressIndicator>
+        </div>
 
         {step === 0 && (
           <>
+            <section>
+              <h4>Instructions:</h4>
+              <p>
+                Upload your BPMN models. You can upload single Models or
+                multiple once your models are uploded
+                <br />
+                go ahead and Analyze and convert.
+              </p>
+            </section>
             <div className="fileUploadBox">
-              <FileUploaderDropContainer
-                accept={[".bpmn", ".dmn", ".zip"]}
-                multiple
-                labelText="Click or drag file to this area to upload"
-                onAddFiles={(evt) => {
-                  setFiles((prevFiles) => [
-                    ...prevFiles,
-                    ...(evt.target.files
-                      ? evt.target.files
-                      : evt.dataTransfer.files),
-                  ]);
+              <DropZone
+                onFiles={(files) => {
+                  setFiles((prevFiles) => [...prevFiles, ...files]);
                 }}
               />
               {files.map((file, idx) => (
-                <FileUploaderItem
+                <FileItem
                   key={file.name + "-" + idx}
                   name={file.name}
                   status="edit"
-                  size="sm"
                   onDelete={() => {
                     setFiles((prevFiles) =>
                       prevFiles.filter((prevFile) => prevFile !== file)
@@ -161,16 +178,11 @@ function App() {
                 />
               ))}
             </div>
-            <section>
-              <h4>Instructions:</h4>
-              <p>Upload your BPMN and models.</p>
-              <p>Here are some FAQ's about the product.</p>
-              <p>Data privacy information for users</p>
-            </section>
-            <div>
+
+            <div className="analyzeButton">
               <Button
                 kind="primary"
-                size="md"
+                size="lg"
                 onClick={analyzeAndConvert}
                 disabled={files.length === 0}
               >
@@ -183,30 +195,34 @@ function App() {
         {step === 1 && (
           <>
             <section>
-              <Callout
-                title="Analyzing"
-                subtitle="Sit tight while we analyze your files."
-                lowContrast
-              />
+              <h4>Instructions:</h4>
+              <p>
+                Upload your BPMN models. You can upload single Models or
+                multiple once your models are uploded
+                <br />
+                go ahead and Analyze and convert.
+              </p>
             </section>
-            <section>
+            <div className="fileUploadBox">
+              <DropZone
+                onFiles={() => {
+                  // do nothing while upload is processing
+                }}
+              />
               {files.map((file, idx) => (
-                <FileUploaderItem
+                <FileItem
                   key={file.name + "-" + idx}
                   name={file.name}
                   status="uploading"
-                  size="sm"
                 />
               ))}
-            </section>
-            <hr />
-            <section>
-              <h4>Analyze results</h4>
-              <p>
-                Once your files are analyzed, you can download the template to
-                see the results. You will see a breakdown of XXXXXXX
-              </p>
-            </section>
+            </div>
+
+            <div className="analyzeButton">
+              <Button kind="primary" size="lg" disabled>
+                Analyze and convert
+              </Button>
+            </div>
           </>
         )}
 
@@ -216,66 +232,78 @@ function App() {
               <Callout
                 kind="success"
                 title="Analysis complete"
-                subtitle="See your analyzes files and take the relevant actions"
+                subtitle="View your analyzed Models"
                 lowContrast
               />
             </section>
             <section>
               <h4>Analyze results</h4>
               <p>
-                Once your files are analyzed, you can download the template to
-                see the results. You will see a breakdown of XXXXXXX
+                Access the completed analysis below. You can download view the
+                results as a XLS sheet or a csv. <br />
+                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
+                  For more information see more about the Camunda Analyzer here
+                </a>
               </p>
               <Button
                 kind="primary"
                 size="md"
                 renderIcon={Download}
                 onClick={() => download(xlsTemplate)}
+                className="withMarginBottom"
+                disabled={!hasValidFiles}
               >
-                Download XLS template
+                Download analyzed results XLS
+              </Button>
+              <br />
+              <Button
+                kind="primary"
+                size="md"
+                renderIcon={Download}
+                onClick={() => download(csvTemplate)}
+                disabled={!hasValidFiles}
+              >
+                Download analyzed results CSV
               </Button>
             </section>
 
             <section>
               <h4>Converted Models</h4>
               <p>
-                Here are the converted models that you can download individually
-                or as a Zip file
+                See below the converted models that you can download
+                individually or as a Zip file
               </p>
               {files.map((file, idx) => (
-                <div key={file.name + "-" + idx} className="individualDownload">
-                  <span>{file.name}</span>
-                  <button onClick={() => download(fileResults[idx])}>
-                    <Download />
-                  </button>
-                </div>
+                <FileItem
+                  key={file.name + "-" + idx}
+                  name={file.name}
+                  downloadAction={() => download(fileResults[idx])}
+                  error={
+                    fileResults[idx].status !== 200 ? "File upload failure" : ""
+                  }
+                />
               ))}
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Download}
                 onClick={() => download(zip)}
+                disabled={!hasValidFiles}
               >
                 Download all converted models as zip
               </Button>
             </section>
             <hr />
-            <section>
-              <Button kind="tertiary" size="md" onClick={() => setStep(3)}>
-                Be Prepared!
-              </Button>
-            </section>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
+            <h3>Next steps for your migration</h3>
             <section>
               <h4>Migration guide</h4>
-              <p>Information about the guide and why it will help</p>
+              <p>
+                Find all the information that you need for your migration needs
+                in our guides.
+              </p>
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Launch}
                 href="https://google.com"
               >
@@ -293,11 +321,11 @@ function App() {
                 AI Tutorial
               </h4>
               <p style={{ fontSize: "0.9rem" }}>
-                Information about the AI tutorial and why it will help
+                See how to use AI to enhance your migration processes.
               </p>
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Launch}
                 href="https://google.com"
               >

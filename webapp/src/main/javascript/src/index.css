@@ -21,12 +21,14 @@ body {
 }
 
 section {
-  margin: 2rem 0;
-  font-size: 0.9rem;
+  margin: 18px 0;
 
   h4 {
     text-decoration: underline;
-    font-size: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    margin-bottom: 10px;
   }
 
   p {
@@ -42,8 +44,9 @@ section {
   display: flex;
   margin: auto;
   background-color: #f4f4f4;
-  width: 900px;
+  width: 1184px;
   flex-direction: column;
+  padding-top: 32px;
 }
 
 h1 {
@@ -54,23 +57,31 @@ h1 {
 }
 
 .whiteBox {
-  padding: 2rem;
+  padding: 16px 24px;
   background-color: white;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   h2 {
-    margin-bottom: 0.8em;
-    font-size: 1.2em;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
   }
 
   p {
-    font-size: 0.9em;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+    margin-bottom: 12px;
   }
 }
 
+.whiteBox.centered {
+  padding: 24px 198px;
+}
+
 .fileUploadBox {
-  margin: 2rem auto;
-  width: 400px;
+  margin: 8px 0;
 }
 
 .individualDownload {
@@ -91,4 +102,110 @@ h1 {
     background: transparent;
     cursor: pointer;
   }
+}
+
+.progressindicators {
+  padding: 16px 0;
+  margin-bottom: 18px;
+}
+
+.analyzeButton {
+  margin-top: 40px;
+}
+
+.DropZone {
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  height: 140px;
+  margin-bottom: 8px;
+
+  text-align: center;
+  padding: 16px;
+
+  cursor: pointer;
+
+  img {
+    margin-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 4px;
+  }
+  p {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: rgba(0, 0, 0, 0.55);
+  }
+}
+
+.FileItem {
+  height: 22px;
+  background-color: #fafafa;
+  margin-bottom: 12px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
+    img {
+      margin-left: 4px;
+      margin-right: 8px;
+    }
+
+    span {
+      font-size: 14px;
+
+      &.downloadable {
+        color: #1890ff;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .right {
+    margin-right: 10px;
+    display: flex;
+    gap: 3px;
+    button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+      margin-right: -6px;
+    }
+
+    button.download {
+      color: blue;
+    }
+  }
+}
+
+.withMarginBottom {
+  margin-bottom: 12px;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  text-decoration: underline;
+}
+
+hr {
+  margin: 24px 0;
+}
+
+.cds--tooltip-content {
+  padding: 2px 16px;
 }
