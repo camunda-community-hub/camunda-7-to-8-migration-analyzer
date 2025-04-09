@@ -1,14 +1,13 @@
 import { useState } from "react";
 
 import {
-  FileUploaderItem,
   ProgressIndicator,
   ProgressStep,
   Button,
   Callout,
 } from "@carbon/react";
 
-import { Download, Launch, TrashCan } from "@carbon/react/icons";
+import { Download, Launch } from "@carbon/react/icons";
 import DropZone from "./DropZone";
 import FileItem from "./FileItem";
 
@@ -16,6 +15,7 @@ function App() {
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [xlsTemplate, setXlsTemplate] = useState();
+  const [csvTemplate, setCsvTemplate] = useState();
   const [fileResults, setFileResults] = useState();
   const [zip, setZip] = useState();
 
@@ -33,6 +33,17 @@ function App() {
         headers: {
           Accept:
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      })
+    );
+
+    // get XLS template
+    setCsvTemplate(
+      await fetch("/check", {
+        body: formData,
+        method: "POST",
+        headers: {
+          Accept: "text/csv",
         },
       })
     );
@@ -119,12 +130,12 @@ function App() {
         <div className="progressindicators">
           <ProgressIndicator spaceEqually>
             <ProgressStep
-              current={step === 0}
-              complete={step > 0}
+              current={step < 2}
+              complete={step > 1}
               label="Upload Models"
             />
             <ProgressStep
-              current={step === 1 || step === 2}
+              current={step === 2}
               complete={step > 2}
               label="Analyze Models"
             />
@@ -181,8 +192,9 @@ function App() {
               <h4>Instructions:</h4>
               <p>
                 Upload your BPMN models. You can upload single Models or
-                multiple once your models are uploded go ahead and Analyze and
-                convert.
+                multiple once your models are uploded
+                <br />
+                go ahead and Analyze and convert.
               </p>
             </section>
             <div className="fileUploadBox">
@@ -200,14 +212,11 @@ function App() {
               ))}
             </div>
 
-            <Button
-              kind="primary"
-              size="md"
-              onClick={analyzeAndConvert}
-              disabled
-            >
-              Analyze and convert
-            </Button>
+            <div className="analyzeButton">
+              <Button kind="primary" size="lg" disabled>
+                Analyze and convert
+              </Button>
+            </div>
           </>
         )}
 
@@ -235,6 +244,7 @@ function App() {
                 size="md"
                 renderIcon={Download}
                 onClick={() => download(xlsTemplate)}
+                className="withMarginBottom"
               >
                 Download analyzed results XLS
               </Button>
@@ -243,7 +253,7 @@ function App() {
                 kind="primary"
                 size="md"
                 renderIcon={Download}
-                onClick={() => download(xlsTemplate)}
+                onClick={() => download(csvTemplate)}
               >
                 Download analyzed results CSV
               </Button>
@@ -256,25 +266,18 @@ function App() {
                 individually or as a Zip file
               </p>
               {files.map((file, idx) => (
-                <div key={file.name + "-" + idx} className="individualDownload">
-                  <span>{file.name}</span>
-                  <button onClick={() => download(fileResults[idx])}>
-                    <Download />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setFiles((prevFiles) =>
-                        prevFiles.filter((prevFile) => prevFile !== file)
-                      )
-                    }
-                  >
-                    <TrashCan />
-                  </button>
-                </div>
+                <FileItem
+                  key={file.name + "-" + idx}
+                  name={file.name}
+                  downloadAction={() => download(fileResults[idx])}
+                  error={
+                    fileResults[idx].status !== 200 ? "File upload failure" : ""
+                  }
+                />
               ))}
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Download}
                 onClick={() => download(zip)}
               >
@@ -291,7 +294,7 @@ function App() {
               </p>
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Launch}
                 href="https://google.com"
               >
@@ -313,7 +316,7 @@ function App() {
               </p>
               <Button
                 kind="tertiary"
-                size="md"
+                size="lg"
                 renderIcon={Launch}
                 href="https://google.com"
               >

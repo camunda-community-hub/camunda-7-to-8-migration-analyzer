@@ -1,5 +1,8 @@
+import { Loading, Tooltip } from "@carbon/react";
+
+import { Download, TrashCan, WarningFilled } from "@carbon/react/icons";
+
 import Paperclip from "./Paperclip.svg";
-import Trash from "./Trash.svg";
 
 export default function DropZone({
   name,
@@ -12,14 +15,32 @@ export default function DropZone({
     <div className="FileItem">
       <div className="left">
         <img src={Paperclip} />
-        <span>{name}</span>
+        <span
+          className={downloadAction ? "downloadable" : ""}
+          onClick={downloadAction}
+        >
+          {name}
+        </span>
       </div>
       <div className="right">
-        {onDelete && (
-          <button onClick={onDelete}>
-            <img src={Trash} />
+        {error && (
+          <Tooltip label={error}>
+            <div style={{ color: "#da1e28" }}>
+              <WarningFilled />
+            </div>
+          </Tooltip>
+        )}
+        {!error && downloadAction && (
+          <button className="download" onClick={downloadAction}>
+            <Download />
           </button>
         )}
+        {onDelete && (
+          <button onClick={onDelete}>
+            <TrashCan />
+          </button>
+        )}
+        {status === "uploading" && <Loading small withOverlay={false} />}
       </div>
     </div>
   );

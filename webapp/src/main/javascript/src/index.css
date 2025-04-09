@@ -28,6 +28,7 @@ section {
     font-size: 16px;
     font-weight: 400;
     line-height: 22px;
+    margin-bottom: 10px;
   }
 
   p {
@@ -71,7 +72,7 @@ h1 {
     font-size: 16px;
     line-height: 22px;
     font-weight: 400;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
 }
 
@@ -160,16 +161,51 @@ h1 {
 
     span {
       font-size: 14px;
-      color: #1890ff;
+
+      &.downloadable {
+        color: #1890ff;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 
   .right {
+    margin-right: 10px;
+    display: flex;
+    gap: 3px;
     button {
       border: none;
       background-color: transparent;
       cursor: pointer;
       display: flex;
+      margin-right: -6px;
+    }
+
+    button.download {
+      color: blue;
     }
   }
+}
+
+.withMarginBottom {
+  margin-bottom: 12px;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  text-decoration: underline;
+}
+
+hr {
+  margin: 24px 0;
+}
+
+.cds--tooltip-content {
+  padding: 2px 16px;
 }
