@@ -17,6 +17,7 @@ import org.camunda.bpm.model.xml.ModelInstance;
 import org.camunda.community.migration.converter.DiagramCheckResult;
 import org.camunda.community.migration.converter.DiagramConverterResultDTO;
 import org.camunda.community.migration.converter.DiagramType;
+import org.camunda.community.migration.converter.excel.ExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

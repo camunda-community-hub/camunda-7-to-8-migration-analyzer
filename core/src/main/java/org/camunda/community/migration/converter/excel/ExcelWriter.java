@@ -1,4 +1,4 @@
-package org.camunda.community.migration.converter.webapp;
+package org.camunda.community.migration.converter.excel;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,19 +9,17 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.camunda.community.migration.converter.DiagramConverterResultDTO;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ExcelWriter {
 
   private static final String FILE_PATH_TEMPLATE = "/MigrationAnalyzerResultTemplate.xlsx";
-  private static final String FILE_PATH_OUTPUT = "MigrationAnalyzerResult.xlsx";
-
   private static final String SHEET_NAME = "AnalysisResults";
 
   /** Method solely to test Excel behavior when filling the template */
   public static void main(String[] args) throws IOException {
-    DiagramConverterResultDTO result1 =
+    String FILE_PATH_OUTPUT = "MigrationAnalyzerResult.xlsx";
+
+  	DiagramConverterResultDTO result1 =
         new DiagramConverterResultDTO(
             "file1.xml",
             "Element A",

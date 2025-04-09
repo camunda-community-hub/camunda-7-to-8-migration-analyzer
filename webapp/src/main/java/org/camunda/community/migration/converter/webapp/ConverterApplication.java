@@ -4,6 +4,7 @@ import org.camunda.community.migration.converter.DiagramConverter;
 import org.camunda.community.migration.converter.DiagramConverterFactory;
 import org.camunda.community.migration.converter.NotificationService;
 import org.camunda.community.migration.converter.NotificationServiceFactory;
+import org.camunda.community.migration.converter.excel.ExcelWriter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -18,5 +19,10 @@ public class ConverterApplication {
   public DiagramConverter bpmnConverter(NotificationService notificationService) {
     NotificationServiceFactory.getInstance().setInstance(notificationService);
     return DiagramConverterFactory.getInstance().get();
+  }
+  
+  @Bean
+  public ExcelWriter excelWriter() {
+  	return new ExcelWriter();
   }
 }

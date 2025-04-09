@@ -75,7 +75,7 @@ public class ConvertLocalCommandTest {
         .hasSize(3)
         .anyMatch(file -> file.getName().equals("c7.bpmn"))
         .anyMatch(file -> file.getName().equals("converted-c8-c7.bpmn"))
-        .anyMatch(file -> file.getName().equals("conversion-results.csv"));
+        .anyMatch(file -> file.getName().equals("analysis-results.csv"));
   }
 
   @Test

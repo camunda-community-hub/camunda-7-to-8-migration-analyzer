@@ -16,7 +16,7 @@ The conversion process can be extended to accommodate special requirements.
   - [CLI](#cli)
   - [Building from Source](#building-from-source) or [Embedding into your own Java Application](#embedding-into-your-own-java-applications)
   - [License](#license)
-- [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) (Refers to the Camunda Migration Guide.)
+- [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) (Refers to the [Camunda Migration Guide](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/))
 - [How to Extend](#how-to-extend-diagram-conversion)
 
 ## Installation
@@ -89,7 +89,6 @@ The CLI is a standalone Java application.
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
    ```
-  
   The typical way is to run it in `local` mode and reference your BPMN model file: 
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn

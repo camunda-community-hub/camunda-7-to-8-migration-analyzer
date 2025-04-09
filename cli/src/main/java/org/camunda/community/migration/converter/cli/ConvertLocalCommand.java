@@ -29,7 +29,7 @@ import picocli.CommandLine.Parameters;
     description = {
       "Converts the diagram from the given directory or file",
       "%nExecute as:",
-      "%njava -Dfile.encoding=UTF-8 -jar backend-diagram-converter-cli.jar local%n"
+      "%njava -Dfile.encoding=UTF-8 -jar camunda-7-to-8-migration-analyzer-cli.jar local%n"
     },
     mixinStandardHelpOptions = true,
     optionListHeading = "Options:%n",

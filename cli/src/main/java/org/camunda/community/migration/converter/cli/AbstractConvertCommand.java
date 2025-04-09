@@ -3,6 +3,7 @@ package org.camunda.community.migration.converter.cli;
 import static org.camunda.community.migration.converter.cli.ConvertCommand.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +19,8 @@ import org.camunda.community.migration.converter.DefaultConverterProperties;
 import org.camunda.community.migration.converter.DiagramCheckResult;
 import org.camunda.community.migration.converter.DiagramConverter;
 import org.camunda.community.migration.converter.DiagramConverterFactory;
+import org.camunda.community.migration.converter.excel.ExcelWriter;
+
 import picocli.CommandLine.Option;
 
 public abstract class AbstractConvertCommand implements Callable<Integer> {
@@ -56,9 +59,15 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
   @Option(
       names = {"--csv"},
       description =
-          "If enabled, a CSV file will be created containing the results for all conversions")
+          "If enabled, a CSV file will be created containing the results for the analysis")
   boolean csv;
 
+  @Option(
+      names = {"--xlsx"},
+      description =
+          "If enabled, a XLSX file will be created containing the results for the analysis")
+  boolean xslx;
+  
   @Option(
       names = {"--md", "--markdown"},
       description =
@@ -116,7 +125,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
       }
     }
     if (csv) {
-      File csvFile = determineFileName(new File(targetDirectory(), "conversion-results.csv"));
+      File csvFile = determineFileName(new File(targetDirectory(), "analysis-results.csv"));
       try (FileWriter fw = new FileWriter(csvFile)) {
         converter.writeCsvFile(results, fw);
         LOG_CLI.info("Created {}", csvFile);
@@ -125,8 +134,18 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
         returnCode = 1;
       }
     }
+    if (xslx) {
+      File xslxFile = determineFileName(new File(targetDirectory(), "analysis-results.xslx"));
+      try (FileOutputStream fos = new FileOutputStream(xslxFile)) {
+      	new ExcelWriter().writeResultsToExcel(converter.createLineItemDTOList(results), fos);      	
+        LOG_CLI.info("Created {}", xslxFile);
+      } catch (IOException e) {
+        LOG_CLI.error("Error while creating xslx results: {}", createMessage(e));
+        returnCode = 1;
+      }
+    }
     if (markdown) {
-      File markdownFile = determineFileName(new File(targetDirectory(), "conversion-results.md"));
+      File markdownFile = determineFileName(new File(targetDirectory(), "analysis-results.md"));
       try (FileWriter fw = new FileWriter(markdownFile)) {
         converter.writeMarkdownFile(results, fw);
         LOG_CLI.info("Created {}", markdownFile);

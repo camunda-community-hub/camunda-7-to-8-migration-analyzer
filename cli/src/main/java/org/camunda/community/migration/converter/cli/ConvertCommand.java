@@ -6,10 +6,10 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
-    name = "backend-diagram-converter-cli",
+    name = "camunda-7-to-8-migration-analyzer-cli",
     description = {
       "%nExecute as:",
-      "%njava -Dfile.encoding=UTF-8 -jar backend-diagram-converter-cli.jar%n"
+      "%njava -Dfile.encoding=UTF-8 -jar camunda-7-to-8-migration-analyzer-cli.jar%n"
     },
     mixinStandardHelpOptions = true,
     optionListHeading = "Options:%n",
