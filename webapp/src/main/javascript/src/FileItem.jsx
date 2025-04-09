@@ -16,8 +16,8 @@ export default function DropZone({
       <div className="left">
         <img src={Paperclip} />
         <span
-          className={downloadAction ? "downloadable" : ""}
-          onClick={downloadAction}
+          className={downloadAction && !error ? "downloadable" : ""}
+          onClick={error ? undefined : downloadAction}
         >
           {name}
         </span>

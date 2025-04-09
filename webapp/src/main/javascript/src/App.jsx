@@ -18,12 +18,30 @@ function App() {
   const [csvTemplate, setCsvTemplate] = useState();
   const [fileResults, setFileResults] = useState();
   const [zip, setZip] = useState();
+  const [hasValidFiles, setHasValidFiles] = useState(true);
 
   async function analyzeAndConvert() {
     setStep(1);
 
+    const fileResults = await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        return await fetch("/convert", {
+          body: formData,
+          method: "POST",
+        });
+      })
+    );
+
+    const validFiles = files.filter(
+      (_, idx) => fileResults[idx].status === 200
+    );
+    setHasValidFiles(validFiles.length > 0);
+
     const formData = new FormData();
-    files.forEach((file) => formData.append("file", file));
+    validFiles.forEach((file) => formData.append("file", file));
 
     // get XLS template
     setXlsTemplate(
@@ -49,19 +67,7 @@ function App() {
     );
 
     // get individual file results
-    setFileResults(
-      await Promise.all(
-        files.map(async (file) => {
-          const formData = new FormData();
-          formData.append("file", file);
-
-          return await fetch("/convert", {
-            body: formData,
-            method: "POST",
-          });
-        })
-      )
-    );
+    setFileResults(fileResults);
 
     // get ZIP file result
     setZip(
@@ -245,6 +251,7 @@ function App() {
                 renderIcon={Download}
                 onClick={() => download(xlsTemplate)}
                 className="withMarginBottom"
+                disabled={!hasValidFiles}
               >
                 Download analyzed results XLS
               </Button>
@@ -254,6 +261,7 @@ function App() {
                 size="md"
                 renderIcon={Download}
                 onClick={() => download(csvTemplate)}
+                disabled={!hasValidFiles}
               >
                 Download analyzed results CSV
               </Button>
@@ -280,6 +288,7 @@ function App() {
                 size="lg"
                 renderIcon={Download}
                 onClick={() => download(zip)}
+                disabled={!hasValidFiles}
               >
                 Download all converted models as zip
               </Button>
