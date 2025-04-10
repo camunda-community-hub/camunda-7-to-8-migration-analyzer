@@ -237,7 +237,7 @@ function App() {
               />
             </section>
             <section>
-              <h4>Results</h4>
+              <h3>Analysis results</h3>
               <p>
                 Download the completed analysis:
               </p>
@@ -264,17 +264,18 @@ function App() {
                 Download CSV
               </Button>
               <p>
-                  Comma Separated Values (CSV) file containing plain results, for example to import into <a href="https://docs.google.com/spreadsheets/d/1ZUxGhj1twgTnXadbopw1CvZg_ZvDnB2VXRQDSrKtmcM/edit?gid=6013418#gid=6013418">this Google Sheeet template</a>.
+                  Comma Separated Values (CSV) file containing plain results to import into your favorite tooling.
               </p>
               <p>
+                For more information on the analysis results,{" "}
                 <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
-                  For more information see the documentation.
-                </a>
+                  see the documentation
+                </a>.
               </p>
             </section>
-
+            <hr />
             <section>
-              <h4>Converted Models</h4>
+              <h3>Converted Models</h3>
               <p>
                 Download the converted models below individually or as one Zip file:
               </p>
@@ -301,9 +302,8 @@ function App() {
             <hr />
             <h3>Next steps for your migration</h3>
             <section>
-              <h4>Migration guide</h4>
               <p>
-                Disvover next steps for your migration from Camunda 7 to Camunda 8.
+                Disvover next steps for your migration from Camunda 7 to Camunda 8 in the migration guide.
               </p>
               <Button
                 kind="tertiary"
