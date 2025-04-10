@@ -3,7 +3,7 @@
 
   <groupId>org.camunda.community.migration</groupId>
   <artifactId>camunda-7-to-8-migration-analyzer-extension-example</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
+  <version>0.2.6-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
