@@ -13,7 +13,7 @@ The conversion process can be extended to accommodate special requirements.
   - [SaaS](#saas)
   - [Local Java Installation](#local-java-installation)
   - [Docker](#docker)
-  - [CLI](#cli)
+  - [CLI](#cli-command-line-interface)
   - [Building from Source](#building-from-source) or [Embedding into your own Java Application](#embedding-into-your-own-java-applications)
   - [License](#license)
 - [How to Use](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer) (Refers to the [Camunda Migration Guide](https://docs.camunda.io/docs/guides/migrating-from-camunda-7/))
@@ -31,7 +31,7 @@ You can use the Migration Analyzer in the following ways:
 
 ### SaaS
 
-A free hosted version of the Migration Analyzer is available at [https://diagram-converter.consulting-sandbox.camunda.cloud/](https://diagram-converter.consulting-sandbox.camunda.cloud/). 
+A free hosted version of the Migration Analyzer is available at [https://migration-analyzer.consulting-sandbox.camunda.cloud/](https://migration-analyzer.consulting-sandbox.camunda.cloud/). 
 
 Note that your models are **not** stored on this platform, and given there is https on transit, your models are safe. However, we don't give any gurantees on this free SaaS version.
 
