@@ -19,6 +19,7 @@ function App() {
   const [fileResults, setFileResults] = useState();
   const [zip, setZip] = useState();
   const [hasValidFiles, setHasValidFiles] = useState(true);
+  const isSaaS = window.location.hostname !== "localhost";
 
   async function analyzeAndConvert() {
     setStep(1);
@@ -115,20 +116,22 @@ function App() {
       <div className="whiteBox">
         <div>
           <div>
-            <h2>Analyze your Models</h2>
+            <h2>Camunda Migration Analyzer</h2>
             <p>
-              Understand your BPMN models before migrating. Identify gaps,
-              assess effort, and convert compatible elements.
-              <br />
-              <br />
-              If you would prefer to use a local version of this tool please{" "}
-              <a href="https://google.com">download it here</a>
+              Understand your BPMN and DMN models before migrating from Camunda 7 to Camunda 8.
+              Identify gaps, assess effort, and convert compatible elements.
             </p>
-            <p>
-              <a href="https://legal.camunda.com/licensing-and-other-legal-terms#trial-and-free">
-                See here for Data privacy information
-              </a>
-            </p>
+            {isSaaS && <div>
+              <p>
+                If you prefer a local version of this tool {" "}
+                <a href="https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer?tab=readme-ov-file#installation">download it here</a>.
+              </p>
+              <p>
+                <a href="https://legal.camunda.com/licensing-and-other-legal-terms#trial-and-free">
+                  Check our legal terms and data privacy information.
+                </a>
+              </p>
+              </div>}
           </div>
         </div>
       </div>
@@ -153,10 +156,7 @@ function App() {
             <section>
               <h4>Instructions:</h4>
               <p>
-                Upload your BPMN models. You can upload single Models or
-                multiple once your models are uploded
-                <br />
-                go ahead and Analyze and convert.
+                Upload your BPMN and DMN models. You can upload one or more files at once. 
               </p>
             </section>
             <div className="fileUploadBox">
@@ -178,7 +178,9 @@ function App() {
                 />
               ))}
             </div>
-
+            <p>
+                Then go ahead and click the button below to analyze and convert your models.
+            </p>
             <div className="analyzeButton">
               <Button
                 kind="primary"
@@ -197,10 +199,7 @@ function App() {
             <section>
               <h4>Instructions:</h4>
               <p>
-                Upload your BPMN models. You can upload single Models or
-                multiple once your models are uploded
-                <br />
-                go ahead and Analyze and convert.
+              Upload your BPMN and DMN models. You can upload one or more files at once. 
               </p>
             </section>
             <div className="fileUploadBox">
@@ -217,7 +216,9 @@ function App() {
                 />
               ))}
             </div>
-
+            <p>
+                Then go ahead and click the button below to analyze and convert your models.
+            </p>
             <div className="analyzeButton">
               <Button kind="primary" size="lg" disabled>
                 Analyze and convert
@@ -231,19 +232,14 @@ function App() {
             <section>
               <Callout
                 kind="success"
-                title="Analysis complete"
-                subtitle="View your analyzed Models"
+                title="Analysis and convertion complete"
                 lowContrast
               />
             </section>
             <section>
-              <h4>Analyze results</h4>
+              <h4>Results</h4>
               <p>
-                Access the completed analysis below. You can download view the
-                results as a XLS sheet or a csv. <br />
-                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
-                  For more information see more about the Camunda Analyzer here
-                </a>
+                Download the completed analysis:
               </p>
               <Button
                 kind="primary"
@@ -253,9 +249,11 @@ function App() {
                 className="withMarginBottom"
                 disabled={!hasValidFiles}
               >
-                Download analyzed results XLS
+                Download XLSX
               </Button>
-              <br />
+              <p>
+                Microsoft Excel file (XSLX) containing results and prepared analysis.
+              </p>
               <Button
                 kind="primary"
                 size="md"
@@ -263,15 +261,22 @@ function App() {
                 onClick={() => download(csvTemplate)}
                 disabled={!hasValidFiles}
               >
-                Download analyzed results CSV
+                Download CSV
               </Button>
+              <p>
+                  Comma Separated Values (CSV) file containing plain results, for example to import into <a href="https://docs.google.com/spreadsheets/d/1ZUxGhj1twgTnXadbopw1CvZg_ZvDnB2VXRQDSrKtmcM/edit?gid=6013418#gid=6013418">this Google Sheeet template</a>.
+              </p>
+              <p>
+                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
+                  For more information see the documentation.
+                </a>
+              </p>
             </section>
 
             <section>
               <h4>Converted Models</h4>
               <p>
-                See below the converted models that you can download
-                individually or as a Zip file
+                Download the converted models below individually or as one Zip file:
               </p>
               {files.map((file, idx) => (
                 <FileItem
@@ -290,7 +295,7 @@ function App() {
                 onClick={() => download(zip)}
                 disabled={!hasValidFiles}
               >
-                Download all converted models as zip
+                Download all converted models as ZIP
               </Button>
             </section>
             <hr />
@@ -298,40 +303,17 @@ function App() {
             <section>
               <h4>Migration guide</h4>
               <p>
-                Find all the information that you need for your migration needs
-                in our guides.
+                Disvover next steps for your migration from Camunda 7 to Camunda 8.
               </p>
               <Button
                 kind="tertiary"
                 size="lg"
                 renderIcon={Launch}
-                href="https://google.com"
+                href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-journey/?utm_source=analyzer"
               >
-                Read migration guide
+                Migration Guide
               </Button>
-            </section>
-            <section>
-              <h4
-                style={{
-                  marginTop: "2rem",
-                  textDecoration: "underline",
-                  fontSize: "0.9rem",
-                }}
-              >
-                AI Tutorial
-              </h4>
-              <p style={{ fontSize: "0.9rem" }}>
-                See how to use AI to enhance your migration processes.
-              </p>
-              <Button
-                kind="tertiary"
-                size="lg"
-                renderIcon={Launch}
-                href="https://google.com"
-              >
-                Watch AI tutorial
-              </Button>
-            </section>
+            </section>            
           </>
         )}
       </div>
