@@ -19,7 +19,7 @@ public class ExcelWriter {
   public static void main(String[] args) throws IOException {
     String FILE_PATH_OUTPUT = "MigrationAnalyzerResult.xlsx";
 
-  	DiagramConverterResultDTO result1 =
+    DiagramConverterResultDTO result1 =
         new DiagramConverterResultDTO(
             "file1.xml",
             "Element A",
