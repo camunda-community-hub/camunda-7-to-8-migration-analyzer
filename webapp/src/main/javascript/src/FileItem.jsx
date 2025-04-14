@@ -1,6 +1,11 @@
 import { Loading, Tooltip } from "@carbon/react";
 
-import { Download, TrashCan, WarningFilled } from "@carbon/react/icons";
+import {
+  Download,
+  TrashCan,
+  WarningFilled,
+  CheckmarkFilled,
+} from "@carbon/react/icons";
 
 import Paperclip from "./Paperclip.svg";
 
@@ -41,6 +46,18 @@ export default function DropZone({
           </button>
         )}
         {status === "uploading" && <Loading small withOverlay={false} />}
+        {status === "error" && (
+          <Tooltip label="File upload failure">
+            <div style={{ color: "#da1e28" }}>
+              <WarningFilled />
+            </div>
+          </Tooltip>
+        )}
+        {status === "success" && (
+          <div style={{ color: "#2ada1e" }}>
+            <CheckmarkFilled />
+          </div>
+        )}
       </div>
     </div>
   );

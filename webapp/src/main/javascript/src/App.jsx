@@ -14,38 +14,46 @@ import FileItem from "./FileItem";
 function App() {
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
-  const [xlsTemplate, setXlsTemplate] = useState();
-  const [csvTemplate, setCsvTemplate] = useState();
-  const [fileResults, setFileResults] = useState();
-  const [zip, setZip] = useState();
-  const [hasValidFiles, setHasValidFiles] = useState(true);
+  const [fileResults, setFileResults] = useState([]);
+  const [validFiles, setValidFiles] = useState([]);
   const isSaaS = window.location.hostname !== "localhost";
 
   async function analyzeAndConvert() {
     setStep(1);
 
     const fileResults = await Promise.all(
-      files.map(async (file) => {
+      files.map(async (file, idx) => {
         const formData = new FormData();
         formData.append("file", file);
 
-        return await fetch("/convert", {
+        const response = await fetch("/convert", {
           body: formData,
           method: "POST",
         });
+
+        setFileResults((fileResults) => {
+          const augmentedResults = [...fileResults];
+          augmentedResults[idx] = response;
+          return augmentedResults;
+        });
+        return response;
       })
     );
+
+    // get individual file results
+    setFileResults(fileResults);
 
     const validFiles = files.filter(
       (_, idx) => fileResults[idx].status === 200
     );
-    setHasValidFiles(validFiles.length > 0);
+    setValidFiles(validFiles);
+    setStep(2);
+  }
 
+  async function downloadXLS() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
-
-    // get XLS template
-    setXlsTemplate(
+    await download(
       await fetch("/check", {
         body: formData,
         method: "POST",
@@ -55,9 +63,11 @@ function App() {
         },
       })
     );
-
-    // get XLS template
-    setCsvTemplate(
+  }
+  async function downloadCSV() {
+    const formData = new FormData();
+    validFiles.forEach((file) => formData.append("file", file));
+    await download(
       await fetch("/check", {
         body: formData,
         method: "POST",
@@ -66,19 +76,16 @@ function App() {
         },
       })
     );
-
-    // get individual file results
-    setFileResults(fileResults);
-
-    // get ZIP file result
-    setZip(
+  }
+  async function downloadZIP() {
+    const formData = new FormData();
+    validFiles.forEach((file) => formData.append("file", file));
+    await download(
       await fetch("/convertBatch", {
         body: formData,
         method: "POST",
       })
     );
-
-    setStep(2);
   }
 
   async function download(response) {
@@ -111,6 +118,12 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
+  function getStatus(response) {
+    if (!response) return "uploading";
+    if (response.status !== 200) return "error";
+    return "success";
+  }
+
   return (
     <div className="container">
       <div className="whiteBox">
@@ -118,20 +131,26 @@ function App() {
           <div>
             <h2>Camunda Migration Analyzer</h2>
             <p>
-              Understand your BPMN and DMN models before migrating from Camunda 7 to Camunda 8.
-              Identify gaps, assess effort, and convert compatible elements.
+              Understand your BPMN and DMN models before migrating from Camunda
+              7 to Camunda 8. Identify gaps, assess effort, and convert
+              compatible elements.
             </p>
-            {isSaaS && <div>
-              <p>
-                If you prefer a local version of this tool {" "}
-                <a href="https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer?tab=readme-ov-file#installation">download it here</a>.
-              </p>
-              <p>
-                <a href="https://legal.camunda.com/licensing-and-other-legal-terms#trial-and-free">
-                  Check our legal terms and data privacy information.
-                </a>
-              </p>
-              </div>}
+            {isSaaS && (
+              <div>
+                <p>
+                  If you prefer a local version of this tool{" "}
+                  <a href="https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer?tab=readme-ov-file#installation">
+                    download it here
+                  </a>
+                  .
+                </p>
+                <p>
+                  <a href="https://legal.camunda.com/licensing-and-other-legal-terms#trial-and-free">
+                    Check our legal terms and data privacy information.
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -156,7 +175,8 @@ function App() {
             <section>
               <h4>Instructions:</h4>
               <p>
-                Upload your BPMN and DMN models. You can upload one or more files at once. 
+                Upload your BPMN and DMN models. You can upload one or more
+                files at once.
               </p>
             </section>
             <div className="fileUploadBox">
@@ -179,7 +199,8 @@ function App() {
               ))}
             </div>
             <p>
-                Then go ahead and click the button below to analyze and convert your models.
+              Then go ahead and click the button below to analyze and convert
+              your models.
             </p>
             <div className="analyzeButton">
               <Button
@@ -199,7 +220,8 @@ function App() {
             <section>
               <h4>Instructions:</h4>
               <p>
-              Upload your BPMN and DMN models. You can upload one or more files at once. 
+                Upload your BPMN and DMN models. You can upload one or more
+                files at once.
               </p>
             </section>
             <div className="fileUploadBox">
@@ -212,12 +234,13 @@ function App() {
                 <FileItem
                   key={file.name + "-" + idx}
                   name={file.name}
-                  status="uploading"
+                  status={getStatus(fileResults[idx])}
                 />
               ))}
             </div>
             <p>
-                Then go ahead and click the button below to analyze and convert your models.
+              Then go ahead and click the button below to analyze and convert
+              your models.
             </p>
             <div className="analyzeButton">
               <Button kind="primary" size="lg" disabled>
@@ -238,46 +261,48 @@ function App() {
             </section>
             <section>
               <h3>Analysis results</h3>
-              <p>
-                Download the completed analysis:
-              </p>
+              <p>Download the completed analysis:</p>
               <Button
                 kind="primary"
                 size="md"
                 renderIcon={Download}
-                onClick={() => download(xlsTemplate)}
+                onClick={downloadXLS}
                 className="withMarginBottom"
-                disabled={!hasValidFiles}
+                disabled={validFiles.length === 0}
               >
                 Download XLSX
               </Button>
               <p>
-                Microsoft Excel file (XSLX) containing results and prepared analysis.
+                Microsoft Excel file (XSLX) containing results and prepared
+                analysis.
               </p>
               <Button
                 kind="primary"
                 size="md"
                 renderIcon={Download}
-                onClick={() => download(csvTemplate)}
-                disabled={!hasValidFiles}
+                onClick={downloadCSV}
+                disabled={validFiles.length === 0}
               >
                 Download CSV
               </Button>
               <p>
-                  Comma Separated Values (CSV) file containing plain results to import into your favorite tooling.
+                Comma Separated Values (CSV) file containing plain results to
+                import into your favorite tooling.
               </p>
               <p>
                 For more information on the analysis results,{" "}
                 <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
                   see the documentation
-                </a>.
+                </a>
+                .
               </p>
             </section>
             <hr />
             <section>
               <h3>Converted Models</h3>
               <p>
-                Download the converted models below individually or as one Zip file:
+                Download the converted models below individually or as one Zip
+                file:
               </p>
               {files.map((file, idx) => (
                 <FileItem
@@ -293,8 +318,8 @@ function App() {
                 kind="tertiary"
                 size="lg"
                 renderIcon={Download}
-                onClick={() => download(zip)}
-                disabled={!hasValidFiles}
+                onClick={downloadZIP}
+                disabled={validFiles.length === 0}
               >
                 Download all converted models as ZIP
               </Button>
@@ -303,7 +328,8 @@ function App() {
             <h3>Next steps for your migration</h3>
             <section>
               <p>
-                Disvover next steps for your migration from Camunda 7 to Camunda 8 in the migration guide.
+                Disvover next steps for your migration from Camunda 7 to Camunda
+                8 in the migration guide.
               </p>
               <Button
                 kind="tertiary"
@@ -313,7 +339,7 @@ function App() {
               >
                 Migration Guide
               </Button>
-            </section>            
+            </section>
           </>
         )}
       </div>
