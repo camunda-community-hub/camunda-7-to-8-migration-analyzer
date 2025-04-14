@@ -16,9 +16,8 @@
     <module>core</module>
     <module>webapp</module>
     <module>cli</module>
-    <module>extension-example</module>
   </modules>
-  
+
 
   <properties>
     <encoding>UTF-8</encoding>
@@ -29,7 +28,6 @@
     <maven.compiler.target>${version.java}</maven.compiler.target>
 
     <version.zeebe>8.7.1</version.zeebe>
-    <version.zeebe-process-test-extension-testcontainer>8.7.0</version.zeebe-process-test-extension-testcontainer>
     <version.camunda.platform>7.23.0</version.camunda.platform>
     <version.jsoup>1.19.1</version.jsoup>
     <version.spring-boot>3.4.4</version.spring-boot>
@@ -37,9 +35,6 @@
     <version.commons-io>2.19.0</version.commons-io>
     <version.slack-api-client>1.45.3</version.slack-api-client>
     <version.opencsv>5.10</version.opencsv>
-    <version.operate-client>8.3.0.1</version.operate-client>
-    <version.camunda-bpm-assert>15.0.0</version.camunda-bpm-assert>
-    <version.jaxb-api>2.3.1</version.jaxb-api>
     <version.grpc>1.71.0</version.grpc>
     <version.protobuf>3.25.6</version.protobuf>
     <version.guava>33.4.7-jre</version.guava>
@@ -47,20 +42,15 @@
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.okio>3.11.0</version.okio>
     <version.archunit>1.4.0</version.archunit>
+    <version.okio>3.10.2</version.okio>
+    <version.apache-poi>5.4.1</version.apache-poi>
 
-    <plugin.version.function-maven-plugin>0.11.1</plugin.version.function-maven-plugin>
     <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
-    <plugin.version.maven-install-plugin>3.1.4</plugin.version.maven-install-plugin>
-    <plugin.version.maven-resources-plugin>3.3.1</plugin.version.maven-resources-plugin>
-    <plugin.version.maven-shade-plugin>3.6.0</plugin.version.maven-shade-plugin>
     <plugin.version.maven-surefire-plugin>3.5.3</plugin.version.maven-surefire-plugin>
     <plugin.version.spotless-maven-plugin>2.44.3</plugin.version.spotless-maven-plugin>
     <plugin.version.maven-compiler-plugin>3.14.0</plugin.version.maven-compiler-plugin>
-    <plugin.version.native-maven-plugin>0.10.6</plugin.version.native-maven-plugin>
-    <plugin.version.maven-depdendency-plugin>3.8.1</plugin.version.maven-depdendency-plugin>
     <plugin.version.maven-site-plugin>3.21.0</plugin.version.maven-site-plugin>
     <plugin.version.maven-assembly-plugin>3.7.1</plugin.version.maven-assembly-plugin>
-    <plugin.version.maven-release-plugin>3.1.1</plugin.version.maven-release-plugin>
     <plugin.version.frontend-maven-plugin>1.15.1</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.3.1</plugin.version.maven-source-plugin>
   </properties>
@@ -209,20 +199,237 @@
         <version>3.49.2</version>
       </dependency>
       <dependency>
-        <groupId>org.camunda.community.migration</groupId>
-        <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
-        <version>5.4.1</version>
+        <version>${version.apache-poi}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
-        <version>5.4.1</version>
+        <version>${version.apache-poi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.camunda.community.migration</groupId>
+        <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${plugin.version.maven-source-plugin}</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${plugin.version.maven-assembly-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${plugin.version.maven-site-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${plugin.version.maven-compiler-plugin}</version>
+          <configuration>
+            <compilerArgs>
+              <arg>-parameters</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${version.spring-boot}</version>
+          <configuration>
+            <image>
+              <env>
+                <BP_JVM_VERSION>17</BP_JVM_VERSION>
+                <BPE_LANG>en_US.utf8</BPE_LANG>
+              </env>
+              <createdDate>${maven.build.timestamp}</createdDate>
+            </image>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${plugin.version.maven-surefire-plugin}</version>
+          <configuration>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${plugin.version.maven-enforcer-plugin}</version>
+          <configuration>
+            <rules>
+              <reactorModuleConvergence />
+              <dependencyConvergence />
+              <requirePluginVersions />
+            </rules>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${plugin.version.spotless-maven-plugin}</version>
+          <configuration>
+            <formats>
+              <format>
+                <includes>
+                  <include>*.md</include>
+                  <include>.gitignore</include>
+                  <include>pom.xml</include>
+                </includes>
+                <trimTrailingWhitespace />
+                <endWithNewline />
+                <indent>
+                  <spaces>true</spaces>
+                  <spacesPerTab>2</spacesPerTab>
+                </indent>
+              </format>
+            </formats>
+            <java>
+              <googleJavaFormat />
+            </java>
+            <pom />
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>${plugin.version.frontend-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <versionRange>[1.0.0,)</versionRange>
+                    <goals>
+                      <goal>enforce</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>example</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <!-- we skip the enforcer as the example is built with another parent and therefore has no dependency convergence -->
+        <enforcer.skip>true</enforcer.skip>
+      </properties>
+      <modules>
+        <module>extension-example</module>
+      </modules>
+    </profile>
+    <!-- profile to auto format -->
+    <profile>
+      <id>autoFormat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>spotless-format</id>
+                <goals>
+                  <goal>apply</goal>
+                </goals>
+                <phase>process-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- profile to perform strict validation checks -->
+    <profile>
+      <id>checkFormat</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>spotless-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>validate</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

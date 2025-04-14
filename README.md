@@ -31,7 +31,7 @@ You can use the Migration Analyzer in the following ways:
 
 ### SaaS
 
-A free hosted version of the Migration Analyzer is available at [https://migration-analyzer.consulting-sandbox.camunda.cloud/](https://migration-analyzer.consulting-sandbox.camunda.cloud/). 
+A free hosted version of the Migration Analyzer is available at [https://migration-analyzer.consulting-sandbox.camunda.cloud/](https://migration-analyzer.consulting-sandbox.camunda.cloud/).
 
 Note that your models are **not** stored on this platform, and given there is https on transit, your models are safe. However, we don't give any gurantees on this free SaaS version.
 
@@ -89,7 +89,8 @@ The CLI is a standalone Java application.
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
    ```
-  The typical way is to run it in `local` mode and reference your BPMN model file: 
+
+  The typical way is to run it in `local` mode and reference your BPMN model file:
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn
    ```

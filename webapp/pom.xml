@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-	  <groupId>org.camunda.community.migration</groupId>
-	  <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
-	  <version>0.12.1-SNAPSHOT</version>
+    <groupId>org.camunda.community.migration</groupId>
+    <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
+    <version>0.12.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -46,11 +46,10 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.15.1</version>
         <configuration>
-            <installDirectory>target</installDirectory>
+          <installDirectory>target</installDirectory>
         </configuration>
-         
+
         <executions>
           <!-- Step 1: Install Node.js & npm -->
           <execution>
@@ -110,9 +109,10 @@
             <phase>deploy</phase>
             <configuration>
               <image>
-               <tags>
+                <tags>
                   <!-- Building all tags here, and only pushing the right one via the Github Action -->
-                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</tag>
+                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}
+                  </tag>
                   <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest</tag>
                   <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:SNAPSHOT</tag>
                   <tag>camundacommunityhub/migration-analyzer:${project.version}</tag>
@@ -121,7 +121,7 @@
                 </tags>
               </image>
             </configuration>
-          </execution>       
+          </execution>
         </executions>
       </plugin>
     </plugins>

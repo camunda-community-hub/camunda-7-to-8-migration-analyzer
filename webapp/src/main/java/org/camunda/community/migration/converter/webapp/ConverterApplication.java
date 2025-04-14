@@ -20,9 +20,9 @@ public class ConverterApplication {
     NotificationServiceFactory.getInstance().setInstance(notificationService);
     return DiagramConverterFactory.getInstance().get();
   }
-  
+
   @Bean
   public ExcelWriter excelWriter() {
-  	return new ExcelWriter();
+    return new ExcelWriter();
   }
 }

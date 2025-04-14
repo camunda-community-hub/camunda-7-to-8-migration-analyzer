@@ -20,7 +20,6 @@ import org.camunda.community.migration.converter.DiagramCheckResult;
 import org.camunda.community.migration.converter.DiagramConverter;
 import org.camunda.community.migration.converter.DiagramConverterFactory;
 import org.camunda.community.migration.converter.excel.ExcelWriter;
-
 import picocli.CommandLine.Option;
 
 public abstract class AbstractConvertCommand implements Callable<Integer> {
@@ -67,7 +66,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
       description =
           "If enabled, a XLSX file will be created containing the results for the analysis")
   boolean xslx;
-  
+
   @Option(
       names = {"--md", "--markdown"},
       description =
@@ -137,7 +136,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
     if (xslx) {
       File xslxFile = determineFileName(new File(targetDirectory(), "analysis-results.xslx"));
       try (FileOutputStream fos = new FileOutputStream(xslxFile)) {
-      	new ExcelWriter().writeResultsToExcel(converter.createLineItemDTOList(results), fos);      	
+        new ExcelWriter().writeResultsToExcel(converter.createLineItemDTOList(results), fos);
         LOG_CLI.info("Created {}", xslxFile);
       } catch (IOException e) {
         LOG_CLI.error("Error while creating xslx results: {}", createMessage(e));
