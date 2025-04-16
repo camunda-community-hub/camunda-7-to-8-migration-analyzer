@@ -22,6 +22,8 @@ public class VisitorException extends RuntimeException {
         + exceptionCausingVisitor.getName()
         + " while visiting element "
         + buildPath(element)
+        + " in namespace "
+        + element.getNamespaceURI()
         + " caused by: "
         + getCause().getMessage();
   }

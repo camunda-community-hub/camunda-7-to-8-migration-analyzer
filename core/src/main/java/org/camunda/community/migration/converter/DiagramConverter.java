@@ -37,7 +37,7 @@ import org.camunda.community.migration.converter.DiagramConverter.MustacheContex
 import org.camunda.community.migration.converter.DiagramConverter.MustacheContext.MustacheResultContext.MustacheElementResultContext.MustacheSeverityContext.MustacheMessageContext;
 import org.camunda.community.migration.converter.DomElementVisitorContext.DefaultDomElementVisitorContext;
 import org.camunda.community.migration.converter.conversion.Conversion;
-import org.camunda.community.migration.converter.visitor.AbstractDmnElementVisitor;
+import org.camunda.community.migration.converter.visitor.AbstractDecisionElementVisitor;
 import org.camunda.community.migration.converter.visitor.AbstractProcessElementVisitor;
 import org.camunda.community.migration.converter.visitor.DomElementVisitor;
 import org.slf4j.Logger;
@@ -240,7 +240,7 @@ public class DiagramConverter {
       // apply process element visitors first
       return 2;
     }
-    if (visitor instanceof AbstractDmnElementVisitor) {
+    if (visitor instanceof AbstractDecisionElementVisitor) {
       // apply dmn element visitors first
       return 2;
     }
