@@ -18,7 +18,7 @@ public class TextVisitor extends AbstractDmnElementVisitor {
   protected void visitDmnElement(DomElementVisitorContext context) {
     String content = context.getElement().getTextContent();
     ExpressionTransformationResult transform =
-        ExpressionTransformer.transformDmn("Decision table field", content);
+        ExpressionTransformer.transformDmn("Text field", content);
     context.addConversion(TextConvertible.class, c -> c.setContent(transform.getFeelExpression()));
     context.addMessage(ExpressionTransformationResultMessageFactory.getMessage(transform, null));
   }
