@@ -124,8 +124,9 @@ public class ExpressionTransformer {
     while (m.find()) {
       String index = m.group(1);
       if (StringUtils.isNumeric(index)) {
-        String oldIndex = "[" + Long.parseLong(m.group(1)) + "]";
-        String newIndex = "[" + (Long.parseLong(m.group(1)) + 1) + "]";
+        long indexLong = Long.parseLong(index);
+        String oldIndex = "[" + indexLong + "]";
+        String newIndex = "[" + (indexLong + 1) + "]";
         replaced = replaced.replace(oldIndex, newIndex);
       }
     }
