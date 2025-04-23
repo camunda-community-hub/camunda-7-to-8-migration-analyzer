@@ -66,7 +66,8 @@ public class ExpressionTransformerTest {
                 .hasMethodInvocation(true),
             expression("${input > 5.5}").hasMethodInvocation(false),
             expression("${input != ''}").isMappedTo("=input != \"\""),
-            expression("${input != 'what the F***'}").isMappedTo("=input != \"what the F***\""))
+            expression("${input != 'what the F***'}").isMappedTo("=input != \"what the F***\""),
+            expression("${array[index]}").isMappedTo("=array[index]"))
         .map(
             data ->
                 DynamicContainer.dynamicContainer(
