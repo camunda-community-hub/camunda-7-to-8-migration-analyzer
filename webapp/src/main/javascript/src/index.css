@@ -154,6 +154,7 @@ h1 {
   align-items: center;
 
   .left {
+    display: flex;
     img {
       margin-left: 4px;
       margin-right: 8px;
@@ -191,6 +192,8 @@ h1 {
   }
 }
 
+
+
 .withMarginBottom {
   margin-bottom: 12px;
 }
@@ -208,4 +211,93 @@ hr {
 
 .cds--tooltip-content {
   padding: 2px 16px;
+}
+
+.download-options {
+  display: grid;
+  row-gap: 1rem;
+}
+.download-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 1rem;
+  align-items: center;
+}
+.download-row button {
+  min-width: 180px;
+}
+.download-row p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+  
+}
+
+
+.diagram-container {
+  height:  400px;
+  width: 100%;
+  border: 1px solid #ccc; 
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  max-width: 95%;
+  width: 100%;
+  max-height: 95%;
+  overflow-y: auto;
+  .modal-header {
+    display: flex;
+    .left {
+      display: flex;
+    }
+  
+    .right {
+      margin-right: 10px;
+      display: flex;
+      gap: 3px;
+    }  
+  
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+
+
+.highlight-info:not(.djs-connection) .djs-visual  > :nth-child(1) {
+  stroke: #078bffb0 !important; 
+}
+.highlight-task:not(.djs-connection) .djs-visual  > :nth-child(1) {
+  stroke: #ffc107 !important; 
+}
+
+.highlight-warning:not(.djs-connection) .djs-visual  > :nth-child(1) {  
+  stroke: #ffc107 !important; 
+}
+
+.highlight-review:not(.djs-connection) .djs-visual  > :nth-child(1) {
+  stroke: #0dcaf0 !important; 
 }
