@@ -3,7 +3,6 @@ package org.camunda.community.migration.converter.conversion;
 import static org.camunda.community.migration.converter.BpmnElementFactory.*;
 import static org.camunda.community.migration.converter.NamespaceUri.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.model.xml.instance.DomDocument;
 import org.camunda.bpm.model.xml.instance.DomElement;
 import org.camunda.community.migration.converter.convertible.UserTaskConvertible;
@@ -15,9 +14,7 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
     if (convertible.isZeebeUserTask()) {
       extensionElements.appendChild(createZeebeUserTask(element.getDocument()));
     }
-    if (canAddFormDefinition(convertible)) {
-      extensionElements.appendChild(createFormDefinition(element.getDocument(), convertible));
-    }
+
     if (canAddAssignmentDefinition(convertible)) {
       extensionElements.appendChild(createAssignmentDefinition(element.getDocument(), convertible));
     }
@@ -42,32 +39,6 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
         || convertible.getZeebeTaskSchedule().getFollowUpDate() != null;
   }
 
-  private DomElement createFormDefinition(DomDocument document, UserTaskConvertible convertible) {
-    DomElement formDefinition = document.createElement(ZEEBE, "formDefinition");
-    if (convertible.getZeebeFormDefinition().getFormKey() != null) {
-      if (convertible.isZeebeUserTask()) {
-        formDefinition.setAttribute(
-            ZEEBE, "externalReference", convertible.getZeebeFormDefinition().getFormKey());
-      } else {
-        formDefinition.setAttribute(
-            ZEEBE, "formKey", convertible.getZeebeFormDefinition().getFormKey());
-      }
-    }
-    if (convertible.getZeebeFormDefinition().getFormId() != null) {
-      formDefinition.setAttribute(
-          ZEEBE, "formId", convertible.getZeebeFormDefinition().getFormId());
-    }
-    if (convertible.getZeebeFormDefinition().getBindingType() != null) {
-      formDefinition.setAttribute(
-          ZEEBE, "bindingType", convertible.getZeebeFormDefinition().getBindingType().name());
-    }
-    if (StringUtils.isNotBlank(convertible.getZeebeFormDefinition().getVersionTag())) {
-      formDefinition.setAttribute(
-          ZEEBE, "versionTag", convertible.getZeebeFormDefinition().getVersionTag());
-    }
-    return formDefinition;
-  }
-
   private DomElement createAssignmentDefinition(
       DomDocument document, UserTaskConvertible convertible) {
     DomElement assignmentDefinition = document.createElement(ZEEBE, "assignmentDefinition");
@@ -78,11 +49,6 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
     assignmentDefinition.setAttribute(
         "candidateUsers", convertible.getZeebeAssignmentDefinition().getCandidateUsers());
     return assignmentDefinition;
-  }
-
-  private boolean canAddFormDefinition(UserTaskConvertible convertible) {
-    return convertible.getZeebeFormDefinition().getFormKey() != null
-        || convertible.getZeebeFormDefinition().getFormId() != null;
   }
 
   private boolean canAddAssignmentDefinition(UserTaskConvertible convertible) {

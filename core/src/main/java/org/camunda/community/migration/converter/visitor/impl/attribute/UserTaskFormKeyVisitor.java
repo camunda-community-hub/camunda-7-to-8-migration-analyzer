@@ -1,7 +1,7 @@
 package org.camunda.community.migration.converter.visitor.impl.attribute;
 
 import org.camunda.community.migration.converter.DomElementVisitorContext;
-import org.camunda.community.migration.converter.convertible.UserTaskConvertible;
+import org.camunda.community.migration.converter.convertible.FormDefinitionConvertible;
 import org.camunda.community.migration.converter.message.Message;
 import org.camunda.community.migration.converter.message.MessageFactory;
 import org.camunda.community.migration.converter.visitor.AbstractSupportedAttributeVisitor;
@@ -16,7 +16,7 @@ public class UserTaskFormKeyVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     context.addConversion(
-        UserTaskConvertible.class,
+        FormDefinitionConvertible.class,
         userTaskConversion -> userTaskConversion.getZeebeFormDefinition().setFormKey(attribute));
     return MessageFactory.formKey(attributeLocalName(), context.getElement().getLocalName());
   }

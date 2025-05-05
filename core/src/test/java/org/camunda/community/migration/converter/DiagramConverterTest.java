@@ -55,7 +55,8 @@ public class DiagramConverterTest {
         "decision-ref-deployment.bpmn",
         "delegate.bpmn",
         "decision-ref-deployment.bpmn",
-        "delegate-expression-listener.bpmn"
+        "delegate-expression-listener.bpmn",
+        "start-event-form-ref-deployment.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();

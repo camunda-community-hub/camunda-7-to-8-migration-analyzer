@@ -15,3 +15,4 @@ org.camunda.community.migration.converter.conversion.ExecutionListenerConversion
 org.camunda.community.migration.converter.conversion.ZeebeVersionTagConversion
 org.camunda.community.migration.converter.conversion.TypeRefConversion
 org.camunda.community.migration.converter.conversion.TextConversion
+org.camunda.community.migration.converter.conversion.FormDefinitionConversion
