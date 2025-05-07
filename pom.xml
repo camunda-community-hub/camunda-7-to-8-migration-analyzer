@@ -41,7 +41,7 @@
     <version.error_prone_annotations>2.38.0</version.error_prone_annotations>
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.okio>3.11.0</version.okio>
-    <version.archunit>1.4.0</version.archunit>
+    <version.archunit>1.4.1</version.archunit>
     <version.okio>3.11.0</version.okio>
     <version.apache-poi>5.4.1</version.apache-poi>
 
