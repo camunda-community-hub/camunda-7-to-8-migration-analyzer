@@ -5,9 +5,16 @@ import {
   ProgressStep,
   Button,
   Callout,
+  DataTable,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeader,
+  TableBody,
+  TableCell,
 } from "@carbon/react";
 
-import { Download, Launch } from "@carbon/react/icons";
+import { Download, Launch, Close } from "@carbon/react/icons";
 import DropZone from "./DropZone";
 import FileItem from "./FileItem";
 import BpmnJS from 'bpmn-js';
@@ -23,6 +30,9 @@ function App() {
   const [previewbpmnXml, setPreviewbpmnXml] = useState("");
   const [previewCheckJson, setPreviewCheckJson] = useState([]);
 
+  const [previewTableHeader, setPreviewTableHeader] = useState([]);
+  const [previewTableRows, setPreviewTableRows] = useState([]);
+
   useEffect(() => {
       if (isPreviewOpen && previewbpmnXml) {
           const viewer = new BpmnJS({ container: '#bpmnDiagram' });
@@ -37,7 +47,9 @@ function App() {
               if (el.elementId) {
                   const severity = getMostSevere(el.messages);
                   if (severity) {
-                    canvas.addMarker(el.elementId, `highlight-${severity.toLowerCase()}`);
+                    // Mark wit the same color everytime for the moment
+                    //canvas.addMarker(el.elementId, `highlight-${severity.toLowerCase()}`);
+                    canvas.addMarker(el.elementId, `highlight-info`);
                   }          
               }
             });
@@ -179,6 +191,31 @@ function App() {
   async function preview(response) {
     if (!response?.checkResponseJson) return;
 
+    setPreviewTableHeader([
+      { key: 'elementType', header: 'Element Type' },
+      { key: 'elementId', header: 'Element ID' },
+      { key: 'elementName', header: 'Element Name' },
+      { key: 'severity', header: 'Severity' },
+      { key: 'message', header: 'Message' },
+      { key: 'link', header: 'Link' },
+    ]);
+    
+    setPreviewTableRows(
+      response.checkResponseJson?.[0]?.results.flatMap((element, elementIdx) =>
+        element.messages.map((message, msgIdx) => ({
+          id: `${elementIdx}-${msgIdx}`,
+          elementType: element.elementType,
+          elementId: element.elementId,
+          elementName: element.elementName || '(unnamed)',
+          severity: message.severity,
+          message: message.message,
+          link: message.link
+            ? `<a href="${message.link}" target="_blank" rel="noopener noreferrer">Link</a>`
+            : '-',
+        }))
+      ) || []);
+    
+
     setPreviewCheckJson(response.checkResponseJson);
     setPreviewbpmnXml(response.originalModelXml);
 
@@ -210,10 +247,19 @@ function App() {
           <div>
             <h2>Camunda Migration Analyzer</h2>
             <p>
-              Understand your BPMN and DMN models before migrating from Camunda
-              7 to Camunda 8. Identify gaps, assess effort, and convert
-              compatible elements.
+            Understand your BPMN models before migrating. Identify gaps, assess effort, and convert compatible elements.
             </p>
+            {!isSaaS && (
+              <div>
+                <p>
+                  If you prefer an online version of this tool{" "}
+                  <a href="https://migration-analyzer.consulting-sandbox.camunda.cloud/">
+                    access it here
+                  </a>
+                  .
+                </p>
+              </div>
+            )}            
             {isSaaS && (
               <div>
                 <p>
@@ -334,7 +380,7 @@ function App() {
                 onClick={downloadZIP}
                 disabled={validFiles.length === 0}
               >
-                Download all successfully converted models as ZIP
+                Download converted models as ZIP
               </Button>
             </section>
             <hr />
@@ -388,7 +434,7 @@ function App() {
             <h3>Next steps for your migration</h3>
             <section>
               <p>
-                Disvover next steps for your migration from Camunda 7 to Camunda
+                Discover next steps for your migration from Camunda 7 to Camunda
                 8 in the migration guide.
               </p>
               <Button
@@ -408,52 +454,66 @@ function App() {
     <div className="modal">
       <div className="modal-header">
         <div className="left">
-        <h2>Analysis - Graphical preview</h2>
+        <h2>Analysis preview</h2>
         </div>
-        <div className="right">
-          <button onClick={() => setIsPreviewOpen(false)}>Close</button>
+        <div>
+          <Button
+            kind="secondary"
+            size="sm"
+            renderIcon={Close}
+            onClick={() => setIsPreviewOpen(false)}
+          >
+            Close
+          </Button>
         </div>
       </div>
      
       <div id="bpmnDiagram" className="diagram-container"></div>
+      <DataTable rows={previewTableRows} headers={previewTableHeader}>
+  {({ rows, headers, getHeaderProps, getRowProps }) => (
+    <Table className="analysis-table">
+      <TableHead>
+        <TableRow>
+          {headers.map((header) => {
+            const headerProps = getHeaderProps({ header });
+            const { key, ...rest } = headerProps;
 
-      <h3>Detailed results</h3>
-      <table className="analysis-table">
-        <thead>
-          <tr>
-          <th>Element Type</th>
-            <th>Element ID</th>
-            <th>Element Name</th>
-            <th>Severity</th>
-            <th>Message</th>
-            <th>Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          {previewCheckJson[0]?.results.flatMap((element, elementIdx) =>
-            element.messages.length > 0
-              ? element.messages.map((message, msgIdx) => (
-                  <tr key={`${elementIdx}-${msgIdx}`}>
-                    <td>{element.elementType}</td>
-                    <td>{element.elementId}</td>
-                    <td>{element.elementName}</td>
-                    <td>{message.severity}</td>
-                    <td>{message.message}</td>
-                    <td>
-                      {message.link ? (
-                        <a href={message.link} target="_blank" rel="noopener noreferrer">
-                          Link
-                        </a>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                  </tr>
-                ))
-              : []
-          )}
-        </tbody>
-      </table>
+            return (
+              <TableHeader key={key} {...rest}>
+                {header.header}
+              </TableHeader>
+            );
+          })}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((row) => {
+          const rowProps = getRowProps({ row });
+          const { key, ...restRowProps } = rowProps;
+
+          return (
+            <TableRow key={key} {...restRowProps}>
+              {row.cells.map((cell) => (
+                <TableCell key={cell.id}>
+                  {cell.info.header === 'link' && cell.value?.startsWith('<a')
+                    ? (
+                        <span
+                          dangerouslySetInnerHTML={{ __html: cell.value }}
+                        />
+                      )
+                    : cell.value}
+                </TableCell>
+              ))}
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  )}
+</DataTable>
+
+
+
 
     </div>
   </div>
