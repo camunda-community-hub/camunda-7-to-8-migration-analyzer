@@ -1,7 +1,7 @@
 package org.camunda.community.migration.converter.visitor.impl.attribute;
 
 import org.camunda.community.migration.converter.DomElementVisitorContext;
-import org.camunda.community.migration.converter.convertible.UserTaskConvertible;
+import org.camunda.community.migration.converter.convertible.FormDefinitionConvertible;
 import org.camunda.community.migration.converter.convertible.UserTaskConvertible.ZeebeFormDefinition.ZeebeFormDefinitionBindingType;
 import org.camunda.community.migration.converter.message.Message;
 import org.camunda.community.migration.converter.message.MessageFactory;
@@ -20,7 +20,7 @@ public class FormRefBindingVisitor extends AbstractSupportedAttributeVisitor {
             >= SemanticVersion._8_6.ordinal()
         && !attribute.equals("version")) {
       context.addConversion(
-          UserTaskConvertible.class,
+          FormDefinitionConvertible.class,
           userTask -> userTask.getZeebeFormDefinition().setBindingType(mapBindingType(attribute)));
       return MessageFactory.formRefBinding();
     } else {

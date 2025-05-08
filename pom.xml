@@ -4,7 +4,7 @@
   <groupId>org.camunda.community.migration</groupId>
   <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
   <packaging>pom</packaging>
-  <version>0.12.1-SNAPSHOT</version>
+  <version>0.12.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.camunda.community</groupId>
@@ -27,21 +27,21 @@
     <maven.compiler.source>${version.java}</maven.compiler.source>
     <maven.compiler.target>${version.java}</maven.compiler.target>
 
-    <version.zeebe>8.7.1</version.zeebe>
+    <version.zeebe>8.7.2</version.zeebe>
     <version.camunda.platform>7.23.0</version.camunda.platform>
-    <version.jsoup>1.19.1</version.jsoup>
+    <version.jsoup>1.20.1</version.jsoup>
     <version.spring-boot>3.4.5</version.spring-boot>
     <version.picocli>4.7.7</version.picocli>
     <version.commons-io>2.19.0</version.commons-io>
     <version.slack-api-client>1.45.3</version.slack-api-client>
-    <version.opencsv>5.10</version.opencsv>
+    <version.opencsv>5.11</version.opencsv>
     <version.grpc>1.72.0</version.grpc>
     <version.protobuf>3.25.7</version.protobuf>
     <version.guava>33.4.8-jre</version.guava>
     <version.error_prone_annotations>2.38.0</version.error_prone_annotations>
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.okio>3.11.0</version.okio>
-    <version.archunit>1.4.0</version.archunit>
+    <version.archunit>1.4.1</version.archunit>
     <version.okio>3.11.0</version.okio>
     <version.apache-poi>5.4.1</version.apache-poi>
 
@@ -196,7 +196,7 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.49.2</version>
+        <version>3.49.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>

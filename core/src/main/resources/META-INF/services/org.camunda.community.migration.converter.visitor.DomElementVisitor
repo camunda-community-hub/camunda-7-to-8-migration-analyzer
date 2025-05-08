@@ -63,8 +63,7 @@ org.camunda.community.migration.converter.visitor.impl.attribute.PriorityVisitor
 org.camunda.community.migration.converter.visitor.impl.CompletionConditionVisitor
 org.camunda.community.migration.converter.visitor.impl.attribute.CalledElementVersionVisitor
 org.camunda.community.migration.converter.visitor.impl.attribute.StartEventFormKeyVisitor
-org.camunda.community.migration.converter.visitor.impl.attribute.StartEventFormRefVisitor
-org.camunda.community.migration.converter.visitor.impl.attribute.UserTaskFormRefVisitor
+org.camunda.community.migration.converter.visitor.impl.attribute.FormRefVisitor
 org.camunda.community.migration.converter.visitor.impl.attribute.ElementVariableVisitor
 org.camunda.community.migration.converter.visitor.impl.attribute.FormRefVersionVisitor
 org.camunda.community.migration.converter.visitor.impl.attribute.DecisionRefVersionVisitor
