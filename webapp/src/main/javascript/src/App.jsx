@@ -86,7 +86,7 @@ function App() {
         formData.append("file", file);
 
         const originalModelXml = await file.text();
-        const checkResponse = await fetch("http://localhost:8080/check", {
+        const checkResponse = await fetch("/check", {
           body: formData,
           method: "POST",
           headers: {
@@ -106,7 +106,7 @@ function App() {
           return updated;
         });
 
-        const convertResponse = await fetch("http://localhost:8080/convert", {
+        const convertResponse = await fetch("/convert", {
           body: formData,
           method: "POST",
         });
