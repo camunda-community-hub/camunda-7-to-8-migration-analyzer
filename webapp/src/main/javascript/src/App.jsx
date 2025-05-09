@@ -112,7 +112,7 @@ function App() {
         });
 
         // Extract filename from the Content-Disposition header
-        let filename = "downloaded-model"; // Default filename
+        let filename = "downloaded-model.bpmn"; // Default filename
 
         const contentDisposition = convertResponse.headers.get("Content-Disposition");
         if (contentDisposition) {
@@ -153,7 +153,7 @@ function App() {
   async function downloadXLS() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
-    await download(
+    await download1("analysis.xlsx",
       await fetch("/check", {
         body: formData,
         method: "POST",
@@ -167,7 +167,7 @@ function App() {
   async function downloadCSV() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
-    await download(
+    await download1("analysis.csv",
       await fetch("/check", {
         body: formData,
         method: "POST",
@@ -180,7 +180,7 @@ function App() {
   async function downloadZIP() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
-    await download(
+    await download1("converted-models.zip",
       await fetch("/convertBatch", {
         body: formData,
         method: "POST",
@@ -225,7 +225,14 @@ function App() {
   async function download(response) {
     let filename = response.filename;
     let blob = response.convertedFileBlob;
+    doDownload(filename, blob);
+  }
 
+  async function download1(filename, response) {
+    doDownload(filename, await response.blob());    
+  }    
+
+  async function doDownload(filename, blob) {
     const url = URL.createObjectURL(blob);
 
     // Create and trigger download link
