@@ -16,10 +16,18 @@ public class TextVisitor extends AbstractDmnElementVisitor {
 
   @Override
   protected void visitDmnElement(DomElementVisitorContext context) {
+    // ignore text annotations
+    if (hasTextAnnotationParent(context)) {
+      return;
+    }
     String content = context.getElement().getTextContent();
     ExpressionTransformationResult transform =
         ExpressionTransformer.transformDmn("Text field", content);
     context.addConversion(TextConvertible.class, c -> c.setContent(transform.getFeelExpression()));
     context.addMessage(ExpressionTransformationResultMessageFactory.getMessage(transform, null));
+  }
+
+  private boolean hasTextAnnotationParent(DomElementVisitorContext context) {
+    return context.getElement().getParentElement().getLocalName().equals("textAnnotation");
   }
 }
