@@ -1,4 +1,4 @@
-# Migration Analyzer Webapp
+# Migration Analyzer & Diagram Converter Webapp
 
 ## Rest API
 

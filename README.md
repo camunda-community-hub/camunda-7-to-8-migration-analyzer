@@ -1,6 +1,6 @@
-# Migration Analyzer
+# Migration Analyzer & Diagram Converter
 
-The Migration Analyzer:
+The Migration Analyzer & Diagram Converter:
 
 - Analyzes Camunda 7 models (BPMN & DMN) to identify tasks required for migration to Camunda 8.
 - Converts those models.
@@ -21,17 +21,17 @@ The conversion process can be extended to accommodate special requirements.
 
 ## Installation
 
-You can use the Migration Analyzer in the following ways:
+You can use the Migration Analyzer & Diagram Converter in the following ways:
 
-- **Web Interface**: A locally installed web-based wizard for the Migration Analyzer, implemented as a Java Spring application. This can be installed
+- **Web Interface**: A locally installed web-based wizard for the Migration Analyzer & Diagram Converter, implemented as a Java Spring application. This can be installed
   - locally as Java jar,
   - using Docker, or
   - consumed as SaaS from our free hosted version.
-- **CLI**: A Command-Line Interface for the Migration Analyzer, implemented as a Java application.
+- **CLI**: A Command-Line Interface for the Migration Analyzer & Diagram Converter, implemented as a Java application.
 
 ### SaaS
 
-A free hosted version of the Migration Analyzer is available at [https://migration-analyzer.consulting-sandbox.camunda.cloud/](https://migration-analyzer.consulting-sandbox.camunda.cloud/).
+A free hosted version of the Migration Analyzer & Diagram Converter is available at [https://migration-analyzer.consulting-sandbox.camunda.cloud/](https://migration-analyzer.consulting-sandbox.camunda.cloud/).
 
 Note that your models are **not** stored on this platform, and given there is https on transit, your models are safe. However, we don't give any gurantees on this free SaaS version.
 
@@ -44,7 +44,7 @@ You can also install the web application locally.
 
 **Steps**:
 
-1. Download the latest Migration Analyzer web application: [camunda-7-to-8-migration-analyzer-webapp.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-webapp.jar).
+1. Download the latest Migration Analyzer & Diagram Converter web application: [camunda-7-to-8-migration-analyzer-webapp.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-webapp.jar).
 2. Run the application. Navigate to the directory where the `.jar` file was downloaded and execute the following command:
 
    ```shell
@@ -61,7 +61,7 @@ java -Dserver.port=8090 -jar camunda-7-to-8-migration-analyzer-webapp.jar
 
 ### Docker
 
-You can also run the Migration Analyzer using Docker.
+You can also run the Migration Analyzer & Diagram Converter using Docker.
 
 1. Pull the latest version of the Docker image:
 
@@ -83,7 +83,7 @@ The CLI is a standalone Java application.
 
 **Steps**:
 
-1. Download the latest Migration Analyzer CLI application: [camunda-7-to-8-migration-analyzer-cli.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-cli.jar).
+1. Download the latest Migration Analyzer & Diagram Converter CLI application: [camunda-7-to-8-migration-analyzer-cli.jar](https://github.com/camunda-community-hub/camunda-7-to-8-migration-analyzer/releases/latest/download/camunda-7-to-8-migration-analyzer-cli.jar).
 2. Run the CLI with the following command:
 
    ```shell
