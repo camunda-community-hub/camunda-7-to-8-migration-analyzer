@@ -252,7 +252,7 @@ function App() {
       <div className="whiteBox">
         <div>
           <div>
-            <h2>Camunda Migration Analyzer</h2>
+            <h2>Camunda Migration Analyzer & Diagram Converter</h2>
             <p>
             Understand your BPMN models before migrating. Identify gaps, assess effort, and convert compatible elements.
             </p>
