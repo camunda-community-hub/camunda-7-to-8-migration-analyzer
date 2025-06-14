@@ -42,7 +42,7 @@
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.okio>3.11.0</version.okio>
     <version.archunit>1.4.1</version.archunit>
-    <version.okio>3.12.0</version.okio>
+    <version.okio>3.13.0</version.okio>
     <version.apache-poi>5.4.1</version.apache-poi>
 
     <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
