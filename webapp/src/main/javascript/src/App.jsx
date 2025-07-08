@@ -563,6 +563,7 @@ function App() {
                 size="lg"
                 renderIcon={Launch}
                 href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-journey/?utm_source=analyzer"
+                target="_blank"
               >
                 Migration Guide
               </Button>
