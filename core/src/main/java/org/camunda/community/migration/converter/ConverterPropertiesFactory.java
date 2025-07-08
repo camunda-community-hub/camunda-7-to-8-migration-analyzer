@@ -56,15 +56,24 @@ public class ConverterPropertiesFactory extends AbstractFactory<ConverterPropert
         "script-format", properties::getScriptFormatHeader, base::setScriptFormatHeader);
     readZeebePlatformInfo("version", properties::getPlatformVersion, base::setPlatformVersion);
     readFlag(
-        "default-job-type-enabled",
-        properties::getDefaultJobTypeEnabled,
-        base::setDefaultJobTypeEnabled);
+        "always-use-default-job-type",
+        properties::getAlwaysUseDefaultJobType,
+        base::setAlwaysUseDefaultJobType);
     readFlag(
         "append-documentation", properties::getAppendDocumentation, base::setAppendDocumentation);
     readFlag(
-        "use-delegate-expression-as-job-type",
-        properties::getUseDelegateExpressionAsJobType,
-        base::setUseDelegateExpressionAsJobType);
+        "keep-job-type-blank",
+        properties::getKeepJobTypeBlank,
+        base::setKeepJobTypeBlank);
+    readFlag(
+        "add-data-migration-execution-listener",
+        properties::getAddDataMigrationExecutionListener,
+        base::setAddDataMigrationExecutionListener);
+    readDefaultValue(
+        "flag.data-migration-execution-listener-job-type",
+        properties::getDataMigrationExecutionListenerJobType,
+        base::setDataMigrationExecutionListenerJobType,
+        s -> s);
     readFlag("append-elements", properties::getAppendElements, base::setAppendElements);
   }
 

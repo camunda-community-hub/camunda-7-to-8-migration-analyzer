@@ -108,8 +108,52 @@ public class DiagramConverterTest {
   }
 
   @Test
-  public void testDelegateHint() {
+  public void testJavaDelegateClassToJobType() {
     DiagramCheckResult result = loadAndCheck("java-delegate-class-c7.bpmn");
+
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAlwaysUseDefaultJobType(false);
+    modified.setKeepJobTypeBlank(false);
+    ConverterPropertiesFactory.getInstance().merge(modified);
+  
+    ElementCheckResult delegateClassServiceTask = result.getResult("DelegateClassServiceTask");        
+    assertNotNull(delegateClassServiceTask);
+    assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
+    ElementCheckMessage message = delegateClassServiceTask.getMessages().get(0);
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Delegate class or expression com.camunda.consulting.MyDelegate has been transformed to job type myDelegate.");
+  }
+
+  @Test
+  public void testJavaDelegateExpressionToJobType() {
+    DiagramCheckResult result = loadAndCheck("delegate.bpmn");
+
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAlwaysUseDefaultJobType(false);
+    modified.setKeepJobTypeBlank(false);
+    ConverterPropertiesFactory.getInstance().merge(modified);
+  
+    ElementCheckResult delegateClassServiceTask = result.getResult("serviceTask");
+    assertNotNull(delegateClassServiceTask);
+    assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
+    ElementCheckMessage message = delegateClassServiceTask.getMessages().get(0);
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Delegate class or expression ${myDelegate} has been transformed to job type myDelegate.");
+  }
+  
+  @Test
+  public void testJavaAdapterJobType() {
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAlwaysUseDefaultJobType(true);
+    modified.setKeepJobTypeBlank(false);
+    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
+
+    DiagramCheckResult result = loadAndCheck(
+            "java-delegate-class-c7.bpmn",  
+             properties);
+  
     ElementCheckResult delegateClassServiceTask = result.getResult("DelegateClassServiceTask");
     assertNotNull(delegateClassServiceTask);
     assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
@@ -118,7 +162,28 @@ public class DiagramConverterTest {
         .isEqualTo(
             "Attribute 'class' on 'serviceTask' was mapped. Delegate call to 'com.camunda.consulting.MyDelegate' was transformed to job type 'camunda-7-adapter'. Please review your implementation.");
   }
+  
+  @Test
+  public void testExpressionMethodInServiceTask() {
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAlwaysUseDefaultJobType(false);
+    modified.setKeepJobTypeBlank(false);
+    modified.setDefaultJobType("TEST123");
+    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
 
+    DiagramCheckResult result = loadAndCheck(
+            "expression-service-task.bpmn",  
+             properties);
+  
+    ElementCheckResult serviceTask = result.getResult("serviceTask");
+    assertNotNull(serviceTask);
+    assertThat(serviceTask.getMessages()).hasSize(1);
+    ElementCheckMessage message = serviceTask.getMessages().get(0);
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Expression ${myDelegate.doSomething()} was written to a header attribute and job type set to TEST123.");
+  }  
+  
   @Test
   public void testTaskListenerHints() {
     DiagramCheckResult result = loadAndCheck("user-task-listener-implementations.bpmn");
@@ -150,7 +215,26 @@ public class DiagramConverterTest {
         .isEqualTo(
             "Element 'script' cannot be transformed. Script 'delegateTask.setName(\"my script name\");' with format 'javascript' on 'taskListener'.");
   }
+  
+  @Test
+  public void testDataMigrationListener() {
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAddDataMigrationExecutionListener(true);
+    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
 
+    DiagramCheckResult result = loadAndCheck(
+            "java-delegate-class-c7.bpmn",  
+             properties);
+  
+    ElementCheckResult startEvent = result.getResult("StartEvent_1");
+    assertNotNull(startEvent);
+    assertThat(startEvent.getMessages()).hasSize(1);
+    ElementCheckMessage message = startEvent.getMessages().get(0);
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Added execution listener 'migrator' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.");
+  }
+  
   @Test
   void testOrGateways() {
     DiagramCheckResult result = loadAndCheckAgainstVersion("or-gateways.bpmn", "8.0.0");
@@ -554,9 +638,9 @@ public class DiagramConverterTest {
   }
 
   @Test
-  void testAdapterDisabled() {
+  void testJobTypeBlank() {
     DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setDefaultJobTypeEnabled(false);
+    modified.setKeepJobTypeBlank(true);
     ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
     BpmnModelInstance modelInstance =
@@ -942,7 +1026,7 @@ public class DiagramConverterTest {
   @Test
   void shouldTransformDelegateExpressionAsJobType() {
     DefaultConverterProperties converterProperties = new DefaultConverterProperties();
-    converterProperties.setUseDelegateExpressionAsJobType(true);
+    //converterProperties.setUseDelegateExpressionAsJobType(true);
     BpmnModelInstance modelInstance =
         loadAndConvert(
             "delegate.bpmn", ConverterPropertiesFactory.getInstance().merge(converterProperties));

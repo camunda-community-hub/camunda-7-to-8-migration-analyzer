@@ -27,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class ConverterController {
   private static final Logger LOG = LoggerFactory.getLogger(ConverterController.class);
   private final DiagramConverterService bpmnConverter;
@@ -70,8 +72,10 @@ public class ConverterController {
       @RequestParam("file") List<MultipartFile> diagramFiles,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "defaultJobTypeEnabled", required = false, defaultValue = "true")
-          Boolean defaultJobTypeEnabled,
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
+      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
+      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType,
       @RequestHeader(HttpHeaders.ACCEPT) String[] contentType) {
 
     ArrayList<DiagramCheckResult> resultList = new ArrayList<DiagramCheckResult>();
@@ -91,7 +95,10 @@ public class ConverterController {
                 modelInstance,
                 defaultJobType,
                 platformVersion,
-                defaultJobTypeEnabled);
+                keepJobTypeBlank,
+                alwaysUseDefaultJobType,
+                addDataMigrationExecutionListener,
+                dataMigrationExecutionListenerJobType);
         resultList.add(diagramCheckResult);
       } catch (IOException e) {
         LOG.error("Error while reading input stream of diagram file", e);
@@ -154,7 +161,11 @@ public class ConverterController {
             .contains("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   }
 
-  /** POST method to actually convert a BPMN or DMN model. */
+  /**
+   * POST method to actually convert a BPMN or DMN model.
+   *
+   * @throws InterruptedException
+   */
   @PostMapping(
       value = "/convert",
       produces = {"application/bpmn+xml", "application/dmn+xml"},
@@ -165,8 +176,13 @@ public class ConverterController {
           Boolean appendDocumentation,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "defaultJobTypeEnabled", required = false, defaultValue = "true")
-          Boolean defaultJobTypeEnabled) {
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
+      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
+      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType)
+      throws InterruptedException {
+
+    Thread.sleep(3000);
 
     DiagramType diagramType = determineDiagramType(diagramFile);
     try (InputStream in = diagramFile.getInputStream()) {
@@ -176,7 +192,10 @@ public class ConverterController {
           appendDocumentation,
           defaultJobType,
           platformVersion,
-          defaultJobTypeEnabled);
+          keepJobTypeBlank,
+          alwaysUseDefaultJobType,
+          addDataMigrationExecutionListener,
+          dataMigrationExecutionListenerJobType);
       String xml = bpmnConverter.printXml(modelInstance.getDocument(), true);
       Resource file = new ByteArrayResource(xml.getBytes());
       return ResponseEntity.ok()
@@ -188,6 +207,7 @@ public class ConverterController {
     } catch (IOException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (Exception e) {
+      // TODO: Should we log this? 
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
@@ -206,8 +226,10 @@ public class ConverterController {
           Boolean appendDocumentation,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "defaultJobTypeEnabled", required = false, defaultValue = "true")
-          Boolean defaultJobTypeEnabled) {
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
+      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
+      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType) {
 
     HashMap<String, Resource> resultList = new HashMap<String, Resource>();
 
@@ -225,7 +247,10 @@ public class ConverterController {
             appendDocumentation,
             defaultJobType,
             platformVersion,
-            defaultJobTypeEnabled);
+            keepJobTypeBlank,
+            alwaysUseDefaultJobType,
+            addDataMigrationExecutionListener,
+            dataMigrationExecutionListenerJobType);
         String xml = bpmnConverter.printXml(modelInstance.getDocument(), true);
         Resource file = new ByteArrayResource(xml.getBytes());
         resultList.put("converted-c8-" + diagramFile.getOriginalFilename(), file);

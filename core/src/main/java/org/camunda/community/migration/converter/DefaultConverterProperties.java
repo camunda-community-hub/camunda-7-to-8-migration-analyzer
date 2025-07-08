@@ -8,9 +8,13 @@ public class DefaultConverterProperties implements ConverterProperties {
   private String resourceHeader;
   private String scriptFormatHeader;
   private String platformVersion;
-  private Boolean defaultJobTypeEnabled;
+  
+  private Boolean keepJobTypeBlank;
+  private Boolean alwaysUseDefaultJobType;
+  private Boolean addDataMigrationExecutionListener;
+  private String dataMigrationExecutionListenerJobType;
+  
   private Boolean appendDocumentation;
-  private Boolean useDelegateExpressionAsJobType;
   private Boolean appendElements;
 
   @Override
@@ -20,15 +24,6 @@ public class DefaultConverterProperties implements ConverterProperties {
 
   public void setAppendDocumentation(Boolean appendDocumentation) {
     this.appendDocumentation = appendDocumentation;
-  }
-
-  @Override
-  public Boolean getDefaultJobTypeEnabled() {
-    return defaultJobTypeEnabled;
-  }
-
-  public void setDefaultJobTypeEnabled(Boolean defaultJobTypeEnabled) {
-    this.defaultJobTypeEnabled = defaultJobTypeEnabled;
   }
 
   @Override
@@ -95,20 +90,43 @@ public class DefaultConverterProperties implements ConverterProperties {
   }
 
   @Override
-  public Boolean getUseDelegateExpressionAsJobType() {
-    return useDelegateExpressionAsJobType;
-  }
-
-  public void setUseDelegateExpressionAsJobType(Boolean useDelegateExpressionAsJobType) {
-    this.useDelegateExpressionAsJobType = useDelegateExpressionAsJobType;
-  }
-
-  @Override
   public Boolean getAppendElements() {
     return appendElements;
   }
 
   public void setAppendElements(Boolean appendElements) {
     this.appendElements = appendElements;
+  }
+
+  public Boolean getKeepJobTypeBlank() {
+    return keepJobTypeBlank;
+  }
+
+  public void setKeepJobTypeBlank(Boolean keepJobTypeBlank) {
+    this.keepJobTypeBlank = keepJobTypeBlank;
+  }
+
+  public Boolean getAlwaysUseDefaultJobType() {
+    return alwaysUseDefaultJobType;
+  }
+
+  public void setAlwaysUseDefaultJobType(Boolean alwaysUseDefaultJobType) {
+    this.alwaysUseDefaultJobType = alwaysUseDefaultJobType;
+  }
+
+  public Boolean getAddDataMigrationExecutionListener() {
+    return addDataMigrationExecutionListener;
+  }
+
+  public void setAddDataMigrationExecutionListener(Boolean addDataMigrationExecutionListener) {
+    this.addDataMigrationExecutionListener = addDataMigrationExecutionListener;
+  }
+
+  public String getDataMigrationExecutionListenerJobType() {
+    return dataMigrationExecutionListenerJobType;
+  }
+
+  public void setDataMigrationExecutionListenerJobType(String dataMigrationExecutionListenerJobType) {
+    this.dataMigrationExecutionListenerJobType = dataMigrationExecutionListenerJobType;
   }
 }

@@ -295,3 +295,14 @@ th, td {
 .highlight-review:not(.djs-connection) .djs-visual  > :nth-child(1) {
   stroke: #0dcaf0 !important; 
 }
+
+.configBox {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f4f4f4; /* Carbon's Gray 10 */
+  border: 1px solid #e0e0e0; /* Carbon's Gray 20 */
+  border-radius: 4px;
+}
+.form-spacer {
+  margin-top: 2rem;
+}

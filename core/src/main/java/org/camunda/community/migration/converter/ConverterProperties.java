@@ -16,11 +16,16 @@ public interface ConverterProperties {
 
   String getPlatformVersion();
 
-  Boolean getDefaultJobTypeEnabled();
-
   Boolean getAppendDocumentation();
 
-  Boolean getUseDelegateExpressionAsJobType();
+  Boolean getKeepJobTypeBlank();
+  
+  Boolean getAlwaysUseDefaultJobType();
 
   Boolean getAppendElements();
+  
+  Boolean getAddDataMigrationExecutionListener();
+
+  String getDataMigrationExecutionListenerJobType();
+  
 }

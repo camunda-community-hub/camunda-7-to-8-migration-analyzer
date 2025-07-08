@@ -513,10 +513,16 @@ public class MessageFactory {
     return INSTANCE.staticMessage("called-element-ref-binding");
   }
 
-  public static Message delegateExpressionAsJobType(String jobType) {
+  public static Message delegateExpressionAsJobType(String jobType, String delegateExpression) {
     return INSTANCE.composeMessage(
         "delegate-expression-as-job-type",
-        ContextBuilder.builder().entry("jobType", jobType).build());
+        ContextBuilder.builder().entry("jobType", jobType).entry("delegateExpression", delegateExpression).build());
+  }
+
+  public static Message expressionMethodAsJobType(String jobType, String expressionMethod) {
+    return INSTANCE.composeMessage(
+        "expression-method-as-job-type",
+        ContextBuilder.builder().entry("jobType", jobType).entry("expressionMethod", expressionMethod).build());
   }
 
   public static Message delegateExpressionAsJobTypeNull(String delegateExpression) {
@@ -598,4 +604,13 @@ public class MessageFactory {
   public static Message numberType() {
     return INSTANCE.staticMessage("number-type");
   }
+  
+  public static Message startListenerAdded(String elementLocalName) {
+    return INSTANCE.composeMessage(
+        "data-migration-listener-added",
+        ContextBuilder.builder()
+            .context(elementNotTransformablePrefix(elementLocalName))            
+            .build());
+  }
+  
 }

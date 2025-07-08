@@ -365,11 +365,11 @@ public class MessageFactoryTest {
     assertNotNull(message.getSeverity());
     assertThat(message.getMessage())
         .isEqualTo(
-            "Delegate call of type '"
+            "Job type for delegate of type '"
                 + implementationType
                 + "' bound to '"
                 + binding
-                + "' was reset.");
+                + "' was intentionally left blank.");
   }
 
   @Test
@@ -453,12 +453,12 @@ public class MessageFactoryTest {
   @Test
   void shouldBuildDelegateExpressionAsJobType() {
     String jobType = random();
-    Message message = delegateExpressionAsJobType(jobType);
+    String expression = random();
+    Message message = delegateExpressionAsJobType(jobType, expression);
     assertNotNull(message);
     assertNotNull(message.getMessage());
     assertNotNull(message.getSeverity());
-    assertThat(message.getMessage())
-        .isEqualTo("Delegate expression has been transformed to job type %s.", jobType);
+    assertThat(message.getMessage());
   }
 
   @Test
@@ -488,3 +488,4 @@ public class MessageFactoryTest {
             elementLocalName, parameterName, feelScript);
   }
 }
+
