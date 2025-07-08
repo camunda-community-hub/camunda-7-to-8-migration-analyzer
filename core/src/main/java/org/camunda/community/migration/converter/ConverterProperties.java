@@ -19,13 +19,12 @@ public interface ConverterProperties {
   Boolean getAppendDocumentation();
 
   Boolean getKeepJobTypeBlank();
-  
+
   Boolean getAlwaysUseDefaultJobType();
 
   Boolean getAppendElements();
-  
+
   Boolean getAddDataMigrationExecutionListener();
 
   String getDataMigrationExecutionListenerJobType();
-  
 }

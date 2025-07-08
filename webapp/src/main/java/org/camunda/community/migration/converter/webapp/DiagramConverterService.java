@@ -38,7 +38,8 @@ public class DiagramConverterService {
     adaptedProperties.setKeepJobTypeBlank(keepJobTypeBlank);
     adaptedProperties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
     adaptedProperties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
-    adaptedProperties.setDataMigrationExecutionListenerJobType(dataMigrationExecutionListenerJobType);
+    adaptedProperties.setDataMigrationExecutionListenerJobType(
+        dataMigrationExecutionListenerJobType);
     adaptedProperties.setAppendDocumentation(appendDocumentation);
     diagramConverter.convert(
         modelInstance, ConverterPropertiesFactory.getInstance().merge(adaptedProperties));
@@ -59,7 +60,8 @@ public class DiagramConverterService {
     adaptedProperties.setKeepJobTypeBlank(keepJobTypeBlank);
     adaptedProperties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
     adaptedProperties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
-    adaptedProperties.setDataMigrationExecutionListenerJobType(dataMigrationExecutionListenerJobType);
+    adaptedProperties.setDataMigrationExecutionListenerJobType(
+        dataMigrationExecutionListenerJobType);
     return diagramConverter.check(
         filename, modelInstance, ConverterPropertiesFactory.getInstance().merge(adaptedProperties));
   }

@@ -72,10 +72,20 @@ public class ConverterController {
       @RequestParam("file") List<MultipartFile> diagramFiles,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
-      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
-      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
-      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType,
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false")
+          Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false")
+          Boolean alwaysUseDefaultJobType,
+      @RequestParam(
+              value = "addDataMigrationExecutionListener",
+              required = false,
+              defaultValue = "true")
+          Boolean addDataMigrationExecutionListener,
+      @RequestParam(
+              value = "dataMigrationExecutionListenerJobType",
+              required = false,
+              defaultValue = "migrator")
+          String dataMigrationExecutionListenerJobType,
       @RequestHeader(HttpHeaders.ACCEPT) String[] contentType) {
 
     ArrayList<DiagramCheckResult> resultList = new ArrayList<DiagramCheckResult>();
@@ -176,10 +186,20 @@ public class ConverterController {
           Boolean appendDocumentation,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
-      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
-      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
-      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType)
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false")
+          Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false")
+          Boolean alwaysUseDefaultJobType,
+      @RequestParam(
+              value = "addDataMigrationExecutionListener",
+              required = false,
+              defaultValue = "true")
+          Boolean addDataMigrationExecutionListener,
+      @RequestParam(
+              value = "dataMigrationExecutionListenerJobType",
+              required = false,
+              defaultValue = "migrator")
+          String dataMigrationExecutionListenerJobType)
       throws InterruptedException {
 
     Thread.sleep(3000);
@@ -207,7 +227,7 @@ public class ConverterController {
     } catch (IOException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (Exception e) {
-      // TODO: Should we log this? 
+      // TODO: Should we log this?
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
@@ -226,10 +246,20 @@ public class ConverterController {
           Boolean appendDocumentation,
       @RequestParam(value = "defaultJobType", required = false) String defaultJobType,
       @RequestParam(value = "platformVersion", required = false) String platformVersion,
-      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false") Boolean keepJobTypeBlank,
-      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false") Boolean alwaysUseDefaultJobType,
-      @RequestParam(value = "addDataMigrationExecutionListener", required = false, defaultValue = "true") Boolean addDataMigrationExecutionListener,
-      @RequestParam(value = "dataMigrationExecutionListenerJobType", required = false, defaultValue = "migrator") String dataMigrationExecutionListenerJobType) {
+      @RequestParam(value = "keepJobTypeBlank", required = false, defaultValue = "false")
+          Boolean keepJobTypeBlank,
+      @RequestParam(value = "alwaysUseDefaultJobType", required = false, defaultValue = "false")
+          Boolean alwaysUseDefaultJobType,
+      @RequestParam(
+              value = "addDataMigrationExecutionListener",
+              required = false,
+              defaultValue = "true")
+          Boolean addDataMigrationExecutionListener,
+      @RequestParam(
+              value = "dataMigrationExecutionListenerJobType",
+              required = false,
+              defaultValue = "migrator")
+          String dataMigrationExecutionListenerJobType) {
 
     HashMap<String, Resource> resultList = new HashMap<String, Resource>();
 

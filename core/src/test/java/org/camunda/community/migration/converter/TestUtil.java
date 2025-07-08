@@ -51,18 +51,20 @@ public class TestUtil {
   public static DiagramCheckResult loadAndCheck(String bpmnFile) {
     return loadAndCheck(bpmnFile, ConverterPropertiesFactory.getInstance().get());
   }
-  
-  public static DiagramCheckResult loadAndCheckAgainstVersion(String bpmnFile, String targetVersion) {
+
+  public static DiagramCheckResult loadAndCheckAgainstVersion(
+      String bpmnFile, String targetVersion) {
     DefaultConverterProperties properties = new DefaultConverterProperties();
     properties.setPlatformVersion(targetVersion);
-    ConverterProperties mergedProperties = ConverterPropertiesFactory.getInstance().merge(properties);
+    ConverterProperties mergedProperties =
+        ConverterPropertiesFactory.getInstance().merge(properties);
     return loadAndCheck(bpmnFile, mergedProperties);
-  }    
+  }
 
   public static DiagramCheckResult loadAndCheck(String bpmnFile, ConverterProperties properties) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
     BpmnModelInstance modelInstance = loadModelInstance(bpmnFile);
-    
+
     DiagramCheckResult result = converter.check(bpmnFile, modelInstance, properties);
     return result;
   }

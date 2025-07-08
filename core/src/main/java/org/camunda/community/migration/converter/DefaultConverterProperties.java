@@ -8,12 +8,12 @@ public class DefaultConverterProperties implements ConverterProperties {
   private String resourceHeader;
   private String scriptFormatHeader;
   private String platformVersion;
-  
+
   private Boolean keepJobTypeBlank;
   private Boolean alwaysUseDefaultJobType;
   private Boolean addDataMigrationExecutionListener;
   private String dataMigrationExecutionListenerJobType;
-  
+
   private Boolean appendDocumentation;
   private Boolean appendElements;
 
@@ -126,7 +126,8 @@ public class DefaultConverterProperties implements ConverterProperties {
     return dataMigrationExecutionListenerJobType;
   }
 
-  public void setDataMigrationExecutionListenerJobType(String dataMigrationExecutionListenerJobType) {
+  public void setDataMigrationExecutionListenerJobType(
+      String dataMigrationExecutionListenerJobType) {
     this.dataMigrationExecutionListenerJobType = dataMigrationExecutionListenerJobType;
   }
 }

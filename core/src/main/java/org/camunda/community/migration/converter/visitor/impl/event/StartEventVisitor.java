@@ -2,25 +2,17 @@ package org.camunda.community.migration.converter.visitor.impl.event;
 
 import static io.camunda.zeebe.model.bpmn.impl.BpmnModelConstants.BPMN20_NS;
 import static io.camunda.zeebe.model.bpmn.impl.BpmnModelConstants.ZEEBE_NS;
-import static io.camunda.zeebe.model.bpmn.impl.BpmnModelConstants.BPMN_ELEMENT_EXTENSION_ELEMENTS;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.camunda.bpm.model.xml.impl.instance.ModelTypeInstanceContext;
 import org.camunda.bpm.model.xml.instance.DomDocument;
 import org.camunda.bpm.model.xml.instance.DomElement;
-import org.camunda.bpm.model.xml.type.ModelElementTypeBuilder;
-import org.camunda.community.migration.converter.ConverterPropertiesFactory;
 import org.camunda.community.migration.converter.DomElementVisitorContext;
 import org.camunda.community.migration.converter.convertible.Convertible;
 import org.camunda.community.migration.converter.convertible.StartEventConvertible;
 import org.camunda.community.migration.converter.message.MessageFactory;
 import org.camunda.community.migration.converter.version.SemanticVersion;
 import org.camunda.community.migration.converter.visitor.AbstractEventVisitor;
-
-import io.camunda.zeebe.model.bpmn.impl.instance.ExtensionElementsImpl;
-import io.camunda.zeebe.model.bpmn.instance.ExtensionElements;
 
 public class StartEventVisitor extends AbstractEventVisitor {
   @Override
@@ -43,39 +35,42 @@ public class StartEventVisitor extends AbstractEventVisitor {
     if (context.getProperties().getAddDataMigrationExecutionListener()) {
       DomElement element = context.getElement();
       DomDocument document = element.getDocument();
-      
-    /* ADD TO START EVENT
-    <bpmn:extensionElements>
-      <zeebe:executionListeners>
-        <zeebe:executionListener eventType="end" type="migrator" />
-      </zeebe:executionListeners>
-    </bpmn:extensionElements>
-     */
-      
+
+      /* ADD TO START EVENT
+      <bpmn:extensionElements>
+        <zeebe:executionListeners>
+          <zeebe:executionListener eventType="end" type="migrator" />
+        </zeebe:executionListeners>
+      </bpmn:extensionElements>
+       */
+
       if (!isBlankStartEvent(element)) {
-          return;
+        return;
       }
 
       // Get or create <bpmn:extensionElements>
       DomElement extensionElements = getOrCreate(BPMN20_NS, "extensionElements", element, document);
 
       // Add <zeebe:executionListeners>
-      DomElement executionListeners = getOrCreate(ZEEBE_NS, "executionListeners", extensionElements, document);
+      DomElement executionListeners =
+          getOrCreate(ZEEBE_NS, "executionListeners", extensionElements, document);
 
       // Add <zeebe:executionListener>
       DomElement listenerElement = document.createElement(ZEEBE_NS, "executionListener");
       listenerElement.setAttribute(ZEEBE_NS, "eventType", "end");
-      listenerElement.setAttribute(ZEEBE_NS, "type", context.getProperties().getDataMigrationExecutionListenerJobType());      
-      executionListeners.appendChild(listenerElement);   
-      
-      context.addMessage( MessageFactory.startListenerAdded(element.getLocalName()) );
+      listenerElement.setAttribute(
+          ZEEBE_NS, "type", context.getProperties().getDataMigrationExecutionListenerJobType());
+      executionListeners.appendChild(listenerElement);
+
+      context.addMessage(MessageFactory.startListenerAdded(element.getLocalName()));
     }
   }
 
-  private DomElement getOrCreate(String namespace, String elementName, DomElement element, DomDocument document) {
+  private DomElement getOrCreate(
+      String namespace, String elementName, DomElement element, DomDocument document) {
     List<DomElement> requiredElementList = element.getChildElementsByNameNs(namespace, elementName);
-    
-    if (requiredElementList != null && requiredElementList.size()>0) {
+
+    if (requiredElementList != null && requiredElementList.size() > 0) {
       return requiredElementList.get(0);
     }
     DomElement requiredElement = document.createElement(namespace, elementName);
@@ -84,20 +79,18 @@ public class StartEventVisitor extends AbstractEventVisitor {
     DomElement insertAfter = null;
     for (DomElement child : element.getChildElements()) {
       String localName = child.getLocalName();
-      if (
-        BPMN20_NS.equals(child.getNamespaceURI()) &&
-        (localName.equals("property") || localName.equals("documentation"))
-      ) {
+      if (BPMN20_NS.equals(child.getNamespaceURI())
+          && (localName.equals("property") || localName.equals("documentation"))) {
         insertAfter = child;
       } else {
         break; // Stop at first non-allowed element
       }
-    }    
-    
+    }
+
     if (insertAfter != null) {
       element.insertChildElementAfter(requiredElement, insertAfter);
     } else {
-     // If no "insertAfter" candidate, manually re-insert children after new element
+      // If no "insertAfter" candidate, manually re-insert children after new element
       List<DomElement> existingChildren = new ArrayList<>(element.getChildElements());
       for (DomElement child : existingChildren) {
         element.removeChild(child);
@@ -110,20 +103,20 @@ public class StartEventVisitor extends AbstractEventVisitor {
 
     return requiredElement;
   }
-  
+
   public static boolean isBlankStartEvent(DomElement element) {
     if (!"startEvent".equals(element.getLocalName())) {
-        return false;
+      return false;
     }
 
     // Look for any child element ending in EventDefinition (message, timer, signal, etc.)
     for (DomElement child : element.getChildElements()) {
-        String localName = child.getLocalName();
-        if (localName != null && localName.endsWith("EventDefinition")) {
-            return false; // not blank
-        }
+      String localName = child.getLocalName();
+      if (localName != null && localName.endsWith("EventDefinition")) {
+        return false; // not blank
+      }
     }
 
     return true; // blank: no event definitions
-}
+  }
 }
