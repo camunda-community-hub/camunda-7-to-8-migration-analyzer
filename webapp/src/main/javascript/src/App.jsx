@@ -544,7 +544,7 @@ function App() {
                 </div>
               <p>
                 For more information on the analysis results,{" "}
-                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
+                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer" target="_blank">
                   see the documentation
                 </a>
                 .
