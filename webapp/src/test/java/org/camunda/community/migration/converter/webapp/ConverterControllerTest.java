@@ -100,8 +100,8 @@ public class ConverterControllerTest {
     String body =
         RestAssured.given()
             .contentType(ContentType.MULTIPART)
-            .multiPart(
-                "file", new File(getClass().getClassLoader().getResource("example.bpmn").toURI()))
+            .multiPart("file", new File(getClass().getClassLoader().getResource("example.bpmn").toURI()))                
+            .multiPart("addDataMigrationExecutionListener", "false")
             .accept("text/csv")
             .post("/check")
             .getBody()
@@ -146,6 +146,7 @@ public class ConverterControllerTest {
                 "file", new File(getClass().getClassLoader().getResource("example.bpmn").toURI()))
             .multiPart(
                 "file", new File(getClass().getClassLoader().getResource("example2.bpmn").toURI()))
+            .multiPart("addDataMigrationExecutionListener", "false")
             .accept("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             //	      .accept("application/vnd.ms-excel")
             //	      .accept("application/excel")
