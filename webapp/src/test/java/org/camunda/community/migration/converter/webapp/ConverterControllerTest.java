@@ -100,7 +100,8 @@ public class ConverterControllerTest {
     String body =
         RestAssured.given()
             .contentType(ContentType.MULTIPART)
-            .multiPart("file", new File(getClass().getClassLoader().getResource("example.bpmn").toURI()))                
+            .multiPart(
+                "file", new File(getClass().getClassLoader().getResource("example.bpmn").toURI()))
             .multiPart("addDataMigrationExecutionListener", "false")
             .accept("text/csv")
             .post("/check")
