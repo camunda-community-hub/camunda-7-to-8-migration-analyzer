@@ -79,7 +79,7 @@ public class ConverterController {
       @RequestParam(
               value = "addDataMigrationExecutionListener",
               required = false,
-              defaultValue = "true")
+              defaultValue = "false")
           Boolean addDataMigrationExecutionListener,
       @RequestParam(
               value = "dataMigrationExecutionListenerJobType",
@@ -193,7 +193,7 @@ public class ConverterController {
       @RequestParam(
               value = "addDataMigrationExecutionListener",
               required = false,
-              defaultValue = "true")
+              defaultValue = "false")
           Boolean addDataMigrationExecutionListener,
       @RequestParam(
               value = "dataMigrationExecutionListenerJobType",
@@ -253,7 +253,7 @@ public class ConverterController {
       @RequestParam(
               value = "addDataMigrationExecutionListener",
               required = false,
-              defaultValue = "true")
+              defaultValue = "false")
           Boolean addDataMigrationExecutionListener,
       @RequestParam(
               value = "dataMigrationExecutionListenerJobType",

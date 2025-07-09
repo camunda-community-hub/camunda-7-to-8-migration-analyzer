@@ -201,7 +201,6 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
     properties.setPlatformVersion(platformVersion);
     properties.setAppendDocumentation(documentation);
     properties.setAppendElements(!disableAppendElements);
-
     properties.setKeepJobTypeBlank(keepJobTypeBlank);
     properties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
     properties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
