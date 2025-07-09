@@ -23,9 +23,9 @@ import DropZone from "./DropZone";
 import FileItem from "./FileItem";
 import BpmnJS from 'bpmn-js';
 
-const baseUrl = ""; // Change this to "http://localhost:8080" if you want to play with it locally by using npm run dev
-
 function App() {
+  const baseUrl = ""; // Change this to "http://localhost:8080" if you want to play with it locally by using npm run dev
+
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [fileResults, setFileResults] = useState([]);
@@ -116,7 +116,7 @@ function App() {
           formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobTyp);
 
         const originalModelXml = await file.text();
-        const checkResponse = await fetch("${baseUrl}/check", {
+        const checkResponse = await fetch(baseUrl + "/check", {
           body: formData,
           method: "POST",
           headers: {
@@ -136,7 +136,7 @@ function App() {
           return updated;
         });
 
-        const convertResponse = await fetch("${baseUrl}/convert", {
+        const convertResponse = await fetch(baseUrl + "/convert", {
           body: formData,
           method: "POST",
         });
@@ -184,7 +184,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.xlsx",
-      await fetch("${baseUrl}/check", {
+      await fetch(baseUrl + "/check", {
         body: formData,
         method: "POST",
         headers: {
@@ -198,7 +198,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.csv",
-      await fetch("${baseUrl}/check", {
+      await fetch(baseUrl + "/check", {
         body: formData,
         method: "POST",
         headers: {
@@ -211,7 +211,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("converted-models.zip",
-      await fetch("${baseUrl}/convertBatch", {
+      await fetch(baseUrl + "/convertBatch", {
         body: formData,
         method: "POST",
       })
