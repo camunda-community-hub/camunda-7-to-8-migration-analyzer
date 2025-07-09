@@ -7,6 +7,8 @@ The Migration Analyzer & Diagram Converter:
 
 The conversion process can be extended to accommodate special requirements.
 
+See it in action in the **[Camunda 7 to 8 Migration Example](https://github.com/camunda-community-hub/camunda-7-to-8-migration-example)**.
+
 ## Table of Contents
 
 - [Installation](#installation)
