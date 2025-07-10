@@ -112,8 +112,8 @@ function App() {
         if (configOptions.addDataMigrationExecutionListener !== undefined)
           formData.append("addDataMigrationExecutionListener", configOptions.addDataMigrationExecutionListener);
 
-        if (configOptions.dataMigrationExecutionListenerJobTyp !== undefined)
-          formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobTyp);
+        if (configOptions.dataMigrationExecutionListenerJobType !== undefined)
+          formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobType);
 
         const originalModelXml = await file.text();
         const checkResponse = await fetch(baseUrl + "/check", {
