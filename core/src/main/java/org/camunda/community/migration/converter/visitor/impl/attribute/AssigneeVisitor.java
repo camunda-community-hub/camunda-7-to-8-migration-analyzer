@@ -18,13 +18,13 @@ public class AssigneeVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Assignee", attribute);
+        ExpressionTransformer.transformToFeel("Assignee", attribute);
     context.addConversion(
         UserTaskConvertible.class,
         userTaskConversion ->
             userTaskConversion
                 .getZeebeAssignmentDefinition()
-                .setAssignee(transformationResult.getFeelExpression()));
+                .setAssignee(transformationResult.result()));
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,
         "https://docs.camunda.io/docs/components/modeler/bpmn/user-tasks/#assignments");

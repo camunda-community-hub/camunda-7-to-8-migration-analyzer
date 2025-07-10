@@ -36,7 +36,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
   @Option(
       names = {"--default-job-type"},
       description =
-          "If set, the default value from the 'converter-properties.properties' for the job type is overridden")
+          "Job type used when adjusting delegates. If set, the default value from the 'converter-properties.properties' is overridden")
   String defaultJobType;
 
   @Option(
@@ -73,21 +73,37 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
           "If enabled, a markdown file will be created containing the results for all conversions")
   boolean markdown;
 
-  @Option(
-      names = {"--delegate-execution-as-job-type", "--delegate-expression-as-job-type"},
-      description = "If enabled, sets the delegate expression as the job type")
-  boolean delegateExecutionAsJobType;
-
   @Option(names = "--check", description = "If enabled, no converted diagrams are exported")
   boolean check;
-
-  @Option(names = "--disable-default-job-type", description = "Disables the default job type")
-  boolean defaultJobTypeDisabled;
 
   @Option(
       names = "--disable-append-elements",
       description = "Disables adding conversion messages to the bpmn xml")
   boolean disableAppendElements;
+
+  @Option(
+      names = "--keep-job-type-blank",
+      description =
+          "Sets all job types to blank so that you need to edit those after conversion yourself")
+  boolean keepJobTypeBlank;
+
+  @Option(
+      names = "--always-use-default-job-type",
+      description =
+          "Always fill in the configured default job type, interesting if you want to use one delegation job worker (like the Camunda 7 Adapter).")
+  boolean alwaysUseDefaultJobType;
+
+  @Option(
+      names = "--add-data-migration-execution-listener",
+      description =
+          "Add an execution listener on blank start events that can be used for the Camunda 7 Data Migrator")
+  boolean addDataMigrationExecutionListener;
+
+  @Option(
+      names = "--data-migration-execution-listener-job-type",
+      description =
+          "Name of the job type of the listener. If set, the default value from the 'converter-properties.properties' is overridden")
+  String dataMigrationExecutionListenerJobType;
 
   public AbstractConvertCommand() {
     DiagramConverterFactory factory = DiagramConverterFactory.getInstance();
@@ -183,10 +199,13 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
     DefaultConverterProperties properties = new DefaultConverterProperties();
     properties.setDefaultJobType(defaultJobType);
     properties.setPlatformVersion(platformVersion);
-    properties.setDefaultJobTypeEnabled(!defaultJobTypeDisabled);
     properties.setAppendDocumentation(documentation);
     properties.setAppendElements(!disableAppendElements);
-    properties.setUseDelegateExpressionAsJobType(delegateExecutionAsJobType);
+    properties.setKeepJobTypeBlank(keepJobTypeBlank);
+    properties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
+    properties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
+    properties.setDataMigrationExecutionListenerJobType(dataMigrationExecutionListenerJobType);
+
     return properties;
   }
 

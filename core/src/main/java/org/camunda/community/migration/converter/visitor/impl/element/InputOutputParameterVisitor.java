@@ -36,13 +36,13 @@ public abstract class InputOutputParameterVisitor extends AbstractCamundaElement
     }
     String expression = element.getTextContent();
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform(
+        ExpressionTransformer.transformToFeel(
             direction.getName() + " parameter '" + name + "'", expression);
     context.addConversion(
         AbstractDataMapperConvertible.class,
         abstractTaskConversion ->
             abstractTaskConversion.addZeebeIoMapping(
-                direction, transformationResult.getFeelExpression(), name));
+                direction, transformationResult.result(), name));
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,
         "https://docs.camunda.io/docs/components/concepts/variables/#inputoutput-variable-mappings");

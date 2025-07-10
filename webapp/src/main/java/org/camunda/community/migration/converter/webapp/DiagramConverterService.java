@@ -28,11 +28,18 @@ public class DiagramConverterService {
       boolean appendDocumentation,
       String defaultJobType,
       String platformVersion,
-      Boolean defaultJobTypeEnabled) {
+      Boolean keepJobTypeBlank,
+      Boolean alwaysUseDefaultJobType,
+      Boolean addDataMigrationExecutionListener,
+      String dataMigrationExecutionListenerJobType) {
     DefaultConverterProperties adaptedProperties = new DefaultConverterProperties();
     adaptedProperties.setDefaultJobType(defaultJobType);
     adaptedProperties.setPlatformVersion(platformVersion);
-    adaptedProperties.setDefaultJobTypeEnabled(defaultJobTypeEnabled);
+    adaptedProperties.setKeepJobTypeBlank(keepJobTypeBlank);
+    adaptedProperties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
+    adaptedProperties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
+    adaptedProperties.setDataMigrationExecutionListenerJobType(
+        dataMigrationExecutionListenerJobType);
     adaptedProperties.setAppendDocumentation(appendDocumentation);
     diagramConverter.convert(
         modelInstance, ConverterPropertiesFactory.getInstance().merge(adaptedProperties));
@@ -43,11 +50,18 @@ public class DiagramConverterService {
       ModelInstance modelInstance,
       String defaultJobType,
       String platformVersion,
-      Boolean defaultJobTypeEnabled) {
+      Boolean keepJobTypeBlank,
+      Boolean alwaysUseDefaultJobType,
+      Boolean addDataMigrationExecutionListener,
+      String dataMigrationExecutionListenerJobType) {
     DefaultConverterProperties adaptedProperties = new DefaultConverterProperties();
     adaptedProperties.setDefaultJobType(defaultJobType);
     adaptedProperties.setPlatformVersion(platformVersion);
-    adaptedProperties.setDefaultJobTypeEnabled(defaultJobTypeEnabled);
+    adaptedProperties.setKeepJobTypeBlank(keepJobTypeBlank);
+    adaptedProperties.setAlwaysUseDefaultJobType(alwaysUseDefaultJobType);
+    adaptedProperties.setAddDataMigrationExecutionListener(addDataMigrationExecutionListener);
+    adaptedProperties.setDataMigrationExecutionListenerJobType(
+        dataMigrationExecutionListenerJobType);
     return diagramConverter.check(
         filename, modelInstance, ConverterPropertiesFactory.getInstance().merge(adaptedProperties));
   }

@@ -12,14 +12,20 @@ import {
   TableHeader,
   TableBody,
   TableCell,
+  Form,
+  FormGroup,
+  Checkbox,
+  TextInput,
 } from "@carbon/react";
 
-import { Download, Launch, Close } from "@carbon/react/icons";
+import { Download, Launch, Close, Settings } from "@carbon/react/icons";
 import DropZone from "./DropZone";
 import FileItem from "./FileItem";
 import BpmnJS from 'bpmn-js';
 
 function App() {
+  const baseUrl = ""; // Change this to "http://localhost:8080" if you want to play with it locally by using npm run dev
+
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [fileResults, setFileResults] = useState([]);
@@ -32,6 +38,16 @@ function App() {
 
   const [previewTableHeader, setPreviewTableHeader] = useState([]);
   const [previewTableRows, setPreviewTableRows] = useState([]);
+
+  const [showConfig, setShowConfig] = useState(false);
+  const [configOptions, setConfigOptions] = useState({
+    defaultJobType: "camunda-7-job",
+    keepJobTypeBlank: false,
+    alwaysUseDefaultJobType: false,
+    addDataMigrationExecutionListener: false,
+    dataMigrationExecutionListenerJobType: "=if legacyId then \"migrator\" else \"noop\"",
+  });
+
 
   useEffect(() => {
       if (isPreviewOpen && previewbpmnXml) {
@@ -84,9 +100,23 @@ function App() {
       files.map(async (file, idx) => {
         const formData = new FormData();
         formData.append("file", file);
+        if (configOptions.defaultJobType !== undefined)
+          formData.append("defaultJobType", configOptions.defaultJobType);
+
+        if (configOptions.keepJobTypeBlank !== undefined)
+          formData.append("keepJobTypeBlank", configOptions.keepJobTypeBlank);
+
+        if (configOptions.alwaysUseDefaultJobType !== undefined)
+          formData.append("alwaysUseDefaultJobType", configOptions.alwaysUseDefaultJobType);
+
+        if (configOptions.addDataMigrationExecutionListener !== undefined)
+          formData.append("addDataMigrationExecutionListener", configOptions.addDataMigrationExecutionListener);
+
+        if (configOptions.dataMigrationExecutionListenerJobType !== undefined)
+          formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobType);
 
         const originalModelXml = await file.text();
-        const checkResponse = await fetch("/check", {
+        const checkResponse = await fetch(baseUrl + "/check", {
           body: formData,
           method: "POST",
           headers: {
@@ -106,7 +136,7 @@ function App() {
           return updated;
         });
 
-        const convertResponse = await fetch("/convert", {
+        const convertResponse = await fetch(baseUrl + "/convert", {
           body: formData,
           method: "POST",
         });
@@ -154,7 +184,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.xlsx",
-      await fetch("/check", {
+      await fetch(baseUrl + "/check", {
         body: formData,
         method: "POST",
         headers: {
@@ -168,7 +198,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.csv",
-      await fetch("/check", {
+      await fetch(baseUrl + "/check", {
         body: formData,
         method: "POST",
         headers: {
@@ -181,7 +211,7 @@ function App() {
     const formData = new FormData();
     validFiles.forEach((file) => formData.append("file", file));
     await download1("converted-models.zip",
-      await fetch("/convertBatch", {
+      await fetch(baseUrl + "/convertBatch", {
         body: formData,
         method: "POST",
       })
@@ -335,6 +365,92 @@ function App() {
               Then go ahead and click the button below to analyze and convert
               your models.
             </p>
+
+            <Form className="configBox">
+              <h4>
+                <Settings style={{ marginRight: '0.5rem' }} /> 
+                Advanced Configuration Options
+                <Button
+                  kind="ghost"
+                  size="sm"
+                  onClick={() => setShowConfig((prev) => !prev)}
+                  className="withMarginBottom"
+                >
+                  {showConfig ? 'Hide' : 'Show'}
+                </Button>
+              </h4>
+            {showConfig && (
+                <FormGroup legendText="">
+                  <Checkbox
+                    id="addDataMigrationExecutionListener"
+                    labelText="Add Data Migration Execution Listener"
+                    checked={configOptions.addDataMigrationExecutionListener}
+                    helperText="Add a listener to the blank start event of the process to be used by the Camunda 7 Data Migrator. Enable if you want to use the runtime migrator later."
+                    onChange={(e, { checked }) =>
+                      setConfigOptions((prev) => ({
+                        ...prev,
+                        addDataMigrationExecutionListener: checked,
+                      }))
+                    }
+                  />  
+                  <TextInput
+                    id="dataMigrationExecutionListenerJobType"
+                    labelText="Execution Listener Job Type"
+                    value={configOptions.dataMigrationExecutionListenerJobType}
+                    disabled={!configOptions.addDataMigrationExecutionListener}
+                    onChange={(e) =>
+                      setConfigOptions((prev) => ({
+                        ...prev,
+                        dataMigrationExecutionListenerJobType: e.target.value,
+                      }))
+                    }
+                  />
+                  <div className="form-spacer" />
+                  <Checkbox
+                    id="keepJobTypeBlank"
+                    labelText="Keep job type blank"
+                    checked={configOptions.keepJobTypeBlank}
+                    helperText="Don't set the job type in process models at all."
+                    onChange={(e, { checked }) =>
+                      setConfigOptions((prev) => ({
+                        ...prev,
+                        keepJobTypeBlank: checked,
+                      }))
+                    }
+                  /> 
+                  <div className="form-spacer" />
+                  <Checkbox
+                    id="defaultJobTypeEnabled"
+                    labelText="Enable default job type"
+                    checked={configOptions.defaultJobTypeEnabled}
+                    helperText="If enabled, tasks will always get the job type below. If disabled, the delegate expression or delegate class name will be used as job type."
+                    disabled={configOptions.keepJobTypeBlank}
+                    onChange={(e, { checked }) =>
+                      setConfigOptions((prev) => ({
+                        ...prev,
+                        defaultJobTypeEnabled: checked,
+                      }))
+                    }
+                  />
+                  <TextInput
+                    id="defaultJobType"
+                    labelText="Default Job Type"
+                    value={configOptions.defaultJobType}
+                    disabled={configOptions.keepJobTypeBlank}
+                    onChange={(e) =>
+                      setConfigOptions((prev) => ({
+                        ...prev,
+                        defaultJobType: e.target.value,
+                      }))
+                    }
+                  />
+                </FormGroup>
+            )}
+            </Form>
+
+
+
+
             <div className="analyzeButton">
               <Button
                 kind="primary"
@@ -430,7 +546,7 @@ function App() {
                 </div>
               <p>
                 For more information on the analysis results,{" "}
-                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer">
+                <a href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-tooling/#migration-analyzer" target="_blank">
                   see the documentation
                 </a>
                 .
@@ -449,6 +565,7 @@ function App() {
                 size="lg"
                 renderIcon={Launch}
                 href="https://docs.camunda.io/docs/guides/migrating-from-camunda-7/migration-journey/?utm_source=analyzer"
+                target="_blank"
               >
                 Migration Guide
               </Button>

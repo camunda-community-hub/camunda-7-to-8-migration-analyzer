@@ -513,10 +513,22 @@ public class MessageFactory {
     return INSTANCE.staticMessage("called-element-ref-binding");
   }
 
-  public static Message delegateExpressionAsJobType(String jobType) {
+  public static Message delegateExpressionAsJobType(String jobType, String delegateExpression) {
     return INSTANCE.composeMessage(
         "delegate-expression-as-job-type",
-        ContextBuilder.builder().entry("jobType", jobType).build());
+        ContextBuilder.builder()
+            .entry("jobType", jobType)
+            .entry("delegateExpression", delegateExpression)
+            .build());
+  }
+
+  public static Message expressionMethodAsJobType(String jobType, String expressionMethod) {
+    return INSTANCE.composeMessage(
+        "expression-method-as-job-type",
+        ContextBuilder.builder()
+            .entry("jobType", jobType)
+            .entry("expressionMethod", expressionMethod)
+            .build());
   }
 
   public static Message delegateExpressionAsJobTypeNull(String delegateExpression) {
@@ -562,6 +574,31 @@ public class MessageFactory {
         link);
   }
 
+  public static Message onlyFeelSupported() {
+    return INSTANCE.staticMessage("only-feel-supported");
+  }
+
+  public static Message inputVariableNotSupported() {
+    return INSTANCE.staticMessage("input-variable-not-supported");
+  }
+
+  public static Message numberType() {
+    return INSTANCE.staticMessage("number-type");
+  }
+
+  public static Message dataMigrationStartListenerAdded(
+      String listenerJobType, String elementLocalName) {
+    return INSTANCE.composeMessage(
+        "data-migration-listener-added",
+        ContextBuilder.builder()
+            .context(
+                ContextBuilder.builder()
+                    .entry("elementLocalName", elementLocalName)
+                    .entry("listenerJobType", listenerJobType)
+                    .build())
+            .build());
+  }
+
   private ComposedMessage composeMessage(String templateName, Map<String, String> context) {
     ComposedMessage message = new ComposedMessage();
     MessageTemplate template = messageTemplateProvider.getMessageTemplate(templateName);
@@ -585,17 +622,5 @@ public class MessageFactory {
 
   private Message emptyMessage() {
     return new EmptyMessage();
-  }
-
-  public static Message onlyFeelSupported() {
-    return INSTANCE.staticMessage("only-feel-supported");
-  }
-
-  public static Message inputVariableNotSupported() {
-    return INSTANCE.staticMessage("input-variable-not-supported");
-  }
-
-  public static Message numberType() {
-    return INSTANCE.staticMessage("number-type");
   }
 }

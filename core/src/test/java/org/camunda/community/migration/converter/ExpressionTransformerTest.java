@@ -13,73 +13,106 @@ import org.junit.jupiter.api.TestFactory;
 
 public class ExpressionTransformerTest {
 
-  private static ExpressionTestBuilder expression(String expression) {
-    return new ExpressionTestBuilder(expression);
+  private static ExpressionTestBuilder expressionToFeel(String expression) {
+    return new ExpressionTestBuilder(expression, TransformationType.feel);
+  }
+
+  private static ExpressionTestBuilder expressionToJobType(String expression) {
+    return new ExpressionTestBuilder(expression, TransformationType.jobType);
   }
 
   @TestFactory
   public Stream<DynamicContainer> shouldResolveExpression() {
     return Stream.of(
-            expression("").isMappedTo("=null"),
-            expression("${someVariable}").isMappedTo("=someVariable"),
-            expression("someStaticValue").isMappedTo("someStaticValue"),
-            expression("${var.innerField}").isMappedTo("=var.innerField"),
-            expression("hello-${World}").isMappedTo("=\"hello-\" + World"),
-            expression("#{x}").isMappedTo("=x"),
-            expression("${x}").isMappedTo("=x"),
-            expression("#{x>5}").isMappedTo("=x>5"),
-            expression("#{x gt 5}").isMappedTo("=x > 5"),
-            expression("#{x < 5}").isMappedTo("=x < 5"),
-            expression("#{x lt 5}").isMappedTo("=x < 5"),
-            expression("#{x==5}").isMappedTo("=x=5"),
-            expression("#{x!=5}").isMappedTo("=x!=5"),
-            expression("#{x eq 5}").isMappedTo("=x = 5"),
-            expression("#{x ne 5}").isMappedTo("=x != 5"),
-            expression("#{x == \"test\"}").isMappedTo("=x = \"test\""),
-            expression("#{true}").isMappedTo("=true"),
-            expression("${false}").isMappedTo("=false"),
-            expression("#{!x}").isMappedTo("=not(x)"),
-            expression("${!x and y}").isMappedTo("=not(x) and y"),
-            expression("${!(x and y)}").isMappedTo("=not(x and y)"),
-            expression("#{!true}").isMappedTo("=not(true)"),
-            expression("#{not(x>5)}").isMappedTo("=not(x>5)"),
-            expression("${not x}").isMappedTo("=not(x)"),
-            expression("#{x && y}").isMappedTo("=x and y"),
-            expression("#{x and y}").isMappedTo("=x and y"),
-            expression("#{x || y}").isMappedTo("=x or y"),
-            expression("#{x or y}").isMappedTo("=x or y"),
-            expression("#{customer.name}").isMappedTo("=customer.name"),
-            expression("#{customer.address[\"street\"]}").isMappedTo("=customer.address.street"),
-            expression("#{customer.orders[1]}").isMappedTo("=customer.orders[2]"),
-            expression("${not empty x}").isMappedTo("=not(x=null)"),
-            expression("${empty donut}").isMappedTo("=donut=null"),
-            expression("${!empty donut}").isMappedTo("=not(donut=null)"),
-            expression("${empty donut || coffee}").isMappedTo("=donut=null or coffee"),
-            expression("${not empty donut || coffee}").isMappedTo("=not(donut=null) or coffee"),
-            expression("${not(empty donut || coffee)}").isMappedTo("=not(donut=null or coffee)"),
-            expression("${execution.getVariable(\"a\")}").isMappedTo("=a"),
-            expression("${execution.getProcessInstanceId()}").hasUsedExecution(true),
-            expression("${myexecutionContext.isSpecial()}").hasUsedExecution(false),
-            expression("${var.getSomething()}").hasMethodInvocation(true),
-            expression("${!dauerbuchungVoat21Ids.isEmpty()}").hasMethodInvocation(true),
-            expression("${!dauerbuchungVoat21Ids.contains(\"someText\")}")
+            expressionToFeel("").isMappedTo("=null"),
+            expressionToFeel("${someVariable}").isMappedTo("=someVariable"),
+            expressionToFeel("someStaticValue").isMappedTo("someStaticValue"),
+            expressionToFeel("${var.innerField}").isMappedTo("=var.innerField"),
+            expressionToFeel("hello-${World}").isMappedTo("=\"hello-\" + World"),
+            expressionToFeel("#{x}").isMappedTo("=x"),
+            expressionToFeel("${x}").isMappedTo("=x"),
+            expressionToFeel("#{x>5}").isMappedTo("=x>5"),
+            expressionToFeel("#{x gt 5}").isMappedTo("=x > 5"),
+            expressionToFeel("#{x < 5}").isMappedTo("=x < 5"),
+            expressionToFeel("#{x lt 5}").isMappedTo("=x < 5"),
+            expressionToFeel("#{x==5}").isMappedTo("=x=5"),
+            expressionToFeel("#{x!=5}").isMappedTo("=x!=5"),
+            expressionToFeel("#{x eq 5}").isMappedTo("=x = 5"),
+            expressionToFeel("#{x ne 5}").isMappedTo("=x != 5"),
+            expressionToFeel("#{x == \"test\"}").isMappedTo("=x = \"test\""),
+            expressionToFeel("#{true}").isMappedTo("=true"),
+            expressionToFeel("${false}").isMappedTo("=false"),
+            expressionToFeel("#{!x}").isMappedTo("=not(x)"),
+            expressionToFeel("${!x and y}").isMappedTo("=not(x) and y"),
+            expressionToFeel("${!(x and y)}").isMappedTo("=not(x and y)"),
+            expressionToFeel("#{!true}").isMappedTo("=not(true)"),
+            expressionToFeel("#{not(x>5)}").isMappedTo("=not(x>5)"),
+            expressionToFeel("${not x}").isMappedTo("=not(x)"),
+            expressionToFeel("#{x && y}").isMappedTo("=x and y"),
+            expressionToFeel("#{x and y}").isMappedTo("=x and y"),
+            expressionToFeel("#{x || y}").isMappedTo("=x or y"),
+            expressionToFeel("#{x or y}").isMappedTo("=x or y"),
+            expressionToFeel("#{customer.name}").isMappedTo("=customer.name"),
+            expressionToFeel("#{customer.address[\"street\"]}")
+                .isMappedTo("=customer.address.street"),
+            expressionToFeel("#{customer.orders[1]}").isMappedTo("=customer.orders[2]"),
+            expressionToFeel("${not empty x}").isMappedTo("=not(x=null)"),
+            expressionToFeel("${empty donut}").isMappedTo("=donut=null"),
+            expressionToFeel("${!empty donut}").isMappedTo("=not(donut=null)"),
+            expressionToFeel("${empty donut || coffee}").isMappedTo("=donut=null or coffee"),
+            expressionToFeel("${not empty donut || coffee}")
+                .isMappedTo("=not(donut=null) or coffee"),
+            expressionToFeel("${not(empty donut || coffee)}")
+                .isMappedTo("=not(donut=null or coffee)"),
+            expressionToFeel("${execution.getVariable(\"a\")}").isMappedTo("=a"),
+            expressionToFeel("${execution.getProcessInstanceId()}").hasUsedExecution(true),
+            expressionToFeel("${myexecutionContext.isSpecial()}").hasUsedExecution(false),
+            expressionToFeel("${var.getSomething()}").hasMethodInvocation(true),
+            expressionToFeel("${!dauerbuchungVoat21Ids.isEmpty()}").hasMethodInvocation(true),
+            expressionToFeel("${!dauerbuchungVoat21Ids.contains(\"someText\")}")
                 .hasMethodInvocation(true),
-            expression("${input > 5.5}").hasMethodInvocation(false),
-            expression("${input != ''}").isMappedTo("=input != \"\""),
-            expression("${input != 'what the F***'}").isMappedTo("=input != \"what the F***\""),
-            expression("${array[index]}").isMappedTo("=array[index]"))
+            expressionToFeel("${input > 5.5}").hasMethodInvocation(false),
+            expressionToFeel("${input != ''}").isMappedTo("=input != \"\""),
+            expressionToFeel("${input != 'what the F***'}")
+                .isMappedTo("=input != \"what the F***\""),
+            expressionToFeel("${array[index]}").isMappedTo("=array[index]"),
+            expressionToJobType("${myDelegate}").isMappedTo("myDelegate"),
+            expressionToJobType("${myDelegate.doSomething()}")
+                .isMappedTo("myDelegateDoSomething")
+                .hasMethodInvocation(true),
+            expressionToJobType("${myDelegate.doSomething.else}")
+                .isMappedTo("myDelegateDoSomethingElse"))
         .map(
             data ->
                 DynamicContainer.dynamicContainer(
-                    "Expression: " + data.getResult().getJuelExpression(), data.getTests()));
+                    "Expression to "
+                        + data.getTransformationType()
+                        + ": "
+                        + data.getResult().juelExpression(),
+                    data.getTests()));
+  }
+
+  private enum TransformationType {
+    feel,
+    jobType
   }
 
   private static class ExpressionTestBuilder {
+    private final TransformationType transformationType;
     private final ExpressionTransformationResult result;
     private final List<DynamicTest> tests = new ArrayList<>();
 
-    public ExpressionTestBuilder(String expression) {
-      this.result = ExpressionTransformer.transform("Test", expression);
+    public ExpressionTestBuilder(String expression, TransformationType type) {
+      this.transformationType = type;
+      this.result =
+          switch (type) {
+            case feel -> ExpressionTransformer.transformToFeel("Test", expression);
+            case jobType -> ExpressionTransformer.transformToJobType(expression);
+          };
+    }
+
+    public TransformationType getTransformationType() {
+      return transformationType;
     }
 
     public ExpressionTransformationResult getResult() {
@@ -94,7 +127,7 @@ public class ExpressionTransformerTest {
       tests.add(
           DynamicTest.dynamicTest(
               "Expect Result: '" + expectedResult + "'",
-              () -> assertThat(result.getFeelExpression()).isEqualTo(expectedResult)));
+              () -> assertThat(result.result()).isEqualTo(expectedResult)));
       return this;
     }
 
@@ -102,7 +135,7 @@ public class ExpressionTransformerTest {
       tests.add(
           DynamicTest.dynamicTest(
               String.format("Expect %s method invocation", expected ? "a" : "no"),
-              () -> assertThat(result.getHasMethodInvocation()).isEqualTo(expected)));
+              () -> assertThat(result.hasMethodInvocation()).isEqualTo(expected)));
       return this;
     }
 
@@ -110,7 +143,7 @@ public class ExpressionTransformerTest {
       tests.add(
           DynamicTest.dynamicTest(
               String.format("Expect %s execution used", expected ? "a" : "no"),
-              () -> assertThat(result.getHasExecutionOnly()).isEqualTo(expected)));
+              () -> assertThat(result.hasExecutionOnly()).isEqualTo(expected)));
       return this;
     }
   }

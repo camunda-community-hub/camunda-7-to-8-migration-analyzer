@@ -85,9 +85,7 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
           AbstractDataMapperConvertible.class,
           conversion ->
               conversion.addZeebeIoMapping(
-                  getDirection(context.getElement()),
-                  transformationResult.getFeelExpression(),
-                  target));
+                  getDirection(context.getElement()), transformationResult.result(), target));
       return ExpressionTransformationResultMessageFactory.getMessage(
           transformationResult,
           "https://docs.camunda.io/docs/components/modeler/bpmn/call-activities/#variable-mappings");
@@ -101,7 +99,7 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
     if (source != null) {
       return new ExpressionTransformationResult(context, source, "=" + source, true, true);
     } else if (sourceExpression != null) {
-      return ExpressionTransformer.transform(context, sourceExpression);
+      return ExpressionTransformer.transformToFeel(context, sourceExpression);
     } else {
       throw new IllegalStateException("Must have one of: 'source', 'sourceExpression'");
     }

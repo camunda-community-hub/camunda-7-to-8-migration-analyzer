@@ -27,15 +27,13 @@ public class CallActivityVisitor extends AbstractActivityVisitor {
   @Override
   protected void postCreationVisitor(DomElementVisitorContext context) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform(
+        ExpressionTransformer.transformToFeel(
             "Called process", context.getElement().getAttribute(NamespaceUri.BPMN, CALLED_ELEMENT));
     if (transformationResult != null) {
       context.addConversion(
           CallActivityConvertible.class,
           conversion ->
-              conversion
-                  .getZeebeCalledElement()
-                  .setProcessId(transformationResult.getFeelExpression()));
+              conversion.getZeebeCalledElement().setProcessId(transformationResult.result()));
       context.addMessage(
           ExpressionTransformationResultMessageFactory.getMessage(
               transformationResult,

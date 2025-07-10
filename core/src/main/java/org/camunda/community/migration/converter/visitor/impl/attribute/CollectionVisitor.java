@@ -18,7 +18,7 @@ public class CollectionVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Collection", attribute);
+        ExpressionTransformer.transformToFeel("Collection", attribute);
     context.addConversion(
         AbstractActivityConvertible.class,
         AbstractActivityConvertible::initializeLoopCharacteristics);
@@ -28,7 +28,7 @@ public class CollectionVisitor extends AbstractSupportedAttributeVisitor {
             conversion
                 .getBpmnMultiInstanceLoopCharacteristics()
                 .getZeebeLoopCharacteristics()
-                .setInputCollection(transformationResult.getFeelExpression()));
+                .setInputCollection(transformationResult.result()));
     context.addMessage(MessageFactory.collectionHint());
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,

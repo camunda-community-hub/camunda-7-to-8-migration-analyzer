@@ -7,7 +7,8 @@ public enum SemanticVersion {
   _8_3("8.3"),
   _8_4("8.4"),
   _8_5("8.5"),
-  _8_6("8.6");
+  _8_6("8.6"),
+  _8_7("8.7");
 
   private final String name;
 

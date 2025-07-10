@@ -49,19 +49,23 @@ public class TestUtil {
   }
 
   public static DiagramCheckResult loadAndCheck(String bpmnFile) {
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().get();
-    return loadAndCheckAgainstVersion(bpmnFile, properties.getPlatformVersion());
+    return loadAndCheck(bpmnFile, ConverterPropertiesFactory.getInstance().get());
   }
 
   public static DiagramCheckResult loadAndCheckAgainstVersion(
       String bpmnFile, String targetVersion) {
-    DiagramConverter converter = DiagramConverterFactory.getInstance().get();
-    BpmnModelInstance modelInstance = loadModelInstance(bpmnFile);
     DefaultConverterProperties properties = new DefaultConverterProperties();
     properties.setPlatformVersion(targetVersion);
-    DiagramCheckResult result =
-        converter.check(
-            bpmnFile, modelInstance, ConverterPropertiesFactory.getInstance().merge(properties));
+    ConverterProperties mergedProperties =
+        ConverterPropertiesFactory.getInstance().merge(properties);
+    return loadAndCheck(bpmnFile, mergedProperties);
+  }
+
+  public static DiagramCheckResult loadAndCheck(String bpmnFile, ConverterProperties properties) {
+    DiagramConverter converter = DiagramConverterFactory.getInstance().get();
+    BpmnModelInstance modelInstance = loadModelInstance(bpmnFile);
+
+    DiagramCheckResult result = converter.check(bpmnFile, modelInstance, properties);
     return result;
   }
 

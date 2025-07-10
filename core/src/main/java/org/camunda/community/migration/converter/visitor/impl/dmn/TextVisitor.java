@@ -22,8 +22,8 @@ public class TextVisitor extends AbstractDmnElementVisitor {
     }
     String content = context.getElement().getTextContent();
     ExpressionTransformationResult transform =
-        ExpressionTransformer.transformDmn("Text field", content);
-    context.addConversion(TextConvertible.class, c -> c.setContent(transform.getFeelExpression()));
+        ExpressionTransformer.transformToFeelDmn("Text field", content);
+    context.addConversion(TextConvertible.class, c -> c.setContent(transform.result()));
     context.addMessage(ExpressionTransformationResultMessageFactory.getMessage(transform, null));
   }
 
