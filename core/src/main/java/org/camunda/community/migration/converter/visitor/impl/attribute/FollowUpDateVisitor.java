@@ -17,10 +17,10 @@ public class FollowUpDateVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult followUpDate =
-        ExpressionTransformer.transform("Follow up date", attribute);
+        ExpressionTransformer.transformToFeel("Follow up date", attribute);
     context.addConversion(
         UserTaskConvertible.class,
-        conv -> conv.getZeebeTaskSchedule().setFollowUpDate(followUpDate.getFeelExpression()));
+        conv -> conv.getZeebeTaskSchedule().setFollowUpDate(followUpDate.result()));
     return ExpressionTransformationResultMessageFactory.getMessage(
         followUpDate,
         "https://docs.camunda.io/docs/components/modeler/bpmn/user-tasks/#scheduling");

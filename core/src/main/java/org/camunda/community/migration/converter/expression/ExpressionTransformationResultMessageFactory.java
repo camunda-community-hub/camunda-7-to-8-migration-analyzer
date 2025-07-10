@@ -8,33 +8,32 @@ public class ExpressionTransformationResultMessageFactory {
   public static Message getMessage(
       ExpressionTransformationResult transformationResult, String link) {
     // no transformation has happened (because the expression is not an expression)
-    if (Objects.equals(
-        transformationResult.getFeelExpression(), transformationResult.getJuelExpression())) {
+    if (Objects.equals(transformationResult.result(), transformationResult.juelExpression())) {
       return MessageFactory.noExpressionTransformation();
     }
     // check for execution reference
 
-    if (transformationResult.getHasExecutionOnly()) {
+    if (transformationResult.hasExecutionOnly()) {
       return MessageFactory.expressionExecutionNotAvailable(
-          transformationResult.getContext(),
-          transformationResult.getJuelExpression(),
-          transformationResult.getFeelExpression(),
+          transformationResult.context(),
+          transformationResult.juelExpression(),
+          transformationResult.result(),
           link);
 
     } else
     // check for method invocation
-    if (transformationResult.getHasMethodInvocation()) {
+    if (transformationResult.hasMethodInvocation()) {
       return MessageFactory.expressionMethodNotPossible(
-          transformationResult.getContext(),
-          transformationResult.getJuelExpression(),
-          transformationResult.getFeelExpression(),
+          transformationResult.context(),
+          transformationResult.juelExpression(),
+          transformationResult.result(),
           link);
     } else {
       // if all is good, just give the default message
       return MessageFactory.expression(
-          transformationResult.getContext(),
-          transformationResult.getJuelExpression(),
-          transformationResult.getFeelExpression(),
+          transformationResult.context(),
+          transformationResult.juelExpression(),
+          transformationResult.result(),
           link);
     }
   }

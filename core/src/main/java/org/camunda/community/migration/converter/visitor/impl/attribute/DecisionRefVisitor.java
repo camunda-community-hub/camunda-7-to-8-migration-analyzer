@@ -17,13 +17,11 @@ public class DecisionRefVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Decision Id", attribute);
+        ExpressionTransformer.transformToFeel("Decision Id", attribute);
     context.addConversion(
         BusinessRuleTaskConvertible.class,
         conversion ->
-            conversion
-                .getZeebeCalledDecision()
-                .setDecisionId(transformationResult.getFeelExpression()));
+            conversion.getZeebeCalledDecision().setDecisionId(transformationResult.result()));
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,
         "https://docs.camunda.io/docs/components/modeler/bpmn/business-rule-tasks/#defining-a-called-decision");

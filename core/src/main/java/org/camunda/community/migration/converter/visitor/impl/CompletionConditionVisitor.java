@@ -19,13 +19,13 @@ public class CompletionConditionVisitor extends AbstractBpmnElementVisitor {
   protected void visitBpmnElement(DomElementVisitorContext context) {
     String textContent = context.getElement().getTextContent();
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Completion condition", textContent);
+        ExpressionTransformer.transformToFeel("Completion condition", textContent);
     context.addConversion(
         AbstractActivityConvertible.class,
         conversion ->
             conversion
                 .getBpmnMultiInstanceLoopCharacteristics()
-                .setCompletionCondition(transformationResult.getFeelExpression()));
+                .setCompletionCondition(transformationResult.result()));
     context.addMessage(
         ExpressionTransformationResultMessageFactory.getMessage(
             transformationResult,

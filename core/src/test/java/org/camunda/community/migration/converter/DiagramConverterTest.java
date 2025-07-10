@@ -177,7 +177,7 @@ public class DiagramConverterTest {
     ElementCheckMessage message = serviceTask.getMessages().get(0);
     assertThat(message.getMessage())
         .isEqualTo(
-            "Expression '${myDelegate.doSomething()}' was written to a header attribute and job type set to 'TEST123'.");
+            "Delegate class or expression '${myDelegate.doSomething()}' has been transformed to job type 'myDelegateDoSomething'.");
   }
 
   @Test

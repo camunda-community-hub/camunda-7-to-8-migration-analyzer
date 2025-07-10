@@ -1,7 +1,8 @@
 package org.camunda.community.migration.converter.visitor;
 
+import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,90 +17,8 @@ public abstract class AbstractDelegateImplementationVisitor
   private static final Set<String> IGNORE =
       Stream.of("taskListener", "executionListener", "errorEventDefinition")
           .collect(Collectors.toSet());
-
-  @Override
-  protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
-    if (context.getProperties().getKeepJobTypeBlank()) {
-      return MessageFactory.delegateImplementationNoDefaultJobType(attributeLocalName(), attribute);
-    } else {
-      if (context.getProperties().getAlwaysUseDefaultJobType()) {
-        context.addConversion(
-            ServiceTaskConvertible.class,
-            serviceTaskConversion ->
-                serviceTaskConversion.addZeebeTaskHeader(attributeLocalName(), attribute));
-        context.addConversion(
-            ServiceTaskConvertible.class,
-            serviceTaskConversion ->
-                serviceTaskConversion
-                    .getZeebeTaskDefinition()
-                    .setType(context.getProperties().getDefaultJobType()));
-        return MessageFactory.delegateImplementation(
-            attributeLocalName(),
-            context.getElement().getLocalName(),
-            attribute,
-            context.getProperties().getDefaultJobType());
-      } else { // use delegate expression itself to form job type
-        if (attribute == null || attribute.trim().isEmpty()) {
-          MessageFactory.delegateExpressionAsJobTypeNull(attribute);
-        }
-
-        // Check for valid simple expression
-        // #{sampleBean}  --> simpleBean
-        // #{sampleBean.property} --> sampleBeanProperty
-        Matcher matcher = SIMPLE_EXPRESSION_PATTERN.matcher(attribute);
-        if (matcher.matches()) {
-          String bean = matcher.group(1);
-          String property = matcher.group(2);
-          if (property != null) {
-            bean = bean + capitalize(property);
-          }
-          final String jobType = bean;
-          context.addConversion(
-              ServiceTaskConvertible.class,
-              serviceTaskConversion ->
-                  serviceTaskConversion.getZeebeTaskDefinition().setType(jobType));
-          return MessageFactory.delegateExpressionAsJobType(jobType, attribute);
-        }
-
-        // If it's an expression, but doesn't match the simple pattern --> treat as method
-        // use default job type and add header
-        if (EXPRESSION_WRAPPER_PATTERN.matcher(attribute).matches()) {
-          final String jobType = context.getProperties().getDefaultJobType();
-          context.addConversion(
-              ServiceTaskConvertible.class,
-              serviceTaskConversion ->
-                  serviceTaskConversion.addZeebeTaskHeader(attributeLocalName(), attribute));
-          context.addConversion(
-              ServiceTaskConvertible.class,
-              serviceTaskConversion ->
-                  serviceTaskConversion.getZeebeTaskDefinition().setType(jobType));
-
-          return MessageFactory.expressionMethodAsJobType(jobType, attribute);
-        }
-
-        // FQN --> extract class name and decapitalize
-        // com.foo.MyDelegate --> myDelegate
-        if (attribute.contains(".")) {
-          int lastDot = attribute.lastIndexOf('.');
-          final String jobType = decapitalize(attribute.substring(lastDot + 1));
-
-          context.addConversion(
-              ServiceTaskConvertible.class,
-              serviceTaskConversion ->
-                  serviceTaskConversion.getZeebeTaskDefinition().setType(jobType));
-          return MessageFactory.delegateExpressionAsJobType(jobType, attribute);
-        }
-
-        // Fallback - just use what we have
-        final String jobType = attribute;
-        context.addConversion(
-            ServiceTaskConvertible.class,
-            serviceTaskConversion ->
-                serviceTaskConversion.getZeebeTaskDefinition().setType(jobType));
-        return MessageFactory.delegateExpressionAsJobType(jobType, attribute);
-      }
-    }
-  }
+  private static final Pattern SIMPLE_EXPRESSION_PATTERN =
+      Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
 
   //
   //  private String extractJobType(String attribute) {
@@ -117,28 +36,62 @@ public abstract class AbstractDelegateImplementationVisitor
   //        return null;
   //    }
   //  }
-
-  private static final Pattern SIMPLE_EXPRESSION_PATTERN =
-      Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
-
   private static final Pattern EXPRESSION_WRAPPER_PATTERN = Pattern.compile("[#$]\\{(.*)}");
 
-  public String extractJobType(
-      DomElementVisitorContext context, final String attribute, String defaultJobType) {
-
-    // No expression, no dot --> return raw
-    return attribute;
+  @Override
+  protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
+    // option 1: job type should always be blank
+    if (context.getProperties().getKeepJobTypeBlank()) {
+      return MessageFactory.delegateImplementationNoDefaultJobType(attributeLocalName(), attribute);
+    }
+    // option 2: job type should always be default
+    if (context.getProperties().getAlwaysUseDefaultJobType()) {
+      return defaultJobType(context, attribute);
+    }
+    // option 3: use delegate implementation attribute to form job type
+    String jobType = extractJobType(context, attribute);
+    // option 3.1: attribute is null or empty -> do not use it
+    if (jobType == null || jobType.trim().isEmpty()) {
+      return MessageFactory.delegateExpressionAsJobTypeNull(attribute);
+    }
+    // option 3.2: the extension knows how to build everything
+    List<Consumer<ServiceTaskConvertible>> additionalConversions =
+        additionalConversions(context, attribute);
+    Message message = returnMessage(context, attribute);
+    context.addConversion(
+        ServiceTaskConvertible.class,
+        serviceTaskConversion -> serviceTaskConversion.getZeebeTaskDefinition().setType(jobType));
+    additionalConversions.forEach(
+        conversion -> context.addConversion(ServiceTaskConvertible.class, conversion));
+    return message;
   }
 
-  private String decapitalize(String name) {
-    if (name == null || name.isEmpty()) return name;
-    return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+  private Message defaultJobType(DomElementVisitorContext context, final String attribute) {
+    context.addConversion(
+        ServiceTaskConvertible.class,
+        serviceTaskConversion ->
+            serviceTaskConversion.addZeebeTaskHeader(attributeLocalName(), attribute));
+    context.addConversion(
+        ServiceTaskConvertible.class,
+        serviceTaskConversion ->
+            serviceTaskConversion
+                .getZeebeTaskDefinition()
+                .setType(context.getProperties().getDefaultJobType()));
+    return MessageFactory.delegateImplementation(
+        attributeLocalName(),
+        context.getElement().getLocalName(),
+        attribute,
+        context.getProperties().getDefaultJobType());
   }
 
-  private String capitalize(String name) {
-    if (name == null || name.isEmpty()) return name;
-    return Character.toUpperCase(name.charAt(0)) + name.substring(1);
-  }
+  protected abstract String extractJobType(
+      DomElementVisitorContext context, final String attribute);
+
+  protected abstract List<Consumer<ServiceTaskConvertible>> additionalConversions(
+      DomElementVisitorContext context, final String attribute);
+
+  protected abstract Message returnMessage(
+      DomElementVisitorContext context, final String attribute);
 
   @Override
   protected boolean canVisit(DomElementVisitorContext context) {

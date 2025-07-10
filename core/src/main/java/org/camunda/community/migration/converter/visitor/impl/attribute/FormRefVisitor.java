@@ -17,13 +17,10 @@ public class FormRefVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Form Id", attribute);
+        ExpressionTransformer.transformToFeel("Form Id", attribute);
     context.addConversion(
         FormDefinitionConvertible.class,
-        conversion ->
-            conversion
-                .getZeebeFormDefinition()
-                .setFormId(transformationResult.getFeelExpression()));
+        conversion -> conversion.getZeebeFormDefinition().setFormId(transformationResult.result()));
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,
         "https://docs.camunda.io/docs/components/modeler/bpmn/user-tasks/#user-task-forms");
