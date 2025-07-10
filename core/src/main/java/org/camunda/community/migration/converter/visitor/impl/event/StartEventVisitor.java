@@ -62,7 +62,10 @@ public class StartEventVisitor extends AbstractEventVisitor {
           ZEEBE_NS, "type", context.getProperties().getDataMigrationExecutionListenerJobType());
       executionListeners.appendChild(listenerElement);
 
-      context.addMessage(MessageFactory.startListenerAdded(element.getLocalName()));
+      context.addMessage(
+          MessageFactory.dataMigrationStartListenerAdded(
+              context.getProperties().getDataMigrationExecutionListenerJobType(),
+              element.getLocalName()));
     }
   }
 

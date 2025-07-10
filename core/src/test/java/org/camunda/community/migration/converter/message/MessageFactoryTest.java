@@ -458,7 +458,10 @@ public class MessageFactoryTest {
     assertNotNull(message);
     assertNotNull(message.getMessage());
     assertNotNull(message.getSeverity());
-    assertThat(message.getMessage());
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Delegate class or expression '%s' has been transformed to job type '%s'.",
+            expression, jobType);
   }
 
   @Test
@@ -486,5 +489,29 @@ public class MessageFactoryTest {
         .isEqualTo(
             "Element '%s' was transformed. Parameter '%s': '%s' has been mapped.",
             elementLocalName, parameterName, feelScript);
+  }
+
+  @Test
+  void shouldBuildExpressionMethodAsJobType() {
+    String jobType = random();
+    String expression = random();
+    Message message = expressionMethodAsJobType(jobType, expression);
+    assertThat(message).isNotNull();
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Expression '%s' was written to a header attribute and job type set to '%s'.",
+            expression, jobType);
+  }
+
+  @Test
+  void shouldBuildDataMigrationStartListenerAdded() {
+    String elementLocalName = random();
+    String listenerJobType = random();
+    Message message = dataMigrationStartListenerAdded(listenerJobType, elementLocalName);
+    assertThat(message).isNotNull();
+    assertThat(message.getMessage())
+        .isEqualTo(
+            "Added execution listener '%s' to blank start event '%s' to be used by Camunda 7 Data Migrator.",
+            listenerJobType, elementLocalName);
   }
 }
