@@ -199,10 +199,7 @@ public class ConverterController {
               value = "dataMigrationExecutionListenerJobType",
               required = false,
               defaultValue = "migrator")
-          String dataMigrationExecutionListenerJobType)
-      throws InterruptedException {
-
-    Thread.sleep(3000);
+          String dataMigrationExecutionListenerJobType) {
 
     DiagramType diagramType = determineDiagramType(diagramFile);
     try (InputStream in = diagramFile.getInputStream()) {
@@ -227,7 +224,7 @@ public class ConverterController {
     } catch (IOException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (Exception e) {
-      // TODO: Should we log this?
+      LOG.error(e.getMessage(), e);
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
