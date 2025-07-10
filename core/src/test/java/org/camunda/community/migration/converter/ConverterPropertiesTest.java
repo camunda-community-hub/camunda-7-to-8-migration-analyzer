@@ -1,14 +1,27 @@
 package org.camunda.community.migration.converter;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 public class ConverterPropertiesTest {
   @Test
-  void shouldContainValues() {
+  void shouldContainDefaultValues() {
     ConverterProperties properties = ConverterPropertiesFactory.getInstance().get();
-    assertNotNull(properties.getScriptHeader());
+    assertThat(properties.getScriptHeader()).isEqualTo("script");
+    assertThat(properties.getResultVariableHeader()).isEqualTo("resultVariable");
+    assertThat(properties.getDefaultJobType()).isEqualTo("camunda-7-adapter");
+    assertThat(properties.getScriptJobType()).isEqualTo("script");
+    assertThat(properties.getResourceHeader()).isEqualTo("resource");
+    assertThat(properties.getScriptFormatHeader()).isEqualTo("language");
+    assertThat(properties.getPlatformVersion()).isNotNull();
+    assertThat(properties.getKeepJobTypeBlank()).isFalse();
+    assertThat(properties.getAlwaysUseDefaultJobType()).isFalse();
+    assertThat(properties.getAddDataMigrationExecutionListener()).isFalse();
+    assertThat(properties.getDataMigrationExecutionListenerJobType()).isEqualTo("migrator");
+    assertThat(properties.getAppendDocumentation()).isFalse();
+    assertThat(properties.getAppendElements()).isTrue();
   }
 
   @Test

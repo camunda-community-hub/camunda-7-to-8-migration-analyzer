@@ -17,7 +17,7 @@ public class CandidateUsersVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult candidateUsers =
-        ExpressionTransformer.transform("Candidate users", attribute);
+        ExpressionTransformer.transformToFeel("Candidate users", attribute);
     context.addConversion(
         UserTaskConvertible.class,
         convertible -> convertible.getZeebeAssignmentDefinition().setCandidateUsers(attribute));

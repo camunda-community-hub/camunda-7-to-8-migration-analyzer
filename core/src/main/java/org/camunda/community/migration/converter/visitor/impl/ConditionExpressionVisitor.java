@@ -91,10 +91,10 @@ public class ConditionExpressionVisitor extends AbstractBpmnElementVisitor {
   private void handleJuelExpression(DomElementVisitorContext context) {
     String expression = context.getElement().getTextContent();
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Condition expression", expression);
+        ExpressionTransformer.transformToFeel("Condition expression", expression);
     context.addConversion(
         SequenceFlowConvertible.class,
-        conversion -> conversion.setConditionExpression(transformationResult.getFeelExpression()));
+        conversion -> conversion.setConditionExpression(transformationResult.result()));
     context.addMessage(
         ExpressionTransformationResultMessageFactory.getMessage(
             transformationResult,

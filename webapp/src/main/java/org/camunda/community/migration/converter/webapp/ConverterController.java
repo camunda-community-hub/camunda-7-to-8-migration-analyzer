@@ -199,10 +199,7 @@ public class ConverterController {
               value = "dataMigrationExecutionListenerJobType",
               required = false,
               defaultValue = "migrator")
-          String dataMigrationExecutionListenerJobType)
-      throws InterruptedException {
-
-    Thread.sleep(3000);
+          String dataMigrationExecutionListenerJobType) {
 
     DiagramType diagramType = determineDiagramType(diagramFile);
     try (InputStream in = diagramFile.getInputStream()) {
@@ -227,7 +224,7 @@ public class ConverterController {
     } catch (IOException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (Exception e) {
-      // TODO: Should we log this?
+      LOG.error("Error while converting resources", e);
       return ResponseEntity.internalServerError().body(e.getMessage());
     }
   }
@@ -286,8 +283,10 @@ public class ConverterController {
         resultList.put("converted-c8-" + diagramFile.getOriginalFilename(), file);
 
       } catch (IOException e) {
+        LOG.error("IO Error while converting resources in batch", e);
         return ResponseEntity.badRequest().body(e.getMessage());
       } catch (Exception e) {
+        LOG.error("Error while converting resources in batch", e);
         return ResponseEntity.internalServerError().body(e.getMessage());
       }
     }

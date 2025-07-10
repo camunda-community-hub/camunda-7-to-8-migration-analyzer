@@ -574,6 +574,31 @@ public class MessageFactory {
         link);
   }
 
+  public static Message onlyFeelSupported() {
+    return INSTANCE.staticMessage("only-feel-supported");
+  }
+
+  public static Message inputVariableNotSupported() {
+    return INSTANCE.staticMessage("input-variable-not-supported");
+  }
+
+  public static Message numberType() {
+    return INSTANCE.staticMessage("number-type");
+  }
+
+  public static Message dataMigrationStartListenerAdded(
+      String listenerJobType, String elementLocalName) {
+    return INSTANCE.composeMessage(
+        "data-migration-listener-added",
+        ContextBuilder.builder()
+            .context(
+                ContextBuilder.builder()
+                    .entry("elementLocalName", elementLocalName)
+                    .entry("listenerJobType", listenerJobType)
+                    .build())
+            .build());
+  }
+
   private ComposedMessage composeMessage(String templateName, Map<String, String> context) {
     ComposedMessage message = new ComposedMessage();
     MessageTemplate template = messageTemplateProvider.getMessageTemplate(templateName);
@@ -597,23 +622,5 @@ public class MessageFactory {
 
   private Message emptyMessage() {
     return new EmptyMessage();
-  }
-
-  public static Message onlyFeelSupported() {
-    return INSTANCE.staticMessage("only-feel-supported");
-  }
-
-  public static Message inputVariableNotSupported() {
-    return INSTANCE.staticMessage("input-variable-not-supported");
-  }
-
-  public static Message numberType() {
-    return INSTANCE.staticMessage("number-type");
-  }
-
-  public static Message startListenerAdded(String elementLocalName) {
-    return INSTANCE.composeMessage(
-        "data-migration-listener-added",
-        ContextBuilder.builder().context(elementNotTransformablePrefix(elementLocalName)).build());
   }
 }

@@ -1,5 +1,7 @@
 package org.camunda.community.migration.converter.expression;
 
+import static org.camunda.community.migration.converter.visitor.AbstractDelegateImplementationVisitor.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,10 +18,32 @@ public class ExpressionTransformer {
   private static final Pattern executionPattern = Pattern.compile("execution\\.");
   private static final Pattern executionGetVariablePattern =
       Pattern.compile("execution.getVariable");
+  private static final Pattern methodParameters = Pattern.compile("\\(.*\\)");
 
   private ExpressionTransformer() {}
 
-  public static ExpressionTransformationResult transform(
+  public static ExpressionTransformationResult transformToJobType(final String juelExpression) {
+    // extract the expression first
+    Matcher expressionMatcher = DELEGATE_NAME_EXTRACT.matcher(juelExpression);
+    // then, we can remove the path
+    String expressionWithoutPath =
+        expressionMatcher.find() ? expressionMatcher.group(1) : juelExpression;
+    while (expressionWithoutPath.contains(".")) {
+      int index = expressionWithoutPath.indexOf(".");
+      expressionWithoutPath =
+          expressionWithoutPath.substring(0, index)
+              + capitalize(expressionWithoutPath.substring(index + 1));
+    }
+    Matcher methodMatcher = methodParameters.matcher(expressionWithoutPath);
+    String expressionWithoutMethod =
+        methodMatcher.find() ? methodMatcher.replaceAll("") : expressionWithoutPath;
+    boolean hasMethodInvocation = INSTANCE.hasMethodInvocation(juelExpression);
+    boolean hasExecutionOnly = INSTANCE.hasExecutionOnly(juelExpression);
+    return new ExpressionTransformationResult(
+        "job type", juelExpression, expressionWithoutMethod, hasMethodInvocation, hasExecutionOnly);
+  }
+
+  public static ExpressionTransformationResult transformToFeel(
       final String context, final String juelExpression) {
     if (juelExpression == null) {
       return null;
@@ -31,7 +55,7 @@ public class ExpressionTransformer {
         context, juelExpression, transform, hasMethodInvocation, hasExecutionOnly);
   }
 
-  public static ExpressionTransformationResult transformDmn(
+  public static ExpressionTransformationResult transformToFeelDmn(
       final String context, final String juelExpression) {
     if (juelExpression == null) {
       return null;
@@ -41,6 +65,13 @@ public class ExpressionTransformer {
     boolean hasExecutionOnly = INSTANCE.hasExecutionOnly(juelExpression);
     return new ExpressionTransformationResult(
         context, juelExpression, transform, hasMethodInvocation, hasExecutionOnly);
+  }
+
+  private static String capitalize(String name) {
+    if (name == null || name.isEmpty()) {
+      return name;
+    }
+    return Character.toUpperCase(name.charAt(0)) + name.substring(1);
   }
 
   private Boolean hasMethodInvocation(String juelExpression) {

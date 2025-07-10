@@ -18,13 +18,13 @@ public class CandidateGroupsVisitor extends AbstractSupportedAttributeVisitor {
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
     ExpressionTransformationResult transformationResult =
-        ExpressionTransformer.transform("Candidate groups", attribute);
+        ExpressionTransformer.transformToFeel("Candidate groups", attribute);
     context.addConversion(
         UserTaskConvertible.class,
         userTaskConversion ->
             userTaskConversion
                 .getZeebeAssignmentDefinition()
-                .setCandidateGroups(transformationResult.getFeelExpression()));
+                .setCandidateGroups(transformationResult.result()));
     return ExpressionTransformationResultMessageFactory.getMessage(
         transformationResult,
         "https://docs.camunda.io/docs/components/modeler/bpmn/user-tasks/#assignments");

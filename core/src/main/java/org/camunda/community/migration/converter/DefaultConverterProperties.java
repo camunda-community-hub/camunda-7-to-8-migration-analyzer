@@ -8,12 +8,11 @@ public class DefaultConverterProperties implements ConverterProperties {
   private String resourceHeader;
   private String scriptFormatHeader;
   private String platformVersion;
+  private String dataMigrationExecutionListenerJobType;
 
   private Boolean keepJobTypeBlank;
   private Boolean alwaysUseDefaultJobType;
   private Boolean addDataMigrationExecutionListener;
-  private String dataMigrationExecutionListenerJobType;
-
   private Boolean appendDocumentation;
   private Boolean appendElements;
 
