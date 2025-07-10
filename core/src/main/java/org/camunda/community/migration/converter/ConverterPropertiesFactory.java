@@ -66,11 +66,10 @@ public class ConverterPropertiesFactory extends AbstractFactory<ConverterPropert
         "add-data-migration-execution-listener",
         properties::getAddDataMigrationExecutionListener,
         base::setAddDataMigrationExecutionListener);
-    readDefaultValue(
-        "flag.data-migration-execution-listener-job-type",
+    readZeebeJobType(
+        "data-migration-execution-listener",
         properties::getDataMigrationExecutionListenerJobType,
-        base::setDataMigrationExecutionListenerJobType,
-        s -> s);
+        base::setDataMigrationExecutionListenerJobType);
     readFlag("append-elements", properties::getAppendElements, base::setAppendElements);
   }
 
