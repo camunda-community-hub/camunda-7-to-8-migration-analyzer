@@ -43,9 +43,9 @@ function App() {
   const [configOptions, setConfigOptions] = useState({
     defaultJobType: "camunda-7-job",
     keepJobTypeBlank: false,
-    defaultJobTypeEnabled: false,
-    addDataMigrationExecutionListener: true,
-    dataMigrationExecutionListenerJobType: "migrator",
+    alwaysUseDefaultJobType: false,
+    addDataMigrationExecutionListener: false,
+    dataMigrationExecutionListenerJobType: "=if legacyId then \"migrator\" else \"noop\"",
   });
 
 
