@@ -90,7 +90,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
   @Option(
       names = "--always-use-default-job-type",
       description =
-          "Always fill in the conifgured default job type, interesting if you want to use one delegation job worker (like the Camunda 7 Adapter).")
+          "Always fill in the configured default job type, interesting if you want to use one delegation job worker (like the Camunda 7 Adapter).")
   boolean alwaysUseDefaultJobType;
 
   @Option(
