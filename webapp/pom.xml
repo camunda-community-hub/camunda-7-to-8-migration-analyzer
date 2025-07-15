@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>camunda-7-to-8-migration-analyzer-webapp</artifactId>
+  <name>camunda-7-to-8-migration-analyzer-webapp</name>
 
   <dependencies>
     <dependency>
