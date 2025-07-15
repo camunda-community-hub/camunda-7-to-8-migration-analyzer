@@ -91,30 +91,42 @@ function App() {
     
       return mostSevere;
     }
+  
+  function createFormData(files) {
+    const formData = new FormData();
+
+    // Normalize to an array (you can pass a single file or an array of files)
+    const fileArray = Array.isArray(files) ? files : [files];
+
+    fileArray.forEach((file, index) => {
+      // Append each file, optionally using indexed keys if needed
+      formData.append("file", file);
+    });
     
+    if (configOptions.defaultJobType !== undefined)
+      formData.append("defaultJobType", configOptions.defaultJobType);
+
+    if (configOptions.keepJobTypeBlank !== undefined)
+      formData.append("keepJobTypeBlank", configOptions.keepJobTypeBlank);
+
+    if (configOptions.alwaysUseDefaultJobType !== undefined)
+      formData.append("alwaysUseDefaultJobType", configOptions.alwaysUseDefaultJobType);
+
+    if (configOptions.addDataMigrationExecutionListener !== undefined)
+      formData.append("addDataMigrationExecutionListener", configOptions.addDataMigrationExecutionListener);
+
+    if (configOptions.dataMigrationExecutionListenerJobType !== undefined)
+      formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobType);
+    return formData;
+  }
+
   async function analyzeAndConvert() {
     setStep(2);
     setFileResults(files.map(() => ({ status: "uploading" })));    
 
     const uploadResults = await Promise.all(
       files.map(async (file, idx) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        if (configOptions.defaultJobType !== undefined)
-          formData.append("defaultJobType", configOptions.defaultJobType);
-
-        if (configOptions.keepJobTypeBlank !== undefined)
-          formData.append("keepJobTypeBlank", configOptions.keepJobTypeBlank);
-
-        if (configOptions.alwaysUseDefaultJobType !== undefined)
-          formData.append("alwaysUseDefaultJobType", configOptions.alwaysUseDefaultJobType);
-
-        if (configOptions.addDataMigrationExecutionListener !== undefined)
-          formData.append("addDataMigrationExecutionListener", configOptions.addDataMigrationExecutionListener);
-
-        if (configOptions.dataMigrationExecutionListenerJobType !== undefined)
-          formData.append("dataMigrationExecutionListenerJobType", configOptions.dataMigrationExecutionListenerJobType);
-
+        const formData = createFormData(file);
         const originalModelXml = await file.text();
         const checkResponse = await fetch(baseUrl + "/check", {
           body: formData,
@@ -181,8 +193,8 @@ function App() {
   }
 
   async function downloadXLS() {
-    const formData = new FormData();
-    validFiles.forEach((file) => formData.append("file", file));
+    const formData = createFormData(validFiles);
+    //validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.xlsx",
       await fetch(baseUrl + "/check", {
         body: formData,
@@ -195,8 +207,8 @@ function App() {
     );
   }
   async function downloadCSV() {
-    const formData = new FormData();
-    validFiles.forEach((file) => formData.append("file", file));
+    const formData = createFormData(validFiles);
+    //validFiles.forEach((file) => formData.append("file", file));
     await download1("analysis.csv",
       await fetch(baseUrl + "/check", {
         body: formData,
@@ -208,8 +220,8 @@ function App() {
     );
   }
   async function downloadZIP() {
-    const formData = new FormData();
-    validFiles.forEach((file) => formData.append("file", file));
+    const formData = createFormData(validFiles);
+    //validFiles.forEach((file) => formData.append("file", file));
     await download1("converted-models.zip",
       await fetch(baseUrl + "/convertBatch", {
         body: formData,
