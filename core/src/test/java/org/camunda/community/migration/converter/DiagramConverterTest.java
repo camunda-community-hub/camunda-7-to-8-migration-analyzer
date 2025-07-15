@@ -181,6 +181,31 @@ public class DiagramConverterTest {
   }
 
   @Test
+  public void testExpressionMethodInServiceTask_ExpressionHeader() {
+    DefaultConverterProperties modified = new DefaultConverterProperties();
+    modified.setAlwaysUseDefaultJobType(false);
+    modified.setKeepJobTypeBlank(false);
+    modified.setDefaultJobType("TEST123");
+    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
+
+    BpmnModelInstance bpmnModelInstance =
+        loadAndConvert("expression-service-task.bpmn", properties);
+
+    DomElement serviceTask = bpmnModelInstance.getDocument().getElementById("serviceTask");
+    assertNotNull(serviceTask);
+    List<DomElement> taskHeaders =
+        serviceTask
+            .getChildElementsByNameNs(BPMN, "extensionElements")
+            .get(0)
+            .getChildElementsByNameNs(ZEEBE, "taskHeaders")
+            .get(0)
+            .getChildElementsByNameNs(ZEEBE, "header");
+    assertThat(taskHeaders).hasSize(1);
+    assertThat(taskHeaders.get(0).getAttribute("key")).isEqualTo("expression");
+    assertThat(taskHeaders.get(0).getAttribute("value")).isEqualTo("${myDelegate.doSomething()}");
+  }
+
+  @Test
   public void testTaskListenerHints() {
     DiagramCheckResult result = loadAndCheck("user-task-listener-implementations.bpmn");
     ElementCheckResult javaClassCheckResult = result.getResult("UserTaskUseJavaClass");

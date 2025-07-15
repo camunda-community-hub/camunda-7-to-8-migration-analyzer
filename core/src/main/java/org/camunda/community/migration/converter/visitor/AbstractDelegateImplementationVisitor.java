@@ -40,6 +40,12 @@ public abstract class AbstractDelegateImplementationVisitor
 
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
+    if (attribute != null && !attribute.trim().isEmpty()) {
+      context.addConversion(
+          ServiceTaskConvertible.class,
+          serviceTaskConversion ->
+              serviceTaskConversion.addZeebeTaskHeader(attributeLocalName(), attribute));
+    }
     // option 1: job type should always be blank
     if (context.getProperties().getKeepJobTypeBlank()) {
       return MessageFactory.delegateImplementationNoDefaultJobType(attributeLocalName(), attribute);
@@ -67,10 +73,6 @@ public abstract class AbstractDelegateImplementationVisitor
   }
 
   private Message defaultJobType(DomElementVisitorContext context, final String attribute) {
-    context.addConversion(
-        ServiceTaskConvertible.class,
-        serviceTaskConversion ->
-            serviceTaskConversion.addZeebeTaskHeader(attributeLocalName(), attribute));
     context.addConversion(
         ServiceTaskConvertible.class,
         serviceTaskConversion ->
