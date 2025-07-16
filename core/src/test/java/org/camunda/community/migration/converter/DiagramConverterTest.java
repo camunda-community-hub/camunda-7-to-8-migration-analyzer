@@ -251,7 +251,7 @@ public class DiagramConverterTest {
     ElementCheckMessage message = startEvent.getMessages().get(0);
     assertThat(message.getMessage())
         .isEqualTo(
-            "Added execution listener 'if legacyId then \"migrator\" else \"noop\"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.");
+            "Added execution listener '=if legacyId != null then \"migrator\" else \"noop\"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.");
   }
 
   @Test

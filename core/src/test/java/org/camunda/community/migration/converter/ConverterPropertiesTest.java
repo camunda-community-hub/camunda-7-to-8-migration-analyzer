@@ -20,7 +20,7 @@ public class ConverterPropertiesTest {
     assertThat(properties.getAlwaysUseDefaultJobType()).isFalse();
     assertThat(properties.getAddDataMigrationExecutionListener()).isFalse();
     assertThat(properties.getDataMigrationExecutionListenerJobType())
-        .isEqualTo("if legacyId then \"migrator\" else \"noop\"");
+        .isEqualTo("=if legacyId != null then \"migrator\" else \"noop\"");
     assertThat(properties.getAppendDocumentation()).isFalse();
     assertThat(properties.getAppendElements()).isTrue();
   }
