@@ -1,8 +1,8 @@
 # Technical details
 
-Technical details around the differences between Camunda 7 and Camunda 8 BPMN and DMN models. Bsasis for the logic of the Migration Analyzer & Diagram Converter. 
+Technical details around the differences between Camunda 7 and Camunda 8 BPMN and DMN models. Basis for the logic of the Migration Analyzer & Diagram Converter.
 
-**Warning:** Sometimes these docs are not updated when the code changes. The truth is always in the source code - and we apologize if you find inconsistencies. 
+**Warning:** Sometimes these docs are not updated when the code changes. The truth is always in the source code - and we apologize if you find inconsistencies.
 
 ## BPMN models
 
