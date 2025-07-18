@@ -365,7 +365,6 @@ public class DiagramConverterTest {
     assertThat(message.getReferencedBy().get(0)).isEqualTo("Receive1Task");
   }
 
-
   @Test
   void testConditionalFlow() {
     DiagramCheckResult result = loadAndCheck("conditional-flow.bpmn");
