@@ -45,11 +45,11 @@ public class BpmnConversionCaseLoader {
     public String name() {
       return name;
     }
-    
+
     public String description() {
       return description;
     }
-    
+
     public String givenBpmn() {
       return givenBpmn;
     }
