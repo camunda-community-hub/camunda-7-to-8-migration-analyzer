@@ -29,8 +29,6 @@ public class BpmnConversionTest {
 
   public String check(BpmnConversionCase testCase) {
     DefaultConverterProperties myProps = new DefaultConverterProperties();
-    //    modified.setAlwaysUseDefaultJobType(false);
-    //    modified.setKeepJobTypeBlank(false);
     myProps.setAppendDocumentation(false);
     ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(myProps);
 
