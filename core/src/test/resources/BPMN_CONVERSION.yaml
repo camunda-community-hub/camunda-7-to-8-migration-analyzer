@@ -1,0 +1,100 @@
+categories:
+- category: execution listener
+  cases:
+  - name: Execution Listener Variations
+    givenBpmn: |
+      <bpmn:serviceTask id="ServiceTaskWithListenerTask" name="Service task with listener" camunda:expression="${service.call(myVariable)}" camunda:resultVariable="myResult">
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${endListener.execute(something)}" event="end" />
+          <camunda:executionListener delegateExpression="${anotherStartListener}" event="start" />
+          <camunda:executionListener event="end">
+            <camunda:script scriptFormat="groovy">print("something");</camunda:script>
+          </camunda:executionListener>
+          <camunda:executionListener class="com.example.StartListener" event="start" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="ServiceTaskWithListenerTask" implementation="##WebService" isForCompensation="false" name="Service task with listener" startQuantity="1">
+            <bpmn:extensionElements>
+              <zeebe:taskHeaders>
+                <zeebe:header key="resultVariable" value="myResult"/>
+                <zeebe:header key="expression" value="${service.call(myVariable)}"/>
+              </zeebe:taskHeaders>
+              <zeebe:taskDefinition type="serviceCall"/>
+              <zeebe:executionListeners>
+                <zeebe:executionListener eventType="end" type="${endListener.execute(something)}"/>
+                <zeebe:executionListener eventType="start" type="anotherStartListener"/>
+                <zeebe:executionListener eventType="end" type="groovy"/>
+                <zeebe:executionListener eventType="start" type="com.example.StartListener"/>
+              </zeebe:executionListeners>
+            </bpmn:extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="WARNING">Element 'script' cannot be transformed. Script 'print("something");' with format 'groovy' on 'executionListener'.</conversion:message>
+      <conversion:message severity="TASK">Listener at 'end' with implementation '${endListener.execute(something)}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Listener at 'start' with implementation '${anotherStartListener}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Listener at 'end' with implementation 'groovy' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Listener at 'start' with implementation 'com.example.StartListener' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="REVIEW">Delegate class or expression '${service.call(myVariable)}' has been transformed to job type 'serviceCall'.</conversion:message>
+      <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'serviceTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
+  - name: Execution Listener on start event
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${myNewJobType}" event="start" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+            <bpmn:extensionElements>
+              <zeebe:executionListeners>
+                <zeebe:executionListener eventType="start" type="myNewJobType"/>
+              </zeebe:executionListeners>
+            </bpmn:extensionElements>            
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="TASK">Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+- category: script task
+  cases:
+  - name: Convert inline Groovy script
+    givenBpmn: |
+      <bpmn:scriptTask id="script1" name="Inline Groovy" scriptFormat="groovy" camunda:resultVariable="">
+        <bpmn:script>
+          sum = 0
+          for ( i in inputArray ) {
+            sum += i
+          }
+        </bpmn:script>
+      </bpmn:scriptTask>
+    expectedBpmn: |
+      <bpmn:scriptTask camunda:resultVariable="" completionQuantity="1" id="script1" isForCompensation="false" name="Inline Groovy" scriptFormat="groovy" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="script" value="&#10; sum = 0&#10; for ( i in inputArray ) {&#10; sum += i&#10; }&#10;"/>
+            <zeebe:header key="language" value="groovy"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="script"/>
+        </extensionElements>
+      </bpmn:scriptTask>
+    expectedMessages: |
+      <conversion:message elementId="script1" severity="REVIEW">Script format 'groovy' was set to header 'language'. Please review.</conversion:message>
+      <conversion:message elementId="script1" severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
+      <conversion:message severity="REVIEW">Script was set to header 'script'. Please review.</conversion:message>
+- category: business rules task
+  cases:
+  - name: Business Rule Task
+    givenBpmn: |
+      <bpmn:businessRuleTask id="ruleTask" name="I am weird" camunda:expression="${y}" camunda:resultVariable="x" />
+    expectedBpmn: |
+      <bpmn:businessRuleTask completionQuantity="1" id="ruleTask" implementation="##unspecified" isForCompensation="false" name="I am weird" startQuantity="1">
+        <extensionElements>
+            <zeebe:taskHeaders>
+              <zeebe:header key="resultVariable" value="x"/>
+              <zeebe:header key="expression" value="${y}"/>
+            </zeebe:taskHeaders>
+            <zeebe:taskDefinition type="y"/>
+        </extensionElements>
+      </bpmn:businessRuleTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Delegate class or expression '${y}' has been transformed to job type 'y'.</conversion:message>
+      <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'businessRuleTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
