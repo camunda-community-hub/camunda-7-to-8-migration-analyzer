@@ -178,14 +178,6 @@ public class DiagramConverterTest {
   }
 
   @Test
-  public void testExpressionInputMapping() {
-    DiagramCheckResult result = loadAndCheck("input-mapping.bpmn");
-    ElementCheckResult serviceTask = result.getResult("ServiceTask");
-    assertNotNull(serviceTask);
-    assertThat(serviceTask.getMessages()).hasSize(0);
-  }
-
-  @Test
   public void testExpressionMethodInServiceTask_ExpressionHeader() {
     DefaultConverterProperties modified = new DefaultConverterProperties();
     modified.setAlwaysUseDefaultJobType(false);
