@@ -42,10 +42,8 @@ public class DiagramConverterTest {
         "collaboration.bpmn",
         "empty-input-parameter.bpmn",
         "flexible-timer-event.bpmn",
-        "business-rule-task-as-expression.bpmn",
         "message-event-definition-handling.bpmn",
         "escalation-code.bpmn",
-        "execution-listener.bpmn",
         "version-tag.bpmn",
         "form-ref-version.bpmn",
         "form-ref-deployment.bpmn",
@@ -55,7 +53,6 @@ public class DiagramConverterTest {
         "decision-ref-deployment.bpmn",
         "delegate.bpmn",
         "decision-ref-deployment.bpmn",
-        "delegate-expression-listener.bpmn",
         "start-event-form-ref-deployment.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
@@ -358,30 +355,6 @@ public class DiagramConverterTest {
     assertThat(message).isNotNull();
     assertThat(message.getReferencedBy()).hasSize(1);
     assertThat(message.getReferencedBy().get(0)).isEqualTo("Receive1Task");
-  }
-
-  @Test
-  void testExecutionListener() {
-    DiagramCheckResult result = loadAndCheck("execution-listener.bpmn");
-    ElementCheckResult serviceTaskWithListenerTask =
-        result.getResult("ServiceTaskWithListenerTask");
-    assertThat(serviceTaskWithListenerTask).isNotNull();
-    assertThat(serviceTaskWithListenerTask.getMessages()).hasSize(7);
-    assertThat(serviceTaskWithListenerTask.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Listener at 'end' with implementation '${endListener.execute(something)}' can be transformed to a job worker. Please adjust the job type.");
-    assertThat(serviceTaskWithListenerTask.getMessages().get(2).getMessage())
-        .isEqualTo(
-            "Listener at 'start' with implementation '${anotherStartListener}' can be transformed to a job worker. Please adjust the job type.");
-    assertThat(serviceTaskWithListenerTask.getMessages().get(3).getMessage())
-        .isEqualTo(
-            "Listener at 'end' with implementation 'groovy' can be transformed to a job worker. Please adjust the job type.");
-    assertThat(serviceTaskWithListenerTask.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Element 'script' cannot be transformed. Script 'print(\"something\");' with format 'groovy' on 'executionListener'.");
-    assertThat(serviceTaskWithListenerTask.getMessages().get(4).getMessage())
-        .isEqualTo(
-            "Listener at 'start' with implementation 'com.example.StartListener' can be transformed to a job worker. Please adjust the job type.");
   }
 
   @Test
@@ -1008,24 +981,6 @@ public class DiagramConverterTest {
         executionListeners.getChildElementsByNameNs(ZEEBE, "executionListener").get(0);
     assertThat(executionListener).isNotNull();
     assertThat(executionListener.getAttribute("type")).contains("hellYeah");
-  }
-
-  @Test
-  void testShouldConvertDelegateExpressionListener() {
-    BpmnModelInstance modelInstance = loadAndConvert("delegate-expression-listener.bpmn");
-    DomElement serviceTask = modelInstance.getDocument().getElementById("serviceTask");
-    assertThat(serviceTask).isNotNull();
-    DomElement extensionElements =
-        serviceTask.getChildElementsByNameNs(BPMN, "extensionElements").get(0);
-    assertThat(extensionElements).isNotNull();
-    DomElement executionListeners =
-        extensionElements.getChildElementsByNameNs(ZEEBE, "executionListeners").get(0);
-    assertThat(executionListeners).isNotNull();
-    DomElement executionListener =
-        executionListeners.getChildElementsByNameNs(ZEEBE, "executionListener").get(0);
-    assertThat(executionListener).isNotNull();
-    String type = executionListener.getAttribute("type");
-    assertThat(type).isEqualTo("myNewJobType");
   }
 
   @Test
