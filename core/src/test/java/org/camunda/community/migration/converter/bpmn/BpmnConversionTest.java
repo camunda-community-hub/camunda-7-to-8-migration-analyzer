@@ -6,9 +6,7 @@ import static org.camunda.community.migration.converter.bpmn.ModelUtilities.asXm
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.stream.Stream;
-
 import javax.xml.transform.stream.StreamSource;
-
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.community.migration.converter.ConverterProperties;
 import org.camunda.community.migration.converter.ConverterPropertiesFactory;
@@ -31,7 +29,7 @@ import org.xmlunit.util.Predicate;
 
 public class BpmnConversionTest {
   private static final Logger LOG = LoggerFactory.getLogger(BpmnConversionTest.class);
-  
+
   public String check(BpmnConversionCase testCase) {
     DefaultConverterProperties myProps = new DefaultConverterProperties();
     myProps.setAppendDocumentation(false);
@@ -117,28 +115,25 @@ public class BpmnConversionTest {
     StringBuilder sb = new StringBuilder();
 
     sb.append("\n==== BPMN Conversion Test: ").append(testCase.name()).append(" ====\n");
-    
+
     if (testCase.description() != null && !testCase.description().isBlank()) {
       sb.append(testCase.description()).append("\n");
     }
 
-    sb.append("\n### Given BPMN\n")
-      .append(testCase.givenBpmn()).append("\n");
+    sb.append("\n### Given BPMN\n").append(testCase.givenBpmn()).append("\n");
 
-    sb.append("\n### Expected BPMN Snippet\n")
-      .append(testCase.expectedBpmn()).append("\n");
+    sb.append("\n### Expected BPMN Snippet\n").append(testCase.expectedBpmn()).append("\n");
 
-    sb.append("\n### Actual BPMN Snippet\n")
-      .append(actualBpmn).append("\n");
+    sb.append("\n### Actual BPMN Snippet\n").append(actualBpmn).append("\n");
 
     if (testCase.expectedMessages() != null && !testCase.expectedMessages().isBlank()) {
       sb.append("\n### Expected Conversion Messages\n")
-        .append(testCase.expectedMessages()).append("\n");
+          .append(testCase.expectedMessages())
+          .append("\n");
     }
 
     sb.append("========================================\n");
 
     LOG.info(sb.toString());
   }
-
 }
