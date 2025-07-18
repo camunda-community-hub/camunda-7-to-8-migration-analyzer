@@ -112,7 +112,10 @@ public class BpmnConversionTest {
 
   public static void logTestCase(BpmnConversionCase testCase, String actualBpmn) {
     System.out.println("\n==== BPMN Conversion Test: " + testCase.name() + " ====");
-    System.out.println("### Given BPMN");
+    if (testCase.description() != null) {
+      System.out.println(testCase.description());
+    }
+    System.out.println("\n### Given BPMN");
     System.out.println(testCase.givenBpmn());
     System.out.println("\n### Expected BPMN Snippet");
     System.out.println(testCase.expectedBpmn());

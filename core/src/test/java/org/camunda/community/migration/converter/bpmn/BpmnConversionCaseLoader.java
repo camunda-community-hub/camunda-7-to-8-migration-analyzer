@@ -37,6 +37,7 @@ public class BpmnConversionCaseLoader {
 
   public static class BpmnConversionCase {
     public String name;
+    public String description;
     public String givenBpmn;
     public String expectedBpmn;
     public String expectedMessages;
@@ -44,7 +45,11 @@ public class BpmnConversionCaseLoader {
     public String name() {
       return name;
     }
-
+    
+    public String description() {
+      return description;
+    }
+    
     public String givenBpmn() {
       return givenBpmn;
     }
