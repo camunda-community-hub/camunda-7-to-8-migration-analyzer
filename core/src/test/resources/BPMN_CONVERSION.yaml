@@ -1,7 +1,31 @@
 categories:
+- category: input output mappings
+  cases:
+  - name: Call Activity Simple Variable Input/Output
+    givenBpmn: |
+      <bpmn:callActivity id="Activity_1yi2nck" name="example">
+        <bpmn:extensionElements>
+          <camunda:in source="input" target="input" />
+          <camunda:out source="output" target="output" />
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedBpmn: |
+      <bpmn:callActivity completionQuantity="1" id="Activity_1yi2nck" isForCompensation="false" name="example" startQuantity="1">
+            <bpmn:extensionElements>
+              <zeebe:calledElement propagateAllChildVariables="false" propagateAllParentVariables="false"/>
+              <zeebe:ioMapping>
+                <zeebe:input source="=input" target="input"/>
+                <zeebe:output source="=output" target="output"/>
+              </zeebe:ioMapping>
+            </bpmn:extensionElements>            
+      </bpmn:callActivity>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">in, Parameter: 'input': Please review transformed expression: 'input' -&gt; '=input'.</conversion:message>
+      <conversion:message severity="REVIEW">out, Parameter: 'output': Please review transformed expression: 'output' -&gt; '=output'.</conversion:message>    
 - category: execution listener
   cases:
   - name: Execution Listener Variations
+    description: If a service task has multiple execution listeners with different implementations, every execution listener should be transformed and the implementations should be mapped to an implementation that is compatible with Camunda 8. Also, the messages being added should outline what the original implementation looked like and what has to be done to finalize the conversion.
     givenBpmn: |
       <bpmn:serviceTask id="ServiceTaskWithListenerTask" name="Service task with listener" camunda:expression="${service.call(myVariable)}" camunda:resultVariable="myResult">
         <bpmn:extensionElements>
@@ -77,8 +101,8 @@ categories:
         </extensionElements>
       </bpmn:scriptTask>
     expectedMessages: |
-      <conversion:message elementId="script1" severity="REVIEW">Script format 'groovy' was set to header 'language'. Please review.</conversion:message>
-      <conversion:message elementId="script1" severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
+      <conversion:message severity="REVIEW">Script format 'groovy' was set to header 'language'. Please review.</conversion:message>
+      <conversion:message severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
       <conversion:message severity="REVIEW">Script was set to header 'script'. Please review.</conversion:message>
 - category: business rules task
   cases:

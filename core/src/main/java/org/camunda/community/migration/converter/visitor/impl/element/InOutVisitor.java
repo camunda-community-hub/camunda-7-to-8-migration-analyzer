@@ -97,7 +97,7 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
     String source = element.getAttribute("source");
     String sourceExpression = element.getAttribute("sourceExpression");
     if (source != null) {
-      return new ExpressionTransformationResult(context, source, "=" + source, true, true);
+      return new ExpressionTransformationResult(context, source, "=" + source, false, false);
     } else if (sourceExpression != null) {
       return ExpressionTransformer.transformToFeel(context, sourceExpression);
     } else {
