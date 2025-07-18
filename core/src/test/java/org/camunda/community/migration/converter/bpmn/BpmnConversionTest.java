@@ -6,7 +6,9 @@ import static org.camunda.community.migration.converter.bpmn.ModelUtilities.asXm
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.stream.Stream;
+
 import javax.xml.transform.stream.StreamSource;
+
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.community.migration.converter.ConverterProperties;
 import org.camunda.community.migration.converter.ConverterPropertiesFactory;
@@ -16,6 +18,8 @@ import org.camunda.community.migration.converter.DiagramConverterFactory;
 import org.camunda.community.migration.converter.bpmn.BpmnConversionCaseLoader.BpmnConversionCase;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -26,7 +30,8 @@ import org.xmlunit.util.Convert;
 import org.xmlunit.util.Predicate;
 
 public class BpmnConversionTest {
-
+  private static final Logger LOG = LoggerFactory.getLogger(BpmnConversionTest.class);
+  
   public String check(BpmnConversionCase testCase) {
     DefaultConverterProperties myProps = new DefaultConverterProperties();
     //    modified.setAlwaysUseDefaultJobType(false);
@@ -111,20 +116,31 @@ public class BpmnConversionTest {
   }
 
   public static void logTestCase(BpmnConversionCase testCase, String actualBpmn) {
-    System.out.println("\n==== BPMN Conversion Test: " + testCase.name() + " ====");
-    if (testCase.description() != null) {
-      System.out.println(testCase.description());
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("\n==== BPMN Conversion Test: ").append(testCase.name()).append(" ====\n");
+    
+    if (testCase.description() != null && !testCase.description().isBlank()) {
+      sb.append(testCase.description()).append("\n");
     }
-    System.out.println("\n### Given BPMN");
-    System.out.println(testCase.givenBpmn());
-    System.out.println("\n### Expected BPMN Snippet");
-    System.out.println(testCase.expectedBpmn());
-    System.out.println("\n### Actual BPMN Snippet");
-    System.out.println(actualBpmn);
+
+    sb.append("\n### Given BPMN\n")
+      .append(testCase.givenBpmn()).append("\n");
+
+    sb.append("\n### Expected BPMN Snippet\n")
+      .append(testCase.expectedBpmn()).append("\n");
+
+    sb.append("\n### Actual BPMN Snippet\n")
+      .append(actualBpmn).append("\n");
+
     if (testCase.expectedMessages() != null && !testCase.expectedMessages().isBlank()) {
-      System.out.println("\n### Expected Conversion Messages");
-      System.out.println(testCase.expectedMessages());
+      sb.append("\n### Expected Conversion Messages\n")
+        .append(testCase.expectedMessages()).append("\n");
     }
-    System.out.println("========================================\n");
+
+    sb.append("========================================\n");
+
+    LOG.info(sb.toString());
   }
+
 }
