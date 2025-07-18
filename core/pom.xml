@@ -67,15 +67,15 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-	<dependency>
-	  <groupId>org.xmlunit</groupId>
-	  <artifactId>xmlunit-assertj</artifactId>
-	  <scope>test</scope>
-	</dependency>
-	<dependency>
-	  <groupId>org.yaml</groupId>
-	  <artifactId>snakeyaml</artifactId>
-	</dependency>
+  <dependency>
+    <groupId>org.xmlunit</groupId>
+    <artifactId>xmlunit-assertj</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.yaml</groupId>
+    <artifactId>snakeyaml</artifactId>
+  </dependency>
   </dependencies>
 
 

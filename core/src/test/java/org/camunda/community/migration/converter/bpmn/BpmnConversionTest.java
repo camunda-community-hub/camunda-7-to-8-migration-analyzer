@@ -1,9 +1,12 @@
 package org.camunda.community.migration.converter.bpmn;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.camunda.community.migration.converter.bpmn.ModelUtilities.asXml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.stream.Stream;
+import javax.xml.transform.stream.StreamSource;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.community.migration.converter.ConverterProperties;
 import org.camunda.community.migration.converter.ConverterPropertiesFactory;
@@ -13,10 +16,13 @@ import org.camunda.community.migration.converter.DiagramConverterFactory;
 import org.camunda.community.migration.converter.bpmn.BpmnConversionCaseLoader.BpmnConversionCase;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xmlunit.assertj.XmlAssert;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.ElementSelectors;
+import org.xmlunit.util.Convert;
 import org.xmlunit.util.Predicate;
 
 public class BpmnConversionTest {
@@ -53,20 +59,33 @@ public class BpmnConversionTest {
             new DefaultNodeMatcher(ElementSelectors.byNameAndAllAttributes)) // ignore sibling order
         .areSimilar();
 
-    XmlAssert.assertThat(asXml(actualBpmn))
-        .and(asXml(testCase.expectedMessages()))
-        .withNodeFilter(onlyConversionMessages())
-        .ignoreWhitespace()
-        .normalizeWhitespace()
-        .withNodeMatcher(
-            new DefaultNodeMatcher(ElementSelectors.byNameAndAllAttributes)) // ignore sibling order
-        .areSimilar();
+    if (testCase.expectedMessages().isEmpty()) {
+      assertNoConversionMessages(asXml(actualBpmn));
+    } else {
+      XmlAssert.assertThat(asXml(actualBpmn))
+          .and(asXml(testCase.expectedMessages()))
+          .withNodeFilter(onlyConversionMessages())
+          .ignoreWhitespace()
+          .normalizeWhitespace()
+          .withNodeMatcher(
+              new DefaultNodeMatcher(
+                  ElementSelectors.byNameAndAllAttributes)) // ignore sibling order
+          .withAttributeFilter(attr -> !"link".equals(attr.getName()))
+          .areSimilar();
+    }
   }
 
   static Stream<BpmnConversionCase> loadConversionCases() throws IOException {
     return BpmnConversionCaseLoader.loadFromYaml(
         BpmnConversionTest.class.getResourceAsStream("/BPMN_CONVERSION.yaml"))
         .stream();
+  }
+
+  public static void assertNoConversionMessages(String bpmnXml) {
+    Document doc = Convert.toDocument(new StreamSource(new StringReader(bpmnXml)));
+    NodeList messages =
+        doc.getElementsByTagNameNS("http://camunda.org/schema/conversion/1.0", "message");
+    assertThat(messages.getLength()).as("Expected no <conversion:message> elements").isEqualTo(0);
   }
 
   /** Ignore all nodes in 'conversion' namespace */

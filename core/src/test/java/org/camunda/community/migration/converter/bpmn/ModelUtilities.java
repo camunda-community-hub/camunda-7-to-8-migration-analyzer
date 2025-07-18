@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import org.camunda.bpm.model.bpmn.instance.Task;
+import org.camunda.bpm.model.bpmn.instance.Activity;
 
 public class ModelUtilities {
 
@@ -59,12 +59,12 @@ public class ModelUtilities {
         Bpmn.readModelFromStream(
             new ByteArrayInputStream(fullXml.getBytes(StandardCharsets.UTF_8)));
 
-    Task importedTask =
-        snippetModel.getModelElementsByType(Task.class).stream()
+    Activity importedActivity =
+        snippetModel.getModelElementsByType(Activity.class).stream()
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("No task element found in snippet"));
+            .orElseThrow(() -> new RuntimeException("No activity element found in snippet"));
 
-    return importedTask.getId();
+    return importedActivity.getId();
   }
 
   public static String extractSnippet(
