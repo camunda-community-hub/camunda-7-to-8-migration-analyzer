@@ -82,7 +82,7 @@ categories:
   cases:
   - name: Convert inline Groovy script
     givenBpmn: |
-      <bpmn:scriptTask id="script1" name="Inline Groovy" scriptFormat="groovy" camunda:resultVariable="">
+      <bpmn:scriptTask id="script1" name="Inline Groovy" scriptFormat="groovy">
         <bpmn:script>
           sum = 0
           for ( i in inputArray ) {
@@ -91,7 +91,7 @@ categories:
         </bpmn:script>
       </bpmn:scriptTask>
     expectedBpmn: |
-      <bpmn:scriptTask camunda:resultVariable="" completionQuantity="1" id="script1" isForCompensation="false" name="Inline Groovy" scriptFormat="groovy" startQuantity="1">
+      <bpmn:scriptTask completionQuantity="1" id="script1" isForCompensation="false" name="Inline Groovy" scriptFormat="groovy" startQuantity="1">
         <extensionElements>
           <zeebe:taskHeaders>
             <zeebe:header key="script" value="&#10; sum = 0&#10; for ( i in inputArray ) {&#10; sum += i&#10; }&#10;"/>
@@ -104,6 +104,27 @@ categories:
       <conversion:message severity="REVIEW">Script format 'groovy' was set to header 'language'. Please review.</conversion:message>
       <conversion:message severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
       <conversion:message severity="REVIEW">Script was set to header 'script'. Please review.</conversion:message>
+  - name: Convert JUEL with result variable
+    givenBpmn: |
+      <bpmn:scriptTask id="script1" name="JUEL" scriptFormat="juel" camunda:resultVariable="result">
+        <bpmn:script>#{echo}</bpmn:script>
+      </bpmn:scriptTask>
+    expectedBpmn: |
+      <bpmn:scriptTask completionQuantity="1" id="script1" isForCompensation="false" name="JUEL" scriptFormat="juel" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="script" value="#{echo}"/>
+            <zeebe:header key="language" value="juel"/>
+            <zeebe:header key="resultVariable" value="result"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="script"/>
+        </extensionElements>
+      </bpmn:scriptTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Script format 'juel' was set to header 'language'. Please review.</conversion:message>
+      <conversion:message severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
+      <conversion:message severity="REVIEW">Script was set to header 'script'. Please review.</conversion:message>
+      <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'scriptTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
 - category: business rules task
   cases:
   - name: Business Rule Task
