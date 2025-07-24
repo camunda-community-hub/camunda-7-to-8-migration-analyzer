@@ -80,7 +80,7 @@ categories:
       <conversion:message severity="TASK">Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
 - category: script task
   cases:
-  - name: Convert inline Groovy script
+  - name: Convert Groovy inline script
     givenBpmn: |
       <bpmn:scriptTask id="script1" name="Inline Groovy" scriptFormat="groovy">
         <bpmn:script>
@@ -125,6 +125,24 @@ categories:
       <conversion:message severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
       <conversion:message severity="REVIEW">Script was set to header 'script'. Please review.</conversion:message>
       <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'scriptTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
+  - name: Convert Groovy external script
+    givenBpmn: |
+      <bpmn:scriptTask id="script1" name="Groovy External" scriptFormat="groovy" camunda:resource="org/camunda/bpm/task.groovy">
+      </bpmn:scriptTask>
+    expectedBpmn: |
+      <bpmn:scriptTask completionQuantity="1" id="script1" isForCompensation="false" name="Groovy External" scriptFormat="groovy" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="resource" value="org/camunda/bpm/task.groovy"/>
+            <zeebe:header key="language" value="groovy"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="script"/>
+        </extensionElements>
+      </bpmn:scriptTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Script format 'groovy' was set to header 'language'. Please review.</conversion:message>
+      <conversion:message severity="REVIEW">Element 'scriptTask' was transformed. Currently, script tasks are implemented like service tasks with job type 'script'. Please review your implementation.</conversion:message>
+      <conversion:message severity="REVIEW">Attribute 'resource' on 'scriptTask' was mapped. Is set to header resource.</conversion:message>
 - category: business rules task
   cases:
   - name: Business Rule Task
