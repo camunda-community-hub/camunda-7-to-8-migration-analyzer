@@ -3,7 +3,6 @@ package org.camunda.community.migration.converter.bpmn;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.camunda.community.migration.converter.bpmn.ModelUtilities.asXml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -14,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,7 +20,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.community.migration.converter.ConverterProperties;
 import org.camunda.community.migration.converter.ConverterPropertiesFactory;
@@ -88,13 +85,14 @@ public class BpmnConversionTest {
     }
   }
 
-  public static void assertConversionMessagesEqual(String expectedXml, String actualXml) throws Exception {
+  public static void assertConversionMessagesEqual(String expectedXml, String actualXml)
+      throws Exception {
     List<Node> expected = extractNodes(expectedXml);
     List<Node> actual = extractNodes(actualXml);
 
     assertEquals(
-        expected.size(), 
-        actual.size(), 
+        expected.size(),
+        actual.size(),
         () -> {
           StringBuilder sb = new StringBuilder();
           sb.append("Mismatch in number of <conversion:message> elements:\n");
@@ -109,36 +107,41 @@ public class BpmnConversionTest {
           }
 
           return sb.toString();
-        }
-    );
+        });
 
     List<Node> unmatched = new ArrayList<>(actual);
 
     for (final Node expectedNode : expected) {
-      boolean matched = unmatched.removeIf(actualNode -> {
-        Diff diff = DiffBuilder.compare(Input.fromNode(expectedNode))
-            .withTest(Input.fromNode(actualNode))
-            .withNodeMatcher(new DefaultNodeMatcher(matchByNameAndSeverityAndTextOnly()))
-            .withAttributeFilter(attr -> !"link".equals(attr.getNodeName()))
-            .ignoreWhitespace()
-            .normalizeWhitespace()
-            .checkForSimilar()
-            .build();
-        return !diff.hasDifferences();
-      });
+      boolean matched =
+          unmatched.removeIf(
+              actualNode -> {
+                Diff diff =
+                    DiffBuilder.compare(Input.fromNode(expectedNode))
+                        .withTest(Input.fromNode(actualNode))
+                        .withNodeMatcher(
+                            new DefaultNodeMatcher(matchByNameAndSeverityAndTextOnly()))
+                        .withAttributeFilter(attr -> !"link".equals(attr.getNodeName()))
+                        .ignoreWhitespace()
+                        .normalizeWhitespace()
+                        .checkForSimilar()
+                        .build();
+                return !diff.hasDifferences();
+              });
 
-      assertTrue(matched, () -> {
-        StringBuilder sb = new StringBuilder();
-        sb.append("No matching actual message found for:\n")
-          .append(expectedNode.getTextContent().trim())
-          .append("\n\nRemaining unmatched actual messages:\n");
+      assertTrue(
+          matched,
+          () -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append("No matching actual message found for:\n")
+                .append(expectedNode.getTextContent().trim())
+                .append("\n\nRemaining unmatched actual messages:\n");
 
-        for (Node node : unmatched) {
-          sb.append("- ").append(node.getTextContent().trim()).append("\n");
-        }
+            for (Node node : unmatched) {
+              sb.append("- ").append(node.getTextContent().trim()).append("\n");
+            }
 
-        return sb.toString();
-      });
+            return sb.toString();
+          });
     }
   }
 
