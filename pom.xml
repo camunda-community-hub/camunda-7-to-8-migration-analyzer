@@ -28,18 +28,18 @@
     <maven.compiler.source>${version.java}</maven.compiler.source>
     <maven.compiler.target>${version.java}</maven.compiler.target>
 
-    <version.zeebe>8.7.8</version.zeebe>
+    <version.zeebe>8.7.9</version.zeebe>
     <version.camunda.platform>7.23.0</version.camunda.platform>
     <version.jsoup>1.21.1</version.jsoup>
-    <version.spring-boot>3.5.3</version.spring-boot>
+    <version.spring-boot>3.5.4</version.spring-boot>
     <version.picocli>4.7.7</version.picocli>
     <version.commons-io>2.20.0</version.commons-io>
     <version.slack-api-client>1.45.3</version.slack-api-client>
-    <version.opencsv>5.11.2</version.opencsv>
-    <version.grpc>1.73.0</version.grpc>
+    <version.opencsv>5.12.0</version.opencsv>
+    <version.grpc>1.74.0</version.grpc>
     <version.protobuf>3.25.8</version.protobuf>
     <version.guava>33.4.8-jre</version.guava>
-    <version.error_prone_annotations>2.40.0</version.error_prone_annotations>
+    <version.error_prone_annotations>2.41.0</version.error_prone_annotations>
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.archunit>1.4.1</version.archunit>
     <version.apache-poi>5.4.1</version.apache-poi>
