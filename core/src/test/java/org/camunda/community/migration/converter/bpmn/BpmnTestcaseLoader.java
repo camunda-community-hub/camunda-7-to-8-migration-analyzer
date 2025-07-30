@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-public class TestcaseLoader {
+public class BpmnTestcaseLoader {
 
   /**
    * Load from a structure like: categories: - category: scriptTask cases: - name: Convert inline

@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class TestcaseUtils {
+public class BpmnTestcaseUtils {
 
   public static BpmnModelInstance wrapSnippetInProcess(String snippetXml) {
     String fullXml = asC7BpmnXml(snippetXml);

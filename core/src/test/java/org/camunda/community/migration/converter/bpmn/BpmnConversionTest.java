@@ -1,11 +1,11 @@
 package org.camunda.community.migration.converter.bpmn;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.camunda.community.migration.converter.bpmn.TestcaseUtils.applyProperties;
-import static org.camunda.community.migration.converter.bpmn.TestcaseUtils.asXml;
-import static org.camunda.community.migration.converter.bpmn.TestcaseUtils.extractMessageNodes;
-import static org.camunda.community.migration.converter.bpmn.TestcaseUtils.extractSnippet;
-import static org.camunda.community.migration.converter.bpmn.TestcaseUtils.wrapSnippetInProcess;
+import static org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.applyProperties;
+import static org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.asXml;
+import static org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.extractMessageNodes;
+import static org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.extractSnippet;
+import static org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.wrapSnippetInProcess;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -20,8 +20,8 @@ import org.camunda.community.migration.converter.ConverterPropertiesFactory;
 import org.camunda.community.migration.converter.DefaultConverterProperties;
 import org.camunda.community.migration.converter.DiagramConverter;
 import org.camunda.community.migration.converter.DiagramConverterFactory;
-import org.camunda.community.migration.converter.bpmn.TestcaseLoader.BpmnConversionCase;
-import org.camunda.community.migration.converter.bpmn.TestcaseUtils.MessageNode;
+import org.camunda.community.migration.converter.bpmn.BpmnTestcaseLoader.BpmnConversionCase;
+import org.camunda.community.migration.converter.bpmn.BpmnTestcaseUtils.MessageNode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -134,7 +134,7 @@ public class BpmnConversionTest {
   }
 
   static Stream<BpmnConversionCase> loadConversionCases() throws IOException {
-    return TestcaseLoader.loadFromYaml(
+    return BpmnTestcaseLoader.loadFromYaml(
         BpmnConversionTest.class.getResourceAsStream("/BPMN_CONVERSION.yaml"))
         .stream();
   }
