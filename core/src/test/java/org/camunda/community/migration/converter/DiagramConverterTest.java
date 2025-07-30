@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,12 +46,7 @@ public class DiagramConverterTest {
         "version-tag.bpmn",
         "form-ref-version.bpmn",
         "form-ref-deployment.bpmn",
-        "decision-ref-version.bpmn",
-        "decision-ref-deployment.bpmn",
         "feel_expr_not_tranformed.bpmn",
-        "decision-ref-deployment.bpmn",
-        "delegate.bpmn",
-        "decision-ref-deployment.bpmn",
         "start-event-form-ref-deployment.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
@@ -123,24 +117,6 @@ public class DiagramConverterTest {
   }
 
   @Test
-  public void testJavaDelegateExpressionToJobType() {
-    DiagramCheckResult result = loadAndCheck("delegate.bpmn");
-
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAlwaysUseDefaultJobType(false);
-    modified.setKeepJobTypeBlank(false);
-    ConverterPropertiesFactory.getInstance().merge(modified);
-
-    ElementCheckResult delegateClassServiceTask = result.getResult("serviceTask");
-    assertNotNull(delegateClassServiceTask);
-    assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
-    ElementCheckMessage message = delegateClassServiceTask.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Delegate class or expression '${myDelegate}' has been transformed to job type 'myDelegate'.");
-  }
-
-  @Test
   public void testJavaAdapterJobType() {
     DefaultConverterProperties modified = new DefaultConverterProperties();
     modified.setAlwaysUseDefaultJobType(true);
@@ -156,50 +132,6 @@ public class DiagramConverterTest {
     assertThat(message.getMessage())
         .isEqualTo(
             "Attribute 'class' on 'serviceTask' was mapped. Delegate call to 'com.camunda.consulting.MyDelegate' was transformed to job type 'camunda-7-adapter'. Please review your implementation.");
-  }
-
-  @Test
-  public void testExpressionMethodInServiceTask() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAlwaysUseDefaultJobType(false);
-    modified.setKeepJobTypeBlank(false);
-    modified.setDefaultJobType("TEST123");
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-
-    DiagramCheckResult result = loadAndCheck("expression-service-task.bpmn", properties);
-
-    ElementCheckResult serviceTask = result.getResult("serviceTask");
-    assertNotNull(serviceTask);
-    assertThat(serviceTask.getMessages()).hasSize(1);
-    ElementCheckMessage message = serviceTask.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Delegate class or expression '${myDelegate.doSomething()}' has been transformed to job type 'myDelegateDoSomething'.");
-  }
-
-  @Test
-  public void testExpressionMethodInServiceTask_ExpressionHeader() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAlwaysUseDefaultJobType(false);
-    modified.setKeepJobTypeBlank(false);
-    modified.setDefaultJobType("TEST123");
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-
-    BpmnModelInstance bpmnModelInstance =
-        loadAndConvert("expression-service-task.bpmn", properties);
-
-    DomElement serviceTask = bpmnModelInstance.getDocument().getElementById("serviceTask");
-    assertNotNull(serviceTask);
-    List<DomElement> taskHeaders =
-        serviceTask
-            .getChildElementsByNameNs(BPMN, "extensionElements")
-            .get(0)
-            .getChildElementsByNameNs(ZEEBE, "taskHeaders")
-            .get(0)
-            .getChildElementsByNameNs(ZEEBE, "header");
-    assertThat(taskHeaders).hasSize(1);
-    assertThat(taskHeaders.get(0).getAttribute("key")).isEqualTo("expression");
-    assertThat(taskHeaders.get(0).getAttribute("value")).isEqualTo("${myDelegate.doSomething()}");
   }
 
   @Test
@@ -278,73 +210,6 @@ public class DiagramConverterTest {
   }
 
   @Test
-  void testCallActivityBefore_8_3() {
-    DiagramCheckResult result = loadAndCheckAgainstVersion("call-activity-latest.bpmn", "8.2");
-    ElementCheckResult callActivityResult = result.getResult("callLatest");
-    assertThat(callActivityResult.getMessages()).hasSize(2);
-    assertThat(callActivityResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Element 'camunda:in' with attribute 'variables=\"all\"' is removed. It is default in Zeebe before 8.3.");
-    assertThat(callActivityResult.getMessages().get(0).getSeverity()).isEqualTo(Severity.INFO);
-    assertThat(callActivityResult.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Element 'camunda:out' with attribute 'variables=\"all\"' is mapped to 'propagateAllChildVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(1).getSeverity()).isEqualTo(Severity.INFO);
-  }
-
-  @Test
-  void testCallActivityLatest() {
-    DiagramCheckResult result = loadAndCheck("call-activity-latest.bpmn");
-    ElementCheckResult callActivityResult = result.getResult("callLatest");
-    assertThat(callActivityResult.getMessages()).hasSize(2);
-    assertThat(callActivityResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Element 'camunda:in' with attribute 'variables=\"all\"' is mapped to 'propagateAllParentVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(0).getSeverity()).isEqualTo(Severity.INFO);
-    assertThat(callActivityResult.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Element 'camunda:out' with attribute 'variables=\"all\"' is mapped to 'propagateAllChildVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(1).getSeverity()).isEqualTo(Severity.INFO);
-  }
-
-  @Test
-  void testCallActivityDeployment() {
-    DiagramCheckResult result = loadAndCheckAgainstVersion("call-activity-deployment.bpmn", "8.5");
-    ElementCheckResult callActivityResult = result.getResult("callDeployment");
-    assertThat(callActivityResult.getMessages()).hasSize(3);
-    assertThat(callActivityResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Attribute 'calledElementBinding' with value 'deployment' on 'callActivity' is not supported.");
-    assertThat(callActivityResult.getMessages().get(0).getSeverity()).isEqualTo(Severity.WARNING);
-    assertThat(callActivityResult.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Element 'camunda:in' with attribute 'variables=\"all\"' is mapped to 'propagateAllParentVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(1).getSeverity()).isEqualTo(Severity.INFO);
-    assertThat(callActivityResult.getMessages().get(2).getMessage())
-        .isEqualTo(
-            "Element 'camunda:out' with attribute 'variables=\"all\"' is mapped to 'propagateAllChildVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(2).getSeverity()).isEqualTo(Severity.INFO);
-  }
-
-  @Test
-  void testCallActivityDeployment_8_6() {
-    DiagramCheckResult result = loadAndCheckAgainstVersion("call-activity-deployment.bpmn", "8.6");
-    ElementCheckResult callActivityResult = result.getResult("callDeployment");
-    assertThat(callActivityResult.getMessages()).hasSize(3);
-    assertThat(callActivityResult.getMessages().get(0).getMessage())
-        .isEqualTo("Called element reference binding has been mapped.");
-    assertThat(callActivityResult.getMessages().get(0).getSeverity()).isEqualTo(Severity.INFO);
-    assertThat(callActivityResult.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Element 'camunda:in' with attribute 'variables=\"all\"' is mapped to 'propagateAllParentVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(1).getSeverity()).isEqualTo(Severity.INFO);
-    assertThat(callActivityResult.getMessages().get(2).getMessage())
-        .isEqualTo(
-            "Element 'camunda:out' with attribute 'variables=\"all\"' is mapped to 'propagateAllChildVariables=\"true\"'.");
-    assertThat(callActivityResult.getMessages().get(2).getSeverity()).isEqualTo(Severity.INFO);
-  }
-
-  @Test
   void testReferences() {
     DiagramCheckResult result = loadAndCheck("message-example.bpmn");
     ElementCheckResult receiveTask = result.getResult("Receive1Task");
@@ -355,15 +220,6 @@ public class DiagramConverterTest {
     assertThat(message).isNotNull();
     assertThat(message.getReferencedBy()).hasSize(1);
     assertThat(message.getReferencedBy().get(0)).isEqualTo("Receive1Task");
-  }
-
-  @Test
-  void testConditionalFlow() {
-    DiagramCheckResult result = loadAndCheck("conditional-flow.bpmn");
-    ElementCheckResult checkResult = result.getResult("SomethingWorkedSequenceFlow");
-    List<ElementCheckMessage> messages = checkResult.getMessages();
-    assertThat(messages).hasSize(2);
-    assertThat(messages.get(0).getMessage()).isEqualTo("A Conditional flow is not supported.");
   }
 
   @Test
@@ -402,126 +258,6 @@ public class DiagramConverterTest {
             "Attribute 'resultVariable' on 'scriptTask' was mapped. Is now available as header 'resultVariable'.");
     assertThat(result.getResult("FeelScriptTask").getMessages().get(3).getMessage())
         .isEqualTo("Script was set to header 'script'. Please review.");
-  }
-
-  @Test
-  void testExcutionGetVariable() {
-    DiagramCheckResult result = loadAndCheck("expression-get-variable.bpmn");
-    List<ElementCheckMessage> equalsYesMessage =
-        result.getResult("GetVariableEqualsYesFlow").getMessages();
-    assertThat(equalsYesMessage).hasSize(1);
-    assertThat(equalsYesMessage.get(0).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(equalsYesMessage.get(0).getMessage()).contains("-> '=exampleVar = \"yes\"");
-    List<ElementCheckMessage> notEqualsYesMessage =
-        result.getResult("GetVariableNotEqualsYesFlow").getMessages();
-    assertThat(notEqualsYesMessage).hasSize(1);
-    assertThat(notEqualsYesMessage.get(0).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(notEqualsYesMessage.get(0).getMessage()).contains("-> '=exampleVar != \"yes\"");
-  }
-
-  @Test
-  void testExpressionWithMethodInvocation() {
-    DiagramCheckResult result = loadAndCheck("expression-method-invocation.bpmn");
-    List<ElementCheckMessage> easyExpressionMessage =
-        result.getResult("EasyExpressionSequenceFlow").getMessages();
-    assertThat(easyExpressionMessage).hasSize(1);
-    assertThat(easyExpressionMessage.get(0).getSeverity()).isEqualTo(Severity.REVIEW);
-
-    List<ElementCheckMessage> executionIsUsedMessage =
-        result.getResult("ExecutionIsUsedSequenceFlow").getMessages();
-    assertThat(executionIsUsedMessage).hasSize(1);
-    assertThat(executionIsUsedMessage.get(0).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(executionIsUsedMessage.get(0).getMessage())
-        .contains("-> '=input != null and input > 5");
-
-    List<ElementCheckMessage> methodInvocationIsUsedMessage =
-        result.getResult("MethodInvocationIsUsedSequenceFlow").getMessages();
-    assertThat(methodInvocationIsUsedMessage).hasSize(1);
-    assertThat(methodInvocationIsUsedMessage.get(0).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(methodInvocationIsUsedMessage.get(0).getMessage())
-        .contains("Method invocation is not possible in FEEL");
-  }
-
-  @Test
-  void testInMappingWithMethodInvocationAndExecution() {
-    DiagramCheckResult result = loadAndCheck("expression-method-invocation.bpmn");
-    List<ElementCheckMessage> inMappingMessages =
-        result.getResult("TaskWithInMappingsServiceTask").getMessages();
-    assertThat(inMappingMessages).hasSize(3);
-
-    assertThat(inMappingMessages.get(0).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(inMappingMessages.get(0).getMessage())
-        .contains(
-            Arrays.asList("taskForMethodExpected", "Method invocation is not possible in FEEL"));
-
-    assertThat(inMappingMessages.get(1).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(inMappingMessages.get(1).getMessage())
-        .contains(
-            Arrays.asList("taskForExecutionExpected", "'execution' is not available in FEEL"));
-
-    assertThat(inMappingMessages.get(2).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(inMappingMessages.get(2).getMessage()).contains("reviewExpected");
-  }
-
-  @Test
-  void testOutputMappingWithMethodInvocationAndExecution() {
-    DiagramCheckResult result = loadAndCheck("expression-method-invocation.bpmn");
-    List<ElementCheckMessage> outMappingMessages =
-        result.getResult("TaskWithOutMappingsServiceTask").getMessages();
-    assertThat(outMappingMessages).hasSize(3);
-
-    assertThat(outMappingMessages.get(0).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(outMappingMessages.get(0).getMessage())
-        .contains(
-            Arrays.asList("taskForMethodExpected", "Method invocation is not possible in FEEL"));
-
-    assertThat(outMappingMessages.get(1).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(outMappingMessages.get(1).getMessage())
-        .contains(
-            Arrays.asList("taskForExecutionExpected", "'execution' is not available in FEEL"));
-
-    assertThat(outMappingMessages.get(2).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(outMappingMessages.get(2).getMessage()).contains("reviewExpected");
-  }
-
-  @Test
-  void testMultiInstanceConfigurationWithExecution() {
-    DiagramCheckResult result = loadAndCheck("expression-method-invocation.bpmn");
-    List<ElementCheckMessage> messages =
-        result.getResult("MultiInstanceConfigurationWithExecutionServiceTask").getMessages();
-    assertThat(messages).hasSize(4);
-    assertThat(messages.get(0).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(messages.get(0).getMessage()).contains("Collecting results");
-
-    assertThat(messages.get(1).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(messages.get(1).getMessage()).contains(Arrays.asList("Collection", "-> '=myList'"));
-
-    assertThat(messages.get(2).getSeverity()).isEqualTo(Severity.REVIEW);
-    assertThat(messages.get(2).getMessage())
-        .contains(Arrays.asList("Completion condition", "-> '=complete = true'"));
-
-    assertThat(messages.get(3).getSeverity()).isEqualTo(Severity.INFO);
-  }
-
-  @Test
-  void testMultiInstanceConfigurationWithMethodInvocation() {
-    DiagramCheckResult result = loadAndCheck("expression-method-invocation.bpmn");
-    List<ElementCheckMessage> messages =
-        result.getResult("MultiInstanceConfigurationWithMethodInvocationServiceTask").getMessages();
-    assertThat(messages).hasSize(4);
-    assertThat(messages.get(0).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(messages.get(0).getMessage()).contains("Collecting results");
-
-    assertThat(messages.get(1).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(messages.get(1).getMessage())
-        .contains(Arrays.asList("Collection", "Method invocation is not possible in FEEL"));
-
-    assertThat(messages.get(2).getSeverity()).isEqualTo(Severity.TASK);
-    assertThat(messages.get(2).getMessage())
-        .contains(
-            Arrays.asList("Completion condition", "Method invocation is not possible in FEEL"));
-
-    assertThat(messages.get(3).getSeverity()).isEqualTo(Severity.INFO);
   }
 
   @Test
@@ -627,58 +363,6 @@ public class DiagramConverterTest {
     } else {
       assertThat(warningMessages).hasSize(1);
     }
-  }
-
-  @Test
-  void testJobTypeBlank() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setKeepJobTypeBlank(true);
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-    DiagramConverter converter = DiagramConverterFactory.getInstance().get();
-    BpmnModelInstance modelInstance =
-        Bpmn.readModelFromStream(getClass().getClassLoader().getResourceAsStream("delegate.bpmn"));
-    converter.convert(modelInstance, properties);
-    List<DomElement> taskDefinition =
-        modelInstance
-            .getDocument()
-            .getElementById("serviceTask")
-            .getChildElementsByNameNs(BPMN, "extensionElements")
-            .get(0)
-            .getChildElementsByNameNs(ZEEBE, "taskDefinition");
-    assertThat(taskDefinition).isEmpty();
-  }
-
-  @Test
-  void testConditionalSequenceFlowWithLanguages() {
-    DiagramCheckResult result = loadAndCheck("conditional-flow-many-languages.bpmn");
-    assertThat(result.getResult("JuelSequenceFlow"))
-        .isNotNull()
-        .extracting(ElementCheckResult::getMessages)
-        .matches(l -> !l.isEmpty())
-        .extracting(l -> l.get(0).getMessage())
-        .isEqualTo(
-            "Condition expression: Please review transformed expression: '${x == 1}' -> '=x = 1'.");
-    assertThat(result.getResult("ExternalScriptSequenceFlow"))
-        .isNotNull()
-        .extracting(ElementCheckResult::getMessages)
-        .matches(l -> !l.isEmpty())
-        .extracting(l -> l.get(0).getMessage())
-        .isEqualTo(
-            "Please translate the content from 'some-resource.js' to a valid FEEL expression.");
-    assertThat(result.getResult("InternalScriptSequenceFlow"))
-        .isNotNull()
-        .extracting(ElementCheckResult::getMessages)
-        .matches(l -> !l.isEmpty())
-        .extracting(l -> l.get(0).getMessage())
-        .isEqualTo(
-            "Please translate the javascript script from 'return x === 3;' to a valid FEEL expression.");
-    assertThat(result.getResult("FeelScriptSequenceFlow"))
-        .isNotNull()
-        .extracting(ElementCheckResult::getMessages)
-        .matches(l -> !l.isEmpty())
-        .extracting(l -> l.get(0).getMessage())
-        .isEqualTo(
-            "FEEL Condition expression: Please review transformed expression: 'x=4' -> '=x=4'. Check for custom FEEL functions as they are not supported by Zeebe.");
   }
 
   @Test
@@ -809,110 +493,6 @@ public class DiagramConverterTest {
   }
 
   @Test
-  void testDecisionRefVersionBindingConversion() {
-    BpmnModelInstance modelInstance = loadAndConvert("decision-ref-version.bpmn");
-    DomElement userTask = modelInstance.getDocument().getElementById("businessRuleTask");
-    assertThat(userTask).isNotNull();
-    assertThat(userTask.getChildElementsByNameNs(BPMN, "extensionElements")).hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledDecision"))
-        .hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledDecision")
-                .get(0)
-                .getAttribute(ZEEBE, "versionTag"))
-        .isEqualTo("1.0");
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledDecision")
-                .get(0)
-                .getAttribute(ZEEBE, "bindingType"))
-        .isEqualTo("versionTag");
-  }
-
-  @Test
-  void testDecisionRefDeploymentBindingConversion() {
-    BpmnModelInstance modelInstance = loadAndConvert("decision-ref-deployment.bpmn");
-    DomElement userTask = modelInstance.getDocument().getElementById("businessRuleTask");
-    assertThat(userTask).isNotNull();
-    assertThat(userTask.getChildElementsByNameNs(BPMN, "extensionElements")).hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledDecision"))
-        .hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledDecision")
-                .get(0)
-                .getAttribute(ZEEBE, "bindingType"))
-        .isEqualTo("deployment");
-  }
-
-  @Test
-  void testCalledElementRefVersionBindingConversion() {
-    BpmnModelInstance modelInstance = loadAndConvert("called-element-ref-version.bpmn");
-    DomElement userTask = modelInstance.getDocument().getElementById("callActivity");
-    assertThat(userTask).isNotNull();
-    assertThat(userTask.getChildElementsByNameNs(BPMN, "extensionElements")).hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledElement"))
-        .hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledElement")
-                .get(0)
-                .getAttribute(ZEEBE, "versionTag"))
-        .isEqualTo("1.0");
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledElement")
-                .get(0)
-                .getAttribute(ZEEBE, "bindingType"))
-        .isEqualTo("versionTag");
-  }
-
-  @Test
-  void testCalledElementRefDeploymentBindingConversion() {
-    BpmnModelInstance modelInstance = loadAndConvert("called-element-ref-deployment.bpmn");
-    DomElement userTask = modelInstance.getDocument().getElementById("callActivity");
-    assertThat(userTask).isNotNull();
-    assertThat(userTask.getChildElementsByNameNs(BPMN, "extensionElements")).hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledElement"))
-        .hasSize(1);
-    assertThat(
-            userTask
-                .getChildElementsByNameNs(BPMN, "extensionElements")
-                .get(0)
-                .getChildElementsByNameNs(ZEEBE, "calledElement")
-                .get(0)
-                .getAttribute(ZEEBE, "bindingType"))
-        .isEqualTo("deployment");
-  }
-
-  @Test
   void testFeelScriptInputShouldBeTransformed() {
     BpmnModelInstance modelInstance = loadAndConvert("feel_expr_not_tranformed.bpmn");
     DomElement serviceTask = modelInstance.getDocument().getElementById("Activity_1s02kf9");
@@ -995,26 +575,6 @@ public class DiagramConverterTest {
         bpmnModelInstance.getDocument().getElementById("HistoryTimeToLive");
     assertThat(historyTimeToLive).isNotNull();
     assertThat(historyTimeToLive.getChildElements()).isEmpty();
-  }
-
-  @Test
-  void shouldTransformDelegateExpressionAsJobType() {
-    DefaultConverterProperties converterProperties = new DefaultConverterProperties();
-    // converterProperties.setUseDelegateExpressionAsJobType(true);
-    BpmnModelInstance modelInstance =
-        loadAndConvert(
-            "delegate.bpmn", ConverterPropertiesFactory.getInstance().merge(converterProperties));
-    printModel(modelInstance);
-    DomElement serviceTask = modelInstance.getDocument().getElementById("serviceTask");
-    assertThat(serviceTask).isNotNull();
-    assertThat(serviceTask.getChildElementsByNameNs(BPMN, "extensionElements")).hasSize(1);
-    DomElement extensionProperties =
-        serviceTask.getChildElementsByNameNs(BPMN, "extensionElements").get(0);
-    assertThat(extensionProperties.getChildElementsByNameNs(ZEEBE, "taskDefinition")).hasSize(1);
-    DomElement taskDefinition =
-        extensionProperties.getChildElementsByNameNs(ZEEBE, "taskDefinition").get(0);
-    assertThat(taskDefinition.hasAttribute("type")).isTrue();
-    assertThat(taskDefinition.getAttribute("type")).isEqualTo("myDelegate");
   }
 
   @Test

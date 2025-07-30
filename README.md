@@ -9,6 +9,25 @@ The conversion process can be extended to accommodate special requirements.
 
 See it in action in the **[Camunda 7 to 8 Migration Example](https://github.com/camunda-community-hub/camunda-7-to-8-migration-example)**.
 
+To understand what conversions will be applied, have a look at the [BPMN Conversion Test Cases YAML](core/src/test/resources/BPMN_CONVERSION.yaml) - as this lists given Camunda 7 BPMN snippets, and the expected Camunda 8 snippet of the transformed BPMN. For example:
+
+```yaml
+- name: Service Task with delegateExpression
+  givenBpmn: |
+    <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:delegateExpression="${myDelegate}" />
+  expectedBpmn: |
+    <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+      <extensionElements>
+         <zeebe:taskHeaders>
+         <zeebe:header key="delegateExpression" value="${myDelegate}"/>
+         </zeebe:taskHeaders>
+         <zeebe:taskDefinition type="myDelegate"/>
+      </extensionElements>
+    </bpmn:serviceTask>
+  expectedMessages: |
+    <conversion:message severity="REVIEW">Delegate class or expression '${myDelegate}' has been transformed to job type 'myDelegate'.</conversion:message>
+```
+
 ## Table of Contents
 
 - [Installation](#installation)

@@ -1,13 +1,15 @@
 package org.camunda.community.migration.converter.bpmn;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-public class BpmnConversionCaseLoader {
+public class BpmnTestcaseLoader {
 
   /**
    * Load from a structure like: categories: - category: scriptTask cases: - name: Convert inline
@@ -38,9 +40,11 @@ public class BpmnConversionCaseLoader {
   public static class BpmnConversionCase {
     public String name;
     public String description;
+    public String targetVersion;
     public String givenBpmn;
     public String expectedBpmn;
     public String expectedMessages;
+    public Map<String, String> properties = new HashMap<>();
 
     public String name() {
       return name;
@@ -77,6 +81,10 @@ public class BpmnConversionCaseLoader {
               .replaceAll("_+", "_") // collapse multiple underscores
               .replaceAll("^_+|_+$", ""); // trim leading/trailing underscores
       return sanitized + ".bpmn";
+    }
+
+    public Map<String, String> properties() {
+      return properties;
     }
   }
 
