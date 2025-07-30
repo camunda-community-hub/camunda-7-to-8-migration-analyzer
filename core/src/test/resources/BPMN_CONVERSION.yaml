@@ -78,6 +78,51 @@ categories:
       </bpmn:serviceTask>
     expectedMessages: |
       <conversion:message severity="TASK">Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+- category: service tasks
+  cases:
+  - name: Service Task with delegateExpression
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:delegateExpression="${myDelegate}" />
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="delegateExpression" value="${myDelegate}"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myDelegate"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Delegate class or expression '${myDelegate}' has been transformed to job type 'myDelegate'.</conversion:message>
+  - name: Service Task with conditionExpression
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:expression="${myDelegate.doSomething()}" />
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="expression" value="${myDelegate.doSomething()}"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myDelegateDoSomething"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Delegate class or expression '${myDelegate.doSomething()}' has been transformed to job type 'myDelegateDoSomething'.</conversion:message>          
+  - name: Service Task with delegateExpression but "KeepJobTypeBlank"
+    properties:
+      keepJobTypeBlank: true
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:delegateExpression="${myDelegate}" />
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="delegateExpression" value="${myDelegate}"/>
+          </zeebe:taskHeaders>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="TASK">Job type for delegate of type 'delegateExpression' bound to '${myDelegate}' was intentionally left blank.</conversion:message>
 - category: script task
   cases:
   - name: Convert Groovy inline script
@@ -161,3 +206,317 @@ categories:
     expectedMessages: |
       <conversion:message severity="REVIEW">Delegate class or expression '${y}' has been transformed to job type 'y'.</conversion:message>
       <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'businessRuleTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
+  - name: Business Rule Task with Deployment Binding
+    givenBpmn: |
+      <bpmn:businessRuleTask id="businessRuleTask" camunda:decisionRef="awd" camunda:decisionRefBinding="deployment" />
+    expectedBpmn: |
+      <bpmn:businessRuleTask completionQuantity="1" id="businessRuleTask" implementation="##unspecified" isForCompensation="false" startQuantity="1">
+        <extensionElements>
+          <zeebe:calledDecision bindingType="deployment" decisionId="awd" resultVariable="decisionResult"/>
+        </extensionElements>
+      </bpmn:businessRuleTask>
+    expectedMessages: |
+      <conversion:message severity="INFO">Decision reference binding has been mapped.</conversion:message>
+  - name: Business Rule Task with Version Binding
+    givenBpmn: |
+      <bpmn:businessRuleTask id="businessRuleTask" camunda:decisionRef="awd" camunda:decisionRefBinding="versionTag" camunda:decisionRefVersionTag="1.0" />
+    expectedBpmn: |
+      <bpmn:businessRuleTask completionQuantity="1" id="businessRuleTask" implementation="##unspecified" isForCompensation="false" startQuantity="1">
+        <extensionElements>
+          <zeebe:calledDecision bindingType="versionTag" decisionId="awd" resultVariable="decisionResult" versionTag="1.0"/>
+        </extensionElements>
+      </bpmn:businessRuleTask>
+    expectedMessages: |
+      <conversion:message severity="INFO">Decision reference version tag has been mapped.</conversion:message>
+      <conversion:message severity="INFO">Decision reference binding has been mapped.</conversion:message>
+- category: Call Activity
+  cases:
+  - name: Call Activity with Process Reference
+    givenBpmn: |
+      <bpmn:callActivity id="callDeployment" name="call deployment" calledElement="myLatestProcess" camunda:calledElementBinding="deployment">
+        <bpmn:extensionElements>
+          <camunda:in variables="all" />
+          <camunda:out variables="all" />
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedBpmn: |
+      <bpmn:callActivity calledElement="myLatestProcess" completionQuantity="1" id="callDeployment" isForCompensation="false" name="call deployment" startQuantity="1">        
+        <bpmn:extensionElements>
+          <zeebe:calledElement bindingType="deployment" processId="myLatestProcess" propagateAllChildVariables="true" propagateAllParentVariables="true"/>
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedMessages: |
+        <conversion:message severity="INFO">Called element reference binding has been mapped.</conversion:message>
+        <conversion:message severity="INFO">Element 'camunda:in' with attribute 'variables="all"' is mapped to 'propagateAllParentVariables="true"'.</conversion:message>
+        <conversion:message severity="INFO">Element 'camunda:out' with attribute 'variables="all"' is mapped to 'propagateAllChildVariables="true"'.</conversion:message>
+  - name: Call Activity with Process Reference before 8.6
+    properties:
+      platformVersion: "8.5"
+    givenBpmn: |
+      <bpmn:callActivity id="callDeployment" name="call deployment" calledElement="myLatestProcess" camunda:calledElementBinding="deployment">
+        <bpmn:extensionElements>
+          <camunda:in variables="all" />
+          <camunda:out variables="all" />
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedBpmn: |
+      <bpmn:callActivity calledElement="myLatestProcess" completionQuantity="1" id="callDeployment" isForCompensation="false" name="call deployment" startQuantity="1">        
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="myLatestProcess" propagateAllChildVariables="true" propagateAllParentVariables="true"/>
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedMessages: |
+        <conversion:message severity="WARNING">Attribute 'calledElementBinding' with value 'deployment' on 'callActivity' is not supported.</conversion:message>
+        <conversion:message severity="INFO">Element 'camunda:in' with attribute 'variables="all"' is mapped to 'propagateAllParentVariables="true"'.</conversion:message>
+        <conversion:message severity="INFO">Element 'camunda:out' with attribute 'variables="all"' is mapped to 'propagateAllChildVariables="true"'.</conversion:message>
+  - name: Call Activity with Variable Mapping before 8.3 (all variables are propagated as default)
+    properties:
+      platformVersion: "8.2"
+    givenBpmn: |
+      <bpmn:callActivity id="callDeployment" name="call deployment" calledElement="myLatestProcess">
+        <bpmn:extensionElements>
+          <camunda:in variables="all" />
+          <camunda:out variables="all" />
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedBpmn: |
+      <bpmn:callActivity calledElement="myLatestProcess" completionQuantity="1" id="callDeployment" isForCompensation="false" name="call deployment" startQuantity="1">        
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="myLatestProcess" propagateAllChildVariables="true" propagateAllParentVariables="false"/>
+        </bpmn:extensionElements>
+      </bpmn:callActivity>
+    expectedMessages: |
+      <conversion:message severity="INFO">Element 'camunda:in' with attribute 'variables="all"' is removed. It is default in Zeebe before 8.3.</conversion:message>
+      <conversion:message severity="INFO">Element 'camunda:out' with attribute 'variables="all"' is mapped to 'propagateAllChildVariables="true"'.</conversion:message>
+  - name: Call Activity with Version reference
+    givenBpmn: |
+      <bpmn:callActivity id="callActivity" calledElement="awd" camunda:calledElementBinding="versionTag" camunda:calledElementVersionTag="1.0" />
+    expectedBpmn: |
+      <bpmn:callActivity calledElement="awd" completionQuantity="1" id="callActivity" isForCompensation="false" startQuantity="1">
+        <extensionElements>
+          <zeebe:calledElement bindingType="versionTag" processId="awd" propagateAllChildVariables="false" propagateAllParentVariables="false" versionTag="1.0"/>
+        </extensionElements>
+      </bpmn:callActivity>
+    expectedMessages: |
+      <conversion:message severity="INFO">Called element reference binding has been mapped.</conversion:message>
+      <conversion:message severity="INFO">Called element reference version tag has been mapped.</conversion:message>
+- category: Expressions
+  cases:
+  - name: Exclusive Gateway with Condition Expressions
+    givenBpmn: |
+      <bpmn:exclusiveGateway id="XGateway" name="x?" />
+      <bpmn:sequenceFlow id="JuelSequenceFlow" name="juel" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${x == 1}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="ExternalScriptSequenceFlow" name="external script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript" camunda:resource="some-resource.js" />
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="InternalScriptSequenceFlow" name="internal script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">return x === 3;</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="FeelScriptSequenceFlow" name="feel script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="feel">x=4</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:task id="someTask" />
+    expectedBpmn: |
+      <bpmn:exclusiveGateway gatewayDirection="Unspecified" id="XGateway" name="x?"/>    
+      <bpmn:sequenceFlow id="JuelSequenceFlow" name="juel" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=x = 1</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="ExternalScriptSequenceFlow" name="external script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression language="javascript" xsi:type="bpmn:tFormalExpression"/>        
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="InternalScriptSequenceFlow" name="internal script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression language="javascript" xsi:type="bpmn:tFormalExpression">return x === 3;</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="FeelScriptSequenceFlow" name="feel script" sourceRef="XGateway" targetRef="someTask">
+        <bpmn:conditionExpression language="feel" xsi:type="bpmn:tFormalExpression">=x=4</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:task completionQuantity="1" id="someTask" isForCompensation="false" startQuantity="1"/>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${x == 1}' -&gt; '=x = 1'.</conversion:message>
+      <conversion:message severity="TASK">Please translate the content from 'some-resource.js' to a valid FEEL expression.</conversion:message>
+      <conversion:message severity="TASK">Please translate the javascript script from 'return x === 3;' to a valid FEEL expression.</conversion:message>
+      <conversion:message severity="REVIEW">FEEL Condition expression: Please review transformed expression: 'x=4' -&gt; '=x=4'. Check for custom FEEL functions as they are not supported by Zeebe.</conversion:message>
+  - name: Sequence Flows with execution.getVariable
+    givenBpmn: |
+      <bpmn:exclusiveGateway id="someGateway" name="exampleVar is not null and equal to &#34;yes&#34;?" />
+      <bpmn:sequenceFlow id="GetVariableEqualsYesFlow" name="yes" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("exampleVar") == "yes"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="GetVariableNotEqualsYesFlow" name="no" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("exampleVar") != "yes"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:task completionQuantity="1" id="someTask" isForCompensation="false" startQuantity="1"/>
+    expectedBpmn: |
+      <bpmn:exclusiveGateway gatewayDirection="Unspecified" id="someGateway" name="exampleVar is not null and equal to &quot;yes&quot;?"/>      
+      <bpmn:sequenceFlow id="GetVariableEqualsYesFlow" name="yes" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=exampleVar = "yes"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="GetVariableNotEqualsYesFlow" name="no" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=exampleVar != "yes"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:task completionQuantity="1" id="someTask" isForCompensation="false" startQuantity="1"/>
+    expectedMessages: |
+      <conversion:message link="https://docs.camunda.io/docs/components/modeler/bpmn/exclusive-gateways/#conditions" severity="REVIEW">Condition expression: Please review transformed expression: '${execution.getVariable("exampleVar") == "yes"}' -&gt; '=exampleVar = "yes"'.</conversion:message>
+      <conversion:message link="https://docs.camunda.io/docs/components/modeler/bpmn/exclusive-gateways/#conditions" severity="REVIEW">Condition expression: Please review transformed expression: '${execution.getVariable("exampleVar") != "yes"}' -&gt; '=exampleVar != "yes"'.</conversion:message>
+  - name: Expressions with method invocation and execution.getVariable
+    givenBpmn: |
+      <bpmn:exclusiveGateway id="someGateway"/>
+      <bpmn:sequenceFlow id="EasyExpressionSequenceFlow" name="Easy expression" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${input &gt; 3}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="ExecutionIsUsedSequenceFlow" name="Execution is used" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable("input") != null &amp;&amp; input &gt; 5}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="MethodInvocationIsUsedSequenceFlow" name="Method invocation is used" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${objectVar.getAddress().getStreet() != "main street"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask id="TaskWithInMappingsServiceTask" name="Task with in mappings">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="reviewExpected">${justAnotherVariable}</camunda:inputParameter>
+            <camunda:inputParameter name="taskForMethodExpected">${myObject.getAddress().getStreet()}</camunda:inputParameter>
+            <camunda:inputParameter name="taskForExecutionExpected">${execution.getProcessEngineServices()}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="TaskWithOutMappingsServiceTask" name="Task with out mappings">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:outputParameter name="reviewExpected">${aNewVariable}</camunda:outputParameter>
+            <camunda:outputParameter name="taskForMethodExpected">${anotherObject.getCustomerName()}</camunda:outputParameter>
+            <camunda:outputParameter name="taskForExecutionExpected">${execution.getProcessInstanceId()}</camunda:outputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1bmugtj" sourceRef="MultiInstanceConfigurationWithExecutionServiceTask" targetRef="MultiInstanceConfigurationWithMethodInvocationServiceTask" />
+      <bpmn:serviceTask id="MultiInstanceConfigurationWithExecutionServiceTask" name="Multi-instance configuration with execution">
+        <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="${execution.getVariable(&#34;myList&#34;)}" camunda:elementVariable="theElement">
+          <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">${execution.getVariable("complete") == true}</bpmn:completionCondition>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_13lx2sc" sourceRef="MultiInstanceConfigurationWithMethodInvocationServiceTask" targetRef="someGateway" />
+      <bpmn:serviceTask id="MultiInstanceConfigurationWithMethodInvocationServiceTask" name="Multi-instance configuration with method invocation">
+        <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="${myInput.getAdresses().getAll()}" camunda:elementVariable="myElement">
+          <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">${myInput.getComplete()}</bpmn:completionCondition>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:task completionQuantity="1" id="someTask" isForCompensation="false" startQuantity="1"/>
+    expectedBpmn: |
+      <bpmn:exclusiveGateway gatewayDirection="Unspecified" id="someGateway"/>          
+      <bpmn:sequenceFlow id="EasyExpressionSequenceFlow" name="Easy expression" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=input &gt; 3</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="ExecutionIsUsedSequenceFlow" name="Execution is used" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=input != null and input &gt; 5</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="MethodInvocationIsUsedSequenceFlow" name="Method invocation is used" sourceRef="someGateway" targetRef="someTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=objectVar.getAddress().getStreet() != "main street"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask completionQuantity="1" id="TaskWithInMappingsServiceTask" implementation="##WebService" isForCompensation="false" name="Task with in mappings" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:input source="=myObject.getAddress().getStreet()" target="taskForMethodExpected"/>
+            <zeebe:input source="=justAnotherVariable" target="reviewExpected"/>
+            <zeebe:input source="=execution.getProcessEngineServices()" target="taskForExecutionExpected"/>
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask completionQuantity="1" id="TaskWithOutMappingsServiceTask" implementation="##WebService" isForCompensation="false" name="Task with out mappings" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="=anotherObject.getCustomerName()" target="taskForMethodExpected"/>
+            <zeebe:output source="=aNewVariable" target="reviewExpected"/>
+            <zeebe:output source="=execution.getProcessInstanceId()" target="taskForExecutionExpected"/>
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1bmugtj" sourceRef="MultiInstanceConfigurationWithExecutionServiceTask" targetRef="MultiInstanceConfigurationWithMethodInvocationServiceTask"/>
+      <bpmn:serviceTask completionQuantity="1" id="MultiInstanceConfigurationWithExecutionServiceTask" implementation="##WebService" isForCompensation="false" name="Multi-instance configuration with execution" startQuantity="1">
+        <bpmn:multiInstanceLoopCharacteristics behavior="All" isSequential="true">
+          <documentation/>
+          <extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=myList" inputElement="theElement"/>
+          </extensionElements>
+          <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">=complete = true</bpmn:completionCondition>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_13lx2sc" sourceRef="MultiInstanceConfigurationWithMethodInvocationServiceTask" targetRef="someGateway"/>
+      <bpmn:serviceTask completionQuantity="1" id="MultiInstanceConfigurationWithMethodInvocationServiceTask" implementation="##WebService" isForCompensation="false" name="Multi-instance configuration with method invocation" startQuantity="1">
+        <bpmn:multiInstanceLoopCharacteristics behavior="All" isSequential="true">
+          <documentation/>
+          <extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=myInput.getAdresses().getAll()" inputElement="myElement"/>
+          </extensionElements>
+          <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">=myInput.getComplete()</bpmn:completionCondition>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:task completionQuantity="1" id="someTask" isForCompensation="false" startQuantity="1"/>
+    expectedMessages: |  
+      <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${input &gt; 3}' -&gt; '=input &gt; 3'.</conversion:message>
+      <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${execution.getVariable("input") != null &amp;&amp; input &gt; 5}' -&gt; '=input != null and input &gt; 5'.</conversion:message>
+      <conversion:message severity="TASK">Condition expression: Transformed expression: '${objectVar.getAddress().getStreet() != "main street"}' -&gt; '=objectVar.getAddress().getStreet() != "main street"'. Method invocation is not possible in FEEL.</conversion:message>               
+      <conversion:message severity="TASK">Input parameter 'taskForMethodExpected': Transformed expression: '${myObject.getAddress().getStreet()}' -&gt; '=myObject.getAddress().getStreet()'. Method invocation is not possible in FEEL.</conversion:message>
+      <conversion:message severity="TASK">Input parameter 'taskForExecutionExpected': Transformed expression: '${execution.getProcessEngineServices()}' -&gt; '=execution.getProcessEngineServices()'. 'execution' is not available in FEEL.</conversion:message>
+      <conversion:message severity="REVIEW">Input parameter 'reviewExpected': Please review transformed expression: '${justAnotherVariable}' -&gt; '=justAnotherVariable'.</conversion:message>
+      <conversion:message severity="TASK">Output parameter 'taskForMethodExpected': Transformed expression: '${anotherObject.getCustomerName()}' -&gt; '=anotherObject.getCustomerName()'. Method invocation is not possible in FEEL.</conversion:message>
+      <conversion:message severity="TASK">Output parameter 'taskForExecutionExpected': Transformed expression: '${execution.getProcessInstanceId()}' -&gt; '=execution.getProcessInstanceId()'. 'execution' is not available in FEEL.</conversion:message>
+      <conversion:message severity="REVIEW">Output parameter 'reviewExpected': Please review transformed expression: '${aNewVariable}' -&gt; '=aNewVariable'.</conversion:message>
+      <conversion:message severity="TASK">Collecting results in a multi instance is now natively possible with Zeebe. Please review.</conversion:message>
+      <conversion:message severity="REVIEW">Collection: Please review transformed expression: '${execution.getVariable("myList")}' -&gt; '=myList'.</conversion:message>
+      <conversion:message severity="REVIEW">Completion condition: Please review transformed expression: '${execution.getVariable("complete") == true}' -&gt; '=complete = true'.</conversion:message>
+      <conversion:message severity="INFO">Attribute 'elementVariable' on 'multiInstanceLoopCharacteristics' was mapped. Is set to Zeebe input element.</conversion:message>
+      <conversion:message severity="TASK">Collecting results in a multi instance is now natively possible with Zeebe. Please review.</conversion:message>
+      <conversion:message severity="TASK">Collection: Transformed expression: '${myInput.getAdresses().getAll()}' -&gt; '=myInput.getAdresses().getAll()'. Method invocation is not possible in FEEL.</conversion:message>
+      <conversion:message severity="TASK">Completion condition: Transformed expression: '${myInput.getComplete()}' -&gt; '=myInput.getComplete()'. Method invocation is not possible in FEEL.</conversion:message>
+      <conversion:message severity="INFO">Attribute 'elementVariable' on 'multiInstanceLoopCharacteristics' was mapped. Is set to Zeebe input element.</conversion:message>
+- category: unsupported elements 
+  cases:
+  - name: Transaction and Cancel Events are not supported
+    givenBpmn: |
+      <bpmn:transaction id="transaction">
+        <bpmn:endEvent id="CancelEndEvent" name="Cancel">
+          <bpmn:cancelEventDefinition id="CancelEventDefinition_1yrm6dp" />
+        </bpmn:endEvent>
+      </bpmn:transaction>
+      <bpmn:boundaryEvent id="CancelBoundaryEvent" name="Cancel" attachedToRef="transaction">
+        <bpmn:cancelEventDefinition id="CancelEventDefinition_12fhstp" />
+      </bpmn:boundaryEvent>
+    expectedBpmn: |
+      <bpmn:transaction completionQuantity="1" id="transaction" isForCompensation="false" method="##Compensate" startQuantity="1" triggeredByEvent="false">
+        <extensionElements>
+        </extensionElements>
+        <bpmn:endEvent id="CancelEndEvent" name="Cancel">
+          <extensionElements>
+          </extensionElements>
+          <bpmn:cancelEventDefinition id="CancelEventDefinition_1yrm6dp"/>
+        </bpmn:endEvent>
+      </bpmn:transaction>
+      <bpmn:boundaryEvent attachedToRef="transaction" cancelActivity="true" id="CancelBoundaryEvent" name="Cancel" parallelMultiple="false">
+        <extensionElements>
+        </extensionElements>
+        <bpmn:cancelEventDefinition id="CancelEventDefinition_12fhstp"/>
+      </bpmn:boundaryEvent>
+    expectedMessages: |
+      <conversion:message severity="WARNING">Element 'Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel End Event' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel Boundary Event attached to Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
+  - name: Sequence Flow with Condition Expression is not supported
+    givenBpmn: |
+      <bpmn:task id="DoSomethingTask" name="Do something"/>
+      <bpmn:task id="EventuallyDoSomethingElseTask" name="Eventually, do something else" />
+      <bpmn:sequenceFlow id="SomethingWorkedSequenceFlow" name="something worked" sourceRef="DoSomethingTask" targetRef="EventuallyDoSomethingElseTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${condition}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+    expectedBpmn: |
+      <bpmn:task completionQuantity="1" id="DoSomethingTask" isForCompensation="false" name="Do something" startQuantity="1"/>    
+      <bpmn:task completionQuantity="1" id="EventuallyDoSomethingElseTask" isForCompensation="false" name="Eventually, do something else" startQuantity="1"/>
+      <bpmn:sequenceFlow id="SomethingWorkedSequenceFlow" name="something worked" sourceRef="DoSomethingTask" targetRef="EventuallyDoSomethingElseTask">
+        <extensionElements>
+        </extensionElements>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=condition</bpmn:conditionExpression>      
+      </bpmn:sequenceFlow>
+    expectedMessages: |
+      <conversion:message severity="WARNING">A Conditional flow is not supported.</conversion:message>
+      <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${condition}' -&gt; '=condition'.</conversion:message>
