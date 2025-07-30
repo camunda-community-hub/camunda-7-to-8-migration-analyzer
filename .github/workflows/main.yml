@@ -38,7 +38,7 @@ jobs:
       - name: Deploy SNAPSHOT / Release
         uses: camunda-community-hub/community-action-maven-release@v2
         with:
-          maven-additional-options: -P!autoFormat
+          maven-additional-options: -P!autoFormat -PcheckFormat
           release-version: ${{ github.event.release.tag_name }}
           nexus-usr: ${{ secrets.NEXUS_USR }}
           nexus-psw: ${{ secrets.NEXUS_PSW }}
