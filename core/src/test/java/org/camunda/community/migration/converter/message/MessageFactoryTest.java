@@ -226,7 +226,7 @@ public class MessageFactoryTest {
     assertNotNull(message);
     assertThat(message.getMessage())
         .isEqualTo(
-            "Task Listener at 'create' with implementation 'delegateExpression' 'my tasklistener implementation' cannot be transformed. Task Listeners require 8.8.");
+            "Task Listener at 'create' with implementation 'delegateExpression' 'my tasklistener implementation' cannot be transformed.");
   }
 
   @Test
