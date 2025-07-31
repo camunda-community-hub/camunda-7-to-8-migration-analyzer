@@ -15,9 +15,9 @@ public abstract class AbstractDelegateImplementationVisitor
     extends AbstractSupportedAttributeVisitor {
   public static final Pattern DELEGATE_NAME_EXTRACT = Pattern.compile("[#$]\\{(.*)}");
   private static final Set<String> IGNORE =
-      Stream.of("errorEventDefinition").collect(Collectors.toSet());
-  private static final Pattern SIMPLE_EXPRESSION_PATTERN =
-      Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
+      Stream.of("taskListener", "executionListener", "errorEventDefinition").collect(Collectors.toSet());
+  //private static final Pattern SIMPLE_EXPRESSION_PATTERN =
+  //    Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
 
   //
   //  private String extractJobType(String attribute) {
@@ -35,7 +35,7 @@ public abstract class AbstractDelegateImplementationVisitor
   //        return null;
   //    }
   //  }
-  private static final Pattern EXPRESSION_WRAPPER_PATTERN = Pattern.compile("[#$]\\{(.*)}");
+  //  private static final Pattern EXPRESSION_WRAPPER_PATTERN = Pattern.compile("[#$]\\{(.*)}");
 
   @Override
   protected Message visitSupportedAttribute(DomElementVisitorContext context, String attribute) {
