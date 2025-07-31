@@ -155,6 +155,8 @@ categories:
       <conversion:message severity="WARNING">Task Listener at 'delete' with implementation 'script' 'javascript' cannot be transformed. Task Listeners require 8.8.</conversion:message>
       <conversion:message severity="WARNING">Element 'script' cannot be transformed. Script 'delegateTask.setName("my script name");' with format 'javascript' on 'taskListener'.</conversion:message>
   - name: User Task Listeners >= 8.8
+    properties:
+      platformVersion: "8.8"
     givenBpmn: |
       <bpmn:userTask id="UserTaskUseJavaClass" name="Use java class">
         <bpmn:extensionElements>

@@ -479,5 +479,4 @@ public class DiagramConverterTest {
     assertThat(historyTimeToLive).isNotNull();
     assertThat(historyTimeToLive.getChildElements()).isEmpty();
   }
-
 }

@@ -57,7 +57,7 @@ public class BpmnConversionTest {
 
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
     converter.convert(modelInstance, properties);
-    
+
     testCase.replacePlaceholdersFromProperties(properties);
 
     return extractSnippet(modelInstance);
