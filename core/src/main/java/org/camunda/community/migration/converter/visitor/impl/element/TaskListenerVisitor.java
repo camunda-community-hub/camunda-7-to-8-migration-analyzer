@@ -44,7 +44,8 @@ public class TaskListenerVisitor extends AbstractListenerVisitor {
 
   private boolean isTaskListenerSupported(DomElementVisitorContext context) {
     Optional<EventType> eventType = EventType.fromName(findEventName(context));
-    SemanticVersion semanticVersion = SemanticVersion.parse(context.getProperties().getPlatformVersion());
+    SemanticVersion semanticVersion =
+        SemanticVersion.parse(context.getProperties().getPlatformVersion());
     return (semanticVersion.ordinal() >= SemanticVersion._8_8.ordinal())
         && eventType.isPresent()
         && !eventType.isEmpty();
