@@ -12,7 +12,6 @@ import org.camunda.community.migration.converter.message.Message;
 import org.camunda.community.migration.converter.message.MessageFactory;
 import org.camunda.community.migration.converter.version.SemanticVersion;
 import org.camunda.community.migration.converter.visitor.AbstractListenerVisitor;
-import org.camunda.community.migration.converter.visitor.AbstractListenerVisitor.ListenerImplementation;
 import org.camunda.community.migration.converter.visitor.AbstractListenerVisitor.ListenerImplementation.DelegateExpressionImplementation;
 
 public class TaskListenerVisitor extends AbstractListenerVisitor {
