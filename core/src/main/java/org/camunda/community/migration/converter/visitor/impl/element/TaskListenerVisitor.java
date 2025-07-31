@@ -2,6 +2,7 @@ package org.camunda.community.migration.converter.visitor.impl.element;
 
 import static org.camunda.community.migration.converter.visitor.AbstractDelegateImplementationVisitor.DELEGATE_NAME_EXTRACT;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import org.camunda.community.migration.converter.DomElementVisitorContext;
 import org.camunda.community.migration.converter.convertible.UserTaskConvertible;
@@ -42,10 +43,11 @@ public class TaskListenerVisitor extends AbstractListenerVisitor {
   }
 
   private boolean isTaskListenerSupported(DomElementVisitorContext context) {
-    return (SemanticVersion.parse(context.getProperties().getPlatformVersion()).ordinal()
-            >= SemanticVersion._8_8.ordinal())
-        && EventType.fromName(findEventName(context)).isPresent()
-        && !EventType.fromName(findEventName(context)).isEmpty();
+    Optional<EventType> eventType = EventType.fromName(findEventName(context));
+    SemanticVersion semanticVersion = SemanticVersion.parse(context.getProperties().getPlatformVersion());
+    return (semanticVersion.ordinal() >= SemanticVersion._8_8.ordinal())
+        && eventType.isPresent()
+        && !eventType.isEmpty();
   }
 
   @Override
