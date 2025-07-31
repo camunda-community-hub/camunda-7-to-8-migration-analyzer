@@ -220,7 +220,7 @@ public class MessageFactoryTest {
 
   @Test
   void shouldBuildTaskListener() {
-    Message message = MessageFactory.taskListener("create", "my tasklistener implementation");
+    Message message = MessageFactory.taskListenerNotSupported("create", "delegateExpression", "my tasklistener implementation");
     assertNotNull(message);
     assertThat(message.getMessage())
         .isEqualTo(
@@ -282,7 +282,7 @@ public class MessageFactoryTest {
   @Test
   void shouldBuildExecutionListener() {
     Message message =
-        MessageFactory.executionListener("start", "delegateExpression", "${myExecutionListener}");
+        MessageFactory.executionListenerNotSupported("start", "delegateExpression", "${myExecutionListener}");
     assertNotNull(message);
     assertNotNull(message.getMessage());
     assertThat(message.getMessage())

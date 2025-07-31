@@ -15,7 +15,7 @@ public abstract class AbstractDelegateImplementationVisitor
     extends AbstractSupportedAttributeVisitor {
   public static final Pattern DELEGATE_NAME_EXTRACT = Pattern.compile("[#$]\\{(.*)}");
   private static final Set<String> IGNORE =
-      Stream.of("taskListener", "executionListener", "errorEventDefinition")
+      Stream.of("errorEventDefinition")
           .collect(Collectors.toSet());
   private static final Pattern SIMPLE_EXPRESSION_PATTERN =
       Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
@@ -97,6 +97,7 @@ public abstract class AbstractDelegateImplementationVisitor
 
   @Override
   protected boolean canVisit(DomElementVisitorContext context) {
-    return super.canVisit(context) && !IGNORE.contains(context.getElement().getLocalName());
+    String localName = context.getElement().getLocalName();
+    return super.canVisit(context) && !IGNORE.contains(localName);
   }
 }
