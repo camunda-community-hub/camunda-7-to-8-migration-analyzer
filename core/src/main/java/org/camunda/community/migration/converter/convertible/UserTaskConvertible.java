@@ -177,7 +177,7 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       UPDATE("updating"),
       COMPLETE("completing"),
       DELETE("canceling"),
-      TIMEOUT(null); // not mapped
+      TIMEOUT(null); // not mapped: Camunda 8 does not support a corresponding timeout event type.
 
       private final String camunda8Name;
 
