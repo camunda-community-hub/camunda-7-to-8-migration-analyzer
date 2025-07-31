@@ -15,8 +15,7 @@ public abstract class AbstractDelegateImplementationVisitor
     extends AbstractSupportedAttributeVisitor {
   public static final Pattern DELEGATE_NAME_EXTRACT = Pattern.compile("[#$]\\{(.*)}");
   private static final Set<String> IGNORE =
-      Stream.of("errorEventDefinition")
-          .collect(Collectors.toSet());
+      Stream.of("errorEventDefinition").collect(Collectors.toSet());
   private static final Pattern SIMPLE_EXPRESSION_PATTERN =
       Pattern.compile("[#$]\\{([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?}");
 

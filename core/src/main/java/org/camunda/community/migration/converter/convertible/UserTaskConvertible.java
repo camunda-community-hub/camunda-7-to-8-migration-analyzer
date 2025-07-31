@@ -12,7 +12,7 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       new ZeebeAssignmentDefinition();
   private final ZeebeTaskSchedule zeebeTaskSchedule = new ZeebeTaskSchedule();
   private boolean zeebeUserTask;
-  
+
   private List<ZeebeTaskListener> zeebeTaskListeners = new ArrayList<>();
 
   public List<ZeebeTaskListener> getZeebeTaskListeners() {
@@ -26,7 +26,6 @@ public class UserTaskConvertible extends AbstractActivityConvertible
   public void addZeebeTaskListener(ZeebeTaskListener zeebeTaskListener) {
     zeebeTaskListeners.add(zeebeTaskListener);
   }
-  
 
   public ZeebeTaskSchedule getZeebeTaskSchedule() {
     return zeebeTaskSchedule;
@@ -142,7 +141,7 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       this.followUpDate = followUpDate;
     }
   }
-  
+
   public static class ZeebeTaskListener {
     private String listenerType;
     private String retries;
@@ -191,9 +190,7 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       }
 
       public static Optional<EventType> fromName(String name) {
-        return Arrays.stream(values())
-                     .filter(e -> e.name().equalsIgnoreCase(name))
-                     .findFirst();
+        return Arrays.stream(values()).filter(e -> e.name().equalsIgnoreCase(name)).findFirst();
       }
     }
   }

@@ -174,7 +174,8 @@ public class MessageFactory {
             .build());
   }
 
-  public static Message executionListenerNotSupported(String event, String type, String implementation) {
+  public static Message executionListenerNotSupported(
+      String event, String type, String implementation) {
     return INSTANCE.composeMessage(
         "execution-listener",
         ContextBuilder.builder()
@@ -211,7 +212,7 @@ public class MessageFactory {
             .entry("implementation", implementation)
             .build());
   }
-  
+
   public static Message resultVariableBusinessRule(
       String attributeLocalName, String elementLocalName) {
     return INSTANCE.composeMessage(

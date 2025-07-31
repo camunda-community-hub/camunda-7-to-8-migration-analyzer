@@ -69,9 +69,8 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
         || convertible.getZeebeAssignmentDefinition().getCandidateGroups() != null
         || convertible.getZeebeAssignmentDefinition().getCandidateUsers() != null;
   }
-  
-  private void createTaskListener(
-      DomElement listenerRoot, ZeebeTaskListener listener) {
+
+  private void createTaskListener(DomElement listenerRoot, ZeebeTaskListener listener) {
     DomElement executionListenerDom =
         listenerRoot.getDocument().createElement(ZEEBE, "taskListener");
     executionListenerDom.setAttribute(ZEEBE, "eventType", listener.getEventType().c8name());
@@ -83,8 +82,7 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
   }
 
   private DomElement createTaskListeners(DomElement extensionElements) {
-    DomElement listeners =
-        extensionElements.getDocument().createElement(ZEEBE, "taskListeners");
+    DomElement listeners = extensionElements.getDocument().createElement(ZEEBE, "taskListeners");
     extensionElements.appendChild(listeners);
     return listeners;
   }
