@@ -144,21 +144,17 @@ categories:
           <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="create" />
         </bpmn:extensionElements>
       </bpmn:userTask>
-      <!-- add stuff from above for all event types -->
     expectedBpmn: |
       <bpmn:userTask completionQuantity="1" id="UserTaskUseJavaClass" implementation="##unspecified" isForCompensation="false" name="Use java class" startQuantity="1">
         <bpmn:extensionElements>
           <zeebe:userTask/>
           <zeebe:taskListeners>
-            <zeebe:taskListener eventType="creating" type="taskListenerExample" />
+            <zeebe:taskListener eventType="creating" type="com.camunda.consulting.TaskListenerExample" />
           </zeebe:taskListeners>
-          <zeebe:taskHeaders>
-            <zeebe:header key="class" value="com.camunda.consulting.TaskListenerExample"/>
-          </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:userTask>
     expectedMessages: |
-      <conversion:message severity="WARNING">Listener at 'create' with implementation 'com.camunda.consulting.TaskListenerExample' cannot be transformed. Task Listeners do not exist in Zeebe.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'create' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
 - category: service tasks
   cases:
   - name: Service Task with class
