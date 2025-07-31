@@ -38,7 +38,7 @@ public class ExecutionListenerVisitor extends AbstractListenerVisitor {
           c -> c.addZeebeExecutionListener(executionListener));
       return MessageFactory.executionListenerSupported(event, implementation.implementation());
     }
-    return MessageFactory.executionListener(
+    return MessageFactory.executionListenerNotSupported(
         event, ListenerImplementation.type(implementation), implementation.implementation());
   }
 

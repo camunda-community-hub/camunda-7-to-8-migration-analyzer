@@ -1,11 +1,13 @@
 package org.camunda.community.migration.converter.conversion;
 
-import static org.camunda.community.migration.converter.BpmnElementFactory.*;
-import static org.camunda.community.migration.converter.NamespaceUri.*;
+import static org.camunda.community.migration.converter.BpmnElementFactory.getExtensionElements;
+import static org.camunda.community.migration.converter.NamespaceUri.ZEEBE;
 
+import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.model.xml.instance.DomDocument;
 import org.camunda.bpm.model.xml.instance.DomElement;
 import org.camunda.community.migration.converter.convertible.UserTaskConvertible;
+import org.camunda.community.migration.converter.convertible.UserTaskConvertible.ZeebeTaskListener;
 
 public class UserTaskConversion extends AbstractTypedConversion<UserTaskConvertible> {
   @Override
@@ -21,6 +23,17 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
     if (canAddTaskSchedule(convertible)) {
       extensionElements.appendChild(createTaskSchedule(element.getDocument(), convertible));
     }
+    if (hasTaskListeners(convertible)) {
+      DomElement listenersRoot = createTaskListeners(extensionElements);
+      for (ZeebeTaskListener listener : convertible.getZeebeTaskListeners()) {
+        createTaskListener(listenersRoot, listener);
+      }
+    }
+  }
+
+  private boolean hasTaskListeners(UserTaskConvertible convertible) {
+    return convertible.getZeebeTaskListeners() != null
+        && !convertible.getZeebeTaskListeners().isEmpty();
   }
 
   private DomElement createZeebeUserTask(DomDocument document) {
@@ -55,6 +68,23 @@ public class UserTaskConversion extends AbstractTypedConversion<UserTaskConverti
     return convertible.getZeebeAssignmentDefinition().getAssignee() != null
         || convertible.getZeebeAssignmentDefinition().getCandidateGroups() != null
         || convertible.getZeebeAssignmentDefinition().getCandidateUsers() != null;
+  }
+
+  private void createTaskListener(DomElement listenerRoot, ZeebeTaskListener listener) {
+    DomElement executionListenerDom =
+        listenerRoot.getDocument().createElement(ZEEBE, "taskListener");
+    executionListenerDom.setAttribute(ZEEBE, "eventType", listener.getEventType().c8name());
+    executionListenerDom.setAttribute(ZEEBE, "type", listener.getListenerType());
+    if (StringUtils.isNotBlank(listener.getRetries())) {
+      executionListenerDom.setAttribute(ZEEBE, "retries", listener.getRetries());
+    }
+    listenerRoot.appendChild(executionListenerDom);
+  }
+
+  private DomElement createTaskListeners(DomElement extensionElements) {
+    DomElement listeners = extensionElements.getDocument().createElement(ZEEBE, "taskListeners");
+    extensionElements.appendChild(listeners);
+    return listeners;
   }
 
   @Override

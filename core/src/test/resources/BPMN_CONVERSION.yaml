@@ -22,8 +22,42 @@ categories:
     expectedMessages: |
       <conversion:message severity="REVIEW">in, Parameter: 'input': Please review transformed expression: 'input' -&gt; '=input'.</conversion:message>
       <conversion:message severity="REVIEW">out, Parameter: 'output': Please review transformed expression: 'output' -&gt; '=output'.</conversion:message>    
-- category: execution listener
+- category: Listener
   cases:
+  - name: Execution Listener on start event
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${myNewJobType}" event="start" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+            <bpmn:extensionElements>
+              <zeebe:executionListeners>
+                <zeebe:executionListener eventType="start" type="myNewJobType"/>
+              </zeebe:executionListeners>
+            </bpmn:extensionElements>            
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="TASK">Execution Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+  - name: Execution Listener Without Implementation
+    givenBpmn: |
+      <bpmn:task id="ListenerWithoutImplTask" name="Listener Without Impl">
+        <bpmn:extensionElements>
+          <camunda:executionListener event="start" />
+        </bpmn:extensionElements>
+      </bpmn:task>      
+    expectedBpmn: |
+      <bpmn:task completionQuantity="1" id="ListenerWithoutImplTask" isForCompensation="false" name="Listener Without Impl" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:executionListeners>
+            <zeebe:executionListener eventType="start" type=""/>
+          </zeebe:executionListeners>
+        </bpmn:extensionElements>            
+      </bpmn:task>
+    expectedMessages: |
+      <conversion:message severity="TASK">Execution Listener at 'start' with implementation 'null' can be transformed to a job worker. Please adjust the job type.</conversion:message>
   - name: Execution Listener Variations
     description: If a service task has multiple execution listeners with different implementations, every execution listener should be transformed and the implementations should be mapped to an implementation that is compatible with Camunda 8. Also, the messages being added should outline what the original implementation looked like and what has to be done to finalize the conversion.
     givenBpmn: |
@@ -55,31 +89,165 @@ categories:
       </bpmn:serviceTask>
     expectedMessages: |
       <conversion:message severity="WARNING">Element 'script' cannot be transformed. Script 'print("something");' with format 'groovy' on 'executionListener'.</conversion:message>
-      <conversion:message severity="TASK">Listener at 'end' with implementation '${endListener.execute(something)}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
-      <conversion:message severity="TASK">Listener at 'start' with implementation '${anotherStartListener}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
-      <conversion:message severity="TASK">Listener at 'end' with implementation 'groovy' can be transformed to a job worker. Please adjust the job type.</conversion:message>
-      <conversion:message severity="TASK">Listener at 'start' with implementation 'com.example.StartListener' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Execution Listener at 'end' with implementation '${endListener.execute(something)}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Execution Listener at 'start' with implementation '${anotherStartListener}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Execution Listener at 'end' with implementation 'groovy' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Execution Listener at 'start' with implementation 'com.example.StartListener' can be transformed to a job worker. Please adjust the job type.</conversion:message>
       <conversion:message severity="REVIEW">Delegate class or expression '${service.call(myVariable)}' has been transformed to job type 'serviceCall'.</conversion:message>
       <conversion:message severity="REVIEW">Attribute 'resultVariable' on 'serviceTask' was mapped. Is now available as header 'resultVariable'.</conversion:message>
-  - name: Execution Listener on start event
+  - name: User Task Listeners with <= 8.7
+    properties:
+      platformVersion: "8.7"
     givenBpmn: |
-      <bpmn:serviceTask id="serviceTask" name="Service Task">
+      <bpmn:userTask id="UserTaskUseJavaClass" name="Use java class">
         <bpmn:extensionElements>
-          <camunda:executionListener delegateExpression="${myNewJobType}" event="start" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="create" />
         </bpmn:extensionElements>
-      </bpmn:serviceTask>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow1" sourceRef="UserTaskUseJavaClass" targetRef="UserTaskUseDelegateExpression" />
+      <bpmn:userTask id="UserTaskUseDelegateExpression" name="Use delegate expression">
+        <bpmn:extensionElements>
+          <camunda:taskListener delegateExpression="${taskListenerExample}" event="assignment" />
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow2" sourceRef="UserTaskUseDelegateExpression" targetRef="UserTaskUseExpression" />
+      <bpmn:userTask id="UserTaskUseExpression" name="Use expression">
+        <bpmn:extensionElements>
+          <camunda:taskListener expression="${delegateTask.setName(&#34;my expression name&#34;)}" event="complete" />
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow3" sourceRef="UserTaskUseExpression" targetRef="UserTaskUseInlineScript" />
+      <bpmn:userTask id="UserTaskUseInlineScript" name="Use inline script">
+        <bpmn:extensionElements>
+          <camunda:taskListener event="delete">
+            <camunda:script scriptFormat="javascript">delegateTask.setName("my script name");</camunda:script>
+          </camunda:taskListener>
+        </bpmn:extensionElements>
+      </bpmn:userTask>     
     expectedBpmn: |
-      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
-            <bpmn:extensionElements>
-              <zeebe:executionListeners>
-                <zeebe:executionListener eventType="start" type="myNewJobType"/>
-              </zeebe:executionListeners>
-            </bpmn:extensionElements>            
-      </bpmn:serviceTask>
+      <bpmn:userTask completionQuantity="1" id="UserTaskUseJavaClass" implementation="##unspecified" isForCompensation="false" name="Use java class" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:userTask/>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow1" sourceRef="UserTaskUseJavaClass" targetRef="UserTaskUseDelegateExpression"/>
+      <bpmn:userTask completionQuantity="1" id="UserTaskUseDelegateExpression" implementation="##unspecified" isForCompensation="false" name="Use delegate expression" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:userTask/>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow2" sourceRef="UserTaskUseDelegateExpression" targetRef="UserTaskUseExpression"/>
+      <bpmn:userTask completionQuantity="1" id="UserTaskUseExpression" implementation="##unspecified" isForCompensation="false" name="Use expression" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:userTask/>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="flow3" sourceRef="UserTaskUseExpression" targetRef="UserTaskUseInlineScript"/>
+      <bpmn:userTask completionQuantity="1" id="UserTaskUseInlineScript" implementation="##unspecified" isForCompensation="false" name="Use inline script" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:userTask/>
+        </bpmn:extensionElements>       
+      </bpmn:userTask>
     expectedMessages: |
-      <conversion:message severity="TASK">Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'create' with implementation 'class' 'com.camunda.consulting.TaskListenerExample' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'assignment' with implementation 'delegateExpression' '${taskListenerExample}' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'complete' with implementation 'expression' '${delegateTask.setName("my expression name")}' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'delete' with implementation 'script' 'javascript' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Element 'script' cannot be transformed. Script 'delegateTask.setName("my script name");' with format 'javascript' on 'taskListener'.</conversion:message>
+  - name: User Task Listeners >= 8.8
+    properties:
+      platformVersion: "8.8"
+    givenBpmn: |
+      <bpmn:userTask id="UserTaskUseJavaClass" name="Use java class">
+        <bpmn:extensionElements>
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="create" id="listenerCreate"/>
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="assignment" id="listenerAssign" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="complete" id="listenerComplete" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="delete" id="listenerDelete" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="update" id="listenerUpdate" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="timeout" id="listenerTimeout">
+            <bpmn:timerEventDefinition id="TimerEventDefinition_1ds6cl2" />
+          </camunda:taskListener>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+    expectedBpmn: |
+      <bpmn:userTask completionQuantity="1" id="UserTaskUseJavaClass" implementation="##unspecified" isForCompensation="false" name="Use java class" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:userTask/>
+          <zeebe:taskListeners>
+            <zeebe:taskListener eventType="creating" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="assigning" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="completing" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="canceling" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="updating" type="com.camunda.consulting.TaskListenerExample" />
+          </zeebe:taskListeners>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+    expectedMessages: |
+      <conversion:message severity="TASK">Task Listener at 'create' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'assignment' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'complete' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'delete' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'update' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'timeout' with implementation 'class' 'com.camunda.consulting.TaskListenerExample' cannot be transformed.</conversion:message>
 - category: service tasks
   cases:
+  - name: Service Task with class
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:class="com.camunda.consulting.MyDelegate" />
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="class" value="com.camunda.consulting.MyDelegate"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myDelegate"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Delegate class or expression 'com.camunda.consulting.MyDelegate' has been transformed to job type 'myDelegate'.</conversion:message>
+  - name: Service Task with class and alwaysUseDefaultJobType property
+    properties:
+      alwaysUseDefaultJobType: true
+      defaultJobType: myAdapter
+    givenBpmn: |
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:class="com.camunda.consulting.MyDelegate" />
+    expectedBpmn: |
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="class" value="com.camunda.consulting.MyDelegate"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myAdapter"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="REVIEW">Attribute 'class' on 'serviceTask' was mapped. Delegate call to 'com.camunda.consulting.MyDelegate' was transformed to job type 'myAdapter'. Please review your implementation.</conversion:message>
+  - name: Service Task with class and addDataMigrationExecutionListener property
+    properties:
+      addDataMigrationExecutionListener: true
+    givenBpmn: |
+      <bpmn:startEvent id="start" />
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:class="com.camunda.consulting.MyDelegate" />
+    expectedBpmn: |
+      <bpmn:startEvent id="start" isInterrupting="true" parallelMultiple="false">
+        <extensionElements>
+          <zeebe:executionListeners>
+            <zeebe:executionListener eventType="end" type="=if legacyId != null then &quot;migrator&quot; else &quot;noop&quot;"/>
+          </zeebe:executionListeners>
+        </extensionElements>
+      </bpmn:startEvent>
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="class" value="com.camunda.consulting.MyDelegate"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myDelegate"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="INFO">Added execution listener '=if legacyId != null then "migrator" else "noop"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.</conversion:message>
+      <conversion:message severity="REVIEW">Delegate class or expression 'com.camunda.consulting.MyDelegate' has been transformed to job type 'myDelegate'.</conversion:message>
   - name: Service Task with delegateExpression
     givenBpmn: |
       <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:delegateExpression="${myDelegate}" />
@@ -108,7 +276,7 @@ categories:
       </bpmn:serviceTask>
     expectedMessages: |
       <conversion:message severity="REVIEW">Delegate class or expression '${myDelegate.doSomething()}' has been transformed to job type 'myDelegateDoSomething'.</conversion:message>          
-  - name: Service Task with delegateExpression but "KeepJobTypeBlank"
+  - name: Service Task and "KeepJobTypeBlank" property
     properties:
       keepJobTypeBlank: true
     givenBpmn: |
@@ -288,7 +456,7 @@ categories:
     expectedMessages: |
       <conversion:message severity="INFO">Element 'camunda:in' with attribute 'variables="all"' is removed. It is default in Zeebe before 8.3.</conversion:message>
       <conversion:message severity="INFO">Element 'camunda:out' with attribute 'variables="all"' is mapped to 'propagateAllChildVariables="true"'.</conversion:message>
-  - name: Call Activity with Version reference
+  - name: Call Activity with version reference
     givenBpmn: |
       <bpmn:callActivity id="callActivity" calledElement="awd" camunda:calledElementBinding="versionTag" camunda:calledElementVersionTag="1.0" />
     expectedBpmn: |
@@ -302,7 +470,7 @@ categories:
       <conversion:message severity="INFO">Called element reference version tag has been mapped.</conversion:message>
 - category: Expressions
   cases:
-  - name: Exclusive Gateway with Condition Expressions
+  - name: Condition Expressions
     givenBpmn: |
       <bpmn:exclusiveGateway id="XGateway" name="x?" />
       <bpmn:sequenceFlow id="JuelSequenceFlow" name="juel" sourceRef="XGateway" targetRef="someTask">
@@ -338,7 +506,7 @@ categories:
       <conversion:message severity="TASK">Please translate the content from 'some-resource.js' to a valid FEEL expression.</conversion:message>
       <conversion:message severity="TASK">Please translate the javascript script from 'return x === 3;' to a valid FEEL expression.</conversion:message>
       <conversion:message severity="REVIEW">FEEL Condition expression: Please review transformed expression: 'x=4' -&gt; '=x=4'. Check for custom FEEL functions as they are not supported by Zeebe.</conversion:message>
-  - name: Sequence Flows with execution.getVariable
+  - name: execution.getVariable
     givenBpmn: |
       <bpmn:exclusiveGateway id="someGateway" name="exampleVar is not null and equal to &#34;yes&#34;?" />
       <bpmn:sequenceFlow id="GetVariableEqualsYesFlow" name="yes" sourceRef="someGateway" targetRef="someTask">
@@ -360,7 +528,7 @@ categories:
     expectedMessages: |
       <conversion:message link="https://docs.camunda.io/docs/components/modeler/bpmn/exclusive-gateways/#conditions" severity="REVIEW">Condition expression: Please review transformed expression: '${execution.getVariable("exampleVar") == "yes"}' -&gt; '=exampleVar = "yes"'.</conversion:message>
       <conversion:message link="https://docs.camunda.io/docs/components/modeler/bpmn/exclusive-gateways/#conditions" severity="REVIEW">Condition expression: Please review transformed expression: '${execution.getVariable("exampleVar") != "yes"}' -&gt; '=exampleVar != "yes"'.</conversion:message>
-  - name: Expressions with method invocation and execution.getVariable
+  - name: Expression Variations (incl. method invocations and execution)
     givenBpmn: |
       <bpmn:exclusiveGateway id="someGateway"/>
       <bpmn:sequenceFlow id="EasyExpressionSequenceFlow" name="Easy expression" sourceRef="someGateway" targetRef="someTask">
@@ -471,7 +639,7 @@ categories:
       <conversion:message severity="TASK">Collection: Transformed expression: '${myInput.getAdresses().getAll()}' -&gt; '=myInput.getAdresses().getAll()'. Method invocation is not possible in FEEL.</conversion:message>
       <conversion:message severity="TASK">Completion condition: Transformed expression: '${myInput.getComplete()}' -&gt; '=myInput.getComplete()'. Method invocation is not possible in FEEL.</conversion:message>
       <conversion:message severity="INFO">Attribute 'elementVariable' on 'multiInstanceLoopCharacteristics' was mapped. Is set to Zeebe input element.</conversion:message>
-- category: unsupported elements 
+- category: Unsupported elements 
   cases:
   - name: Transaction and Cancel Events are not supported
     givenBpmn: |
@@ -499,10 +667,10 @@ categories:
         <bpmn:cancelEventDefinition id="CancelEventDefinition_12fhstp"/>
       </bpmn:boundaryEvent>
     expectedMessages: |
-      <conversion:message severity="WARNING">Element 'Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
-      <conversion:message severity="WARNING">Element 'Cancel End Event' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
-      <conversion:message severity="WARNING">Element 'Cancel Boundary Event attached to Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
-  - name: Sequence Flow with Condition Expression is not supported
+      <conversion:message severity="WARNING">Element 'Transaction' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel End Event' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel Boundary Event attached to Transaction' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
+  - name: Conditional flow is not supported
     givenBpmn: |
       <bpmn:task id="DoSomethingTask" name="Do something"/>
       <bpmn:task id="EventuallyDoSomethingElseTask" name="Eventually, do something else" />
@@ -513,10 +681,24 @@ categories:
       <bpmn:task completionQuantity="1" id="DoSomethingTask" isForCompensation="false" name="Do something" startQuantity="1"/>    
       <bpmn:task completionQuantity="1" id="EventuallyDoSomethingElseTask" isForCompensation="false" name="Eventually, do something else" startQuantity="1"/>
       <bpmn:sequenceFlow id="SomethingWorkedSequenceFlow" name="something worked" sourceRef="DoSomethingTask" targetRef="EventuallyDoSomethingElseTask">
-        <extensionElements>
-        </extensionElements>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=condition</bpmn:conditionExpression>      
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=condition</bpmn:conditionExpression>      
       </bpmn:sequenceFlow>
     expectedMessages: |
       <conversion:message severity="WARNING">A Conditional flow is not supported.</conversion:message>
       <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${condition}' -&gt; '=condition'.</conversion:message>
+  - name: Take listeners on sequence flow not supported
+    givenBpmn: |
+      <bpmn:task id="task1" name="Task1"/>
+      <bpmn:task id="task2" name="Task2" />
+      <bpmn:sequenceFlow id="takeListenerFlow" sourceRef="task1" targetRef="task2">
+        <bpmn:extensionElements>
+          <camunda:executionListener class="abc.def" event="take" />
+        </bpmn:extensionElements>
+      </bpmn:sequenceFlow>
+    expectedBpmn: |
+      <bpmn:task completionQuantity="1" id="task1" isForCompensation="false" name="Task1" startQuantity="1"/>  
+      <bpmn:task completionQuantity="1" id="task2" isForCompensation="false" name="Task2" startQuantity="1"/>
+      <bpmn:sequenceFlow id="takeListenerFlow" sourceRef="task1" targetRef="task2">
+      </bpmn:sequenceFlow>
+    expectedMessages: |
+      <conversion:message severity="WARNING">Execution Listener at 'take' with implementation 'class' 'abc.def' cannot be transformed.</conversion:message>

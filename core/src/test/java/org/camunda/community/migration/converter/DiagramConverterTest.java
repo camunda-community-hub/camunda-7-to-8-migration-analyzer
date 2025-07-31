@@ -34,7 +34,6 @@ public class DiagramConverterTest {
       value = {
         "example-c7.bpmn",
         "example-c7_2.bpmn",
-        "java-delegate-class-c7.bpmn",
         "old-process.bpmn20.xml",
         "collaboration.bpmn",
         "internal-script.bpmn",
@@ -96,91 +95,6 @@ public class DiagramConverterTest {
             this.getClass().getClassLoader().getResourceAsStream("c8_simple.bpmn"));
     Assertions.assertThrows(
         RuntimeException.class, () -> converter.convert(modelInstance, properties));
-  }
-
-  @Test
-  public void testJavaDelegateClassToJobType() {
-    DiagramCheckResult result = loadAndCheck("java-delegate-class-c7.bpmn");
-
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAlwaysUseDefaultJobType(false);
-    modified.setKeepJobTypeBlank(false);
-    ConverterPropertiesFactory.getInstance().merge(modified);
-
-    ElementCheckResult delegateClassServiceTask = result.getResult("DelegateClassServiceTask");
-    assertNotNull(delegateClassServiceTask);
-    assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
-    ElementCheckMessage message = delegateClassServiceTask.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Delegate class or expression 'com.camunda.consulting.MyDelegate' has been transformed to job type 'myDelegate'.");
-  }
-
-  @Test
-  public void testJavaAdapterJobType() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAlwaysUseDefaultJobType(true);
-    modified.setKeepJobTypeBlank(false);
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-
-    DiagramCheckResult result = loadAndCheck("java-delegate-class-c7.bpmn", properties);
-
-    ElementCheckResult delegateClassServiceTask = result.getResult("DelegateClassServiceTask");
-    assertNotNull(delegateClassServiceTask);
-    assertThat(delegateClassServiceTask.getMessages()).hasSize(1);
-    ElementCheckMessage message = delegateClassServiceTask.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Attribute 'class' on 'serviceTask' was mapped. Delegate call to 'com.camunda.consulting.MyDelegate' was transformed to job type 'camunda-7-adapter'. Please review your implementation.");
-  }
-
-  @Test
-  public void testTaskListenerHints() {
-    DiagramCheckResult result = loadAndCheck("user-task-listener-implementations.bpmn");
-    ElementCheckResult javaClassCheckResult = result.getResult("UserTaskUseJavaClass");
-    assertThat(javaClassCheckResult.getMessages()).hasSize(1);
-    assertThat(javaClassCheckResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Listener at 'create' with implementation 'com.camunda.consulting.TaskListenerExample' cannot be transformed. Task Listeners do not exist in Zeebe.");
-
-    ElementCheckResult delegateExpressionCheckResult =
-        result.getResult("UserTaskUseDelegateExpression");
-    assertThat(delegateExpressionCheckResult.getMessages()).hasSize(1);
-    assertThat(delegateExpressionCheckResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Listener at 'assignment' with implementation '${taskListenerExample}' cannot be transformed. Task Listeners do not exist in Zeebe.");
-
-    ElementCheckResult expressionCheckResult = result.getResult("UserTaskUseExpression");
-    assertThat(expressionCheckResult.getMessages()).hasSize(1);
-    assertThat(expressionCheckResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Listener at 'complete' with implementation '${delegateTask.setName(\"my expression name\")}' cannot be transformed. Task Listeners do not exist in Zeebe.");
-
-    ElementCheckResult inlineScriptCheckResult = result.getResult("UserTaskUseInlineScript");
-    assertThat(inlineScriptCheckResult.getMessages()).hasSize(2);
-    assertThat(inlineScriptCheckResult.getMessages().get(0).getMessage())
-        .isEqualTo(
-            "Listener at 'delete' with implementation 'javascript' cannot be transformed. Task Listeners do not exist in Zeebe.");
-    assertThat(inlineScriptCheckResult.getMessages().get(1).getMessage())
-        .isEqualTo(
-            "Element 'script' cannot be transformed. Script 'delegateTask.setName(\"my script name\");' with format 'javascript' on 'taskListener'.");
-  }
-
-  @Test
-  public void testDataMigrationListener() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAddDataMigrationExecutionListener(true);
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-
-    DiagramCheckResult result = loadAndCheck("java-delegate-class-c7.bpmn", properties);
-
-    ElementCheckResult startEvent = result.getResult("StartEvent_1");
-    assertNotNull(startEvent);
-    assertThat(startEvent.getMessages()).hasSize(1);
-    ElementCheckMessage message = startEvent.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Added execution listener '=if legacyId != null then \"migrator\" else \"noop\"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.");
   }
 
   @Test
@@ -269,17 +183,6 @@ public class DiagramConverterTest {
     assertThat(message.getMessage())
         .isEqualTo(
             "Input parameter 'inputParameterName': Please review transformed expression: '' -> '=null'.");
-  }
-
-  @Test
-  void testExecutionListenerWithoutImpl() {
-    DiagramCheckResult result = loadAndCheck("execution-listener-no-impl.bpmn");
-    List<ElementCheckMessage> messages = result.getResult("ListenerWithoutImplTask").getMessages();
-    assertThat(messages).hasSize(1);
-    ElementCheckMessage message = messages.get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Listener at 'start' with implementation 'null' can be transformed to a job worker. Please adjust the job type.");
   }
 
   @Test
@@ -575,18 +478,5 @@ public class DiagramConverterTest {
         bpmnModelInstance.getDocument().getElementById("HistoryTimeToLive");
     assertThat(historyTimeToLive).isNotNull();
     assertThat(historyTimeToLive.getChildElements()).isEmpty();
-  }
-
-  @Test
-  void shouldNotTransformTakeListener() {
-    DiagramCheckResult diagramCheckResult = loadAndCheck("take-listener.bpmn");
-    ElementCheckResult takeListenerFlow = diagramCheckResult.getResult("takeListenerFlow");
-    assertThat(takeListenerFlow).isNotNull();
-    assertThat(takeListenerFlow.getMessages()).hasSize(1);
-    ElementCheckMessage message = takeListenerFlow.getMessages().get(0);
-    assertThat(message).isNotNull();
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Listener at 'take' with implementation 'class' 'abc.def' cannot be transformed.");
   }
 }

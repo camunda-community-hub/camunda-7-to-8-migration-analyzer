@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.camunda.community.migration.converter.ConverterProperties;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
@@ -40,7 +41,6 @@ public class BpmnTestcaseLoader {
   public static class BpmnConversionCase {
     public String name;
     public String description;
-    public String targetVersion;
     public String givenBpmn;
     public String expectedBpmn;
     public String expectedMessages;
@@ -85,6 +85,11 @@ public class BpmnTestcaseLoader {
 
     public Map<String, String> properties() {
       return properties;
+    }
+
+    public void replacePlaceholdersFromProperties(ConverterProperties properties) {
+      expectedMessages =
+          expectedMessages.replace("${semanticVersion}", properties.getPlatformVersion());
     }
   }
 

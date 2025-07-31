@@ -174,7 +174,8 @@ public class MessageFactory {
             .build());
   }
 
-  public static Message executionListener(String event, String type, String implementation) {
+  public static Message executionListenerNotSupported(
+      String event, String type, String implementation) {
     return INSTANCE.composeMessage(
         "execution-listener",
         ContextBuilder.builder()
@@ -187,6 +188,25 @@ public class MessageFactory {
   public static Message executionListenerSupported(String event, String implementation) {
     return INSTANCE.composeMessage(
         "execution-listener-supported",
+        ContextBuilder.builder()
+            .entry("event", event)
+            .entry("implementation", implementation)
+            .build());
+  }
+
+  public static Message taskListenerNotSupported(String event, String type, String implementation) {
+    return INSTANCE.composeMessage(
+        "task-listener",
+        ContextBuilder.builder()
+            .entry("event", event)
+            .entry("type", type)
+            .entry("implementation", implementation)
+            .build());
+  }
+
+  public static Message taskListenerSupported(String event, String implementation) {
+    return INSTANCE.composeMessage(
+        "task-listener-supported",
         ContextBuilder.builder()
             .entry("event", event)
             .entry("implementation", implementation)
@@ -264,15 +284,6 @@ public class MessageFactory {
     return INSTANCE.composeMessage(
         "error-event-definition",
         ContextBuilder.builder().context(elementNotTransformablePrefix(elementLocalName)).build());
-  }
-
-  public static Message taskListener(String event, String implementation) {
-    return INSTANCE.composeMessage(
-        "task-listener",
-        ContextBuilder.builder()
-            .entry("event", event)
-            .entry("implementation", implementation)
-            .build());
   }
 
   public static Message formData(String elementLocalName) {

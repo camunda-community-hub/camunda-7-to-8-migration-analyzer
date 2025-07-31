@@ -220,11 +220,13 @@ public class MessageFactoryTest {
 
   @Test
   void shouldBuildTaskListener() {
-    Message message = MessageFactory.taskListener("create", "my tasklistener implementation");
+    Message message =
+        MessageFactory.taskListenerNotSupported(
+            "create", "delegateExpression", "my tasklistener implementation");
     assertNotNull(message);
     assertThat(message.getMessage())
         .isEqualTo(
-            "Listener at 'create' with implementation 'my tasklistener implementation' cannot be transformed. Task Listeners do not exist in Zeebe.");
+            "Task Listener at 'create' with implementation 'delegateExpression' 'my tasklistener implementation' cannot be transformed.");
   }
 
   @Test
@@ -282,12 +284,13 @@ public class MessageFactoryTest {
   @Test
   void shouldBuildExecutionListener() {
     Message message =
-        MessageFactory.executionListener("start", "delegateExpression", "${myExecutionListener}");
+        MessageFactory.executionListenerNotSupported(
+            "start", "delegateExpression", "${myExecutionListener}");
     assertNotNull(message);
     assertNotNull(message.getMessage());
     assertThat(message.getMessage())
         .isEqualTo(
-            "Listener at 'start' with implementation 'delegateExpression' '${myExecutionListener}' cannot be transformed.");
+            "Execution Listener at 'start' with implementation 'delegateExpression' '${myExecutionListener}' cannot be transformed.");
   }
 
   @Test
@@ -297,7 +300,7 @@ public class MessageFactoryTest {
     assertNotNull(message.getMessage());
     assertThat(message.getMessage())
         .isEqualTo(
-            "Listener at 'start' with implementation '${myExecutionListener}' can be transformed to a job worker. Please adjust the job type.");
+            "Execution Listener at 'start' with implementation '${myExecutionListener}' can be transformed to a job worker. Please adjust the job type.");
   }
 
   @Test

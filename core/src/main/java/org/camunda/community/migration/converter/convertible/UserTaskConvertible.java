@@ -1,5 +1,10 @@
 package org.camunda.community.migration.converter.convertible;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 public class UserTaskConvertible extends AbstractActivityConvertible
     implements FormDefinitionConvertible {
   private final ZeebeFormDefinition zeebeFormDefinition = new ZeebeFormDefinition();
@@ -7,6 +12,20 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       new ZeebeAssignmentDefinition();
   private final ZeebeTaskSchedule zeebeTaskSchedule = new ZeebeTaskSchedule();
   private boolean zeebeUserTask;
+
+  private List<ZeebeTaskListener> zeebeTaskListeners = new ArrayList<>();
+
+  public List<ZeebeTaskListener> getZeebeTaskListeners() {
+    return zeebeTaskListeners;
+  }
+
+  public void setZeebeTaskListeners(List<ZeebeTaskListener> zeebeTaskListeners) {
+    this.zeebeTaskListeners = zeebeTaskListeners;
+  }
+
+  public void addZeebeTaskListener(ZeebeTaskListener zeebeTaskListener) {
+    zeebeTaskListeners.add(zeebeTaskListener);
+  }
 
   public ZeebeTaskSchedule getZeebeTaskSchedule() {
     return zeebeTaskSchedule;
@@ -120,6 +139,63 @@ public class UserTaskConvertible extends AbstractActivityConvertible
 
     public void setFollowUpDate(String followUpDate) {
       this.followUpDate = followUpDate;
+    }
+  }
+
+  public static class ZeebeTaskListener {
+    private String listenerType;
+    private String retries;
+    private EventType eventType;
+
+    public String getListenerType() {
+      return listenerType;
+    }
+
+    public void setListenerType(String listenerType) {
+      this.listenerType = listenerType;
+    }
+
+    public String getRetries() {
+      return retries;
+    }
+
+    public void setRetries(String retries) {
+      this.retries = retries;
+    }
+
+    public EventType getEventType() {
+      return eventType;
+    }
+
+    public void setEventType(EventType eventType) {
+      this.eventType = eventType;
+    }
+
+    public enum EventType {
+      CREATE("creating"),
+      ASSIGNMENT("assigning"),
+      UPDATE("updating"),
+      COMPLETE("completing"),
+      DELETE("canceling"),
+      TIMEOUT(null); // not mapped: Camunda 8 does not support a corresponding timeout event type.
+
+      private final String camunda8Name;
+
+      EventType(String camunda8Name) {
+        this.camunda8Name = camunda8Name;
+      }
+
+      public String c8name() {
+        return camunda8Name;
+      }
+
+      public static Optional<EventType> fromName(String name) {
+        return Arrays.stream(values()).filter(e -> e.name().equalsIgnoreCase(name)).findFirst();
+      }
+
+      public boolean isMapped() {
+        return (camunda8Name != null);
+      }
     }
   }
 }
