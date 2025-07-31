@@ -41,6 +41,23 @@ categories:
       </bpmn:serviceTask>
     expectedMessages: |
       <conversion:message severity="TASK">Execution Listener at 'start' with implementation '${myNewJobType}' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+  - name: Execution Listener Without Implementation
+    givenBpmn: |
+      <bpmn:task id="ListenerWithoutImplTask" name="Listener Without Impl">
+        <bpmn:extensionElements>
+          <camunda:executionListener event="start" />
+        </bpmn:extensionElements>
+      </bpmn:task>      
+    expectedBpmn: |
+      <bpmn:task completionQuantity="1" id="ListenerWithoutImplTask" isForCompensation="false" name="Listener Without Impl" startQuantity="1">
+        <bpmn:extensionElements>
+          <zeebe:executionListeners>
+            <zeebe:executionListener eventType="start" type=""/>
+          </zeebe:executionListeners>
+        </bpmn:extensionElements>            
+      </bpmn:task>
+    expectedMessages: |
+      <conversion:message severity="TASK">Execution Listener at 'start' with implementation 'null' can be transformed to a job worker. Please adjust the job type.</conversion:message>
   - name: Execution Listener Variations
     description: If a service task has multiple execution listeners with different implementations, every execution listener should be transformed and the implementations should be mapped to an implementation that is compatible with Camunda 8. Also, the messages being added should outline what the original implementation looked like and what has to be done to finalize the conversion.
     givenBpmn: |
@@ -188,6 +205,31 @@ categories:
       </bpmn:serviceTask>
     expectedMessages: |
       <conversion:message severity="REVIEW">Attribute 'class' on 'serviceTask' was mapped. Delegate call to 'com.camunda.consulting.MyDelegate' was transformed to job type 'myAdapter'. Please review your implementation.</conversion:message>
+  - name: Service Task with class and addDataMigrationExecutionListener property
+    properties:
+      addDataMigrationExecutionListener: true
+    givenBpmn: |
+      <bpmn:startEvent id="start" />
+      <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:class="com.camunda.consulting.MyDelegate" />
+    expectedBpmn: |
+      <bpmn:startEvent id="start" isInterrupting="true" parallelMultiple="false">
+        <extensionElements>
+          <zeebe:executionListeners>
+            <zeebe:executionListener eventType="end" type="=if legacyId != null then &quot;migrator&quot; else &quot;noop&quot;"/>
+          </zeebe:executionListeners>
+        </extensionElements>
+      </bpmn:startEvent>
+      <bpmn:serviceTask completionQuantity="1" id="serviceTask" implementation="##WebService" isForCompensation="false" name="Service Task" startQuantity="1">
+        <extensionElements>
+          <zeebe:taskHeaders>
+            <zeebe:header key="class" value="com.camunda.consulting.MyDelegate"/>
+          </zeebe:taskHeaders>
+          <zeebe:taskDefinition type="myDelegate"/>
+        </extensionElements>
+      </bpmn:serviceTask>
+    expectedMessages: |
+      <conversion:message severity="INFO">Added execution listener '=if legacyId != null then "migrator" else "noop"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.</conversion:message>
+      <conversion:message severity="REVIEW">Delegate class or expression 'com.camunda.consulting.MyDelegate' has been transformed to job type 'myDelegate'.</conversion:message>
   - name: Service Task with delegateExpression
     givenBpmn: |
       <bpmn:serviceTask id="serviceTask" name="Service Task" camunda:delegateExpression="${myDelegate}" />
@@ -607,9 +649,9 @@ categories:
         <bpmn:cancelEventDefinition id="CancelEventDefinition_12fhstp"/>
       </bpmn:boundaryEvent>
     expectedMessages: |
-      <conversion:message severity="WARNING">Element 'Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
-      <conversion:message severity="WARNING">Element 'Cancel End Event' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
-      <conversion:message severity="WARNING">Element 'Cancel Boundary Event attached to Transaction' is not supported in Zeebe version '8.7'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Transaction' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel End Event' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
+      <conversion:message severity="WARNING">Element 'Cancel Boundary Event attached to Transaction' is not supported in Zeebe version '${semanticVersion}'. Please review.</conversion:message>
   - name: Conditional flow is not supported
     givenBpmn: |
       <bpmn:task id="DoSomethingTask" name="Do something"/>
@@ -626,3 +668,19 @@ categories:
     expectedMessages: |
       <conversion:message severity="WARNING">A Conditional flow is not supported.</conversion:message>
       <conversion:message severity="REVIEW">Condition expression: Please review transformed expression: '${condition}' -&gt; '=condition'.</conversion:message>
+  - name: Take listeners on sequence flow not supported
+    givenBpmn: |
+      <bpmn:task id="task1" name="Task1"/>
+      <bpmn:task id="task2" name="Task2" />
+      <bpmn:sequenceFlow id="takeListenerFlow" sourceRef="task1" targetRef="task2">
+        <bpmn:extensionElements>
+          <camunda:executionListener class="abc.def" event="take" />
+        </bpmn:extensionElements>
+      </bpmn:sequenceFlow>
+    expectedBpmn: |
+      <bpmn:task completionQuantity="1" id="task1" isForCompensation="false" name="Task1" startQuantity="1"/>  
+      <bpmn:task completionQuantity="1" id="task2" isForCompensation="false" name="Task2" startQuantity="1"/>
+      <bpmn:sequenceFlow id="takeListenerFlow" sourceRef="task1" targetRef="task2">
+      </bpmn:sequenceFlow>
+    expectedMessages: |
+      <conversion:message severity="WARNING">Execution Listener at 'take' with implementation 'class' 'abc.def' cannot be transformed.</conversion:message>

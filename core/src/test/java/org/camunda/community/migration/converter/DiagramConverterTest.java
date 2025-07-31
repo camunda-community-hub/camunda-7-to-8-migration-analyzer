@@ -34,7 +34,6 @@ public class DiagramConverterTest {
       value = {
         "example-c7.bpmn",
         "example-c7_2.bpmn",
-        "java-delegate-class-c7.bpmn",
         "old-process.bpmn20.xml",
         "collaboration.bpmn",
         "internal-script.bpmn",
@@ -96,23 +95,6 @@ public class DiagramConverterTest {
             this.getClass().getClassLoader().getResourceAsStream("c8_simple.bpmn"));
     Assertions.assertThrows(
         RuntimeException.class, () -> converter.convert(modelInstance, properties));
-  }
-
-  @Test
-  public void testDataMigrationListener() {
-    DefaultConverterProperties modified = new DefaultConverterProperties();
-    modified.setAddDataMigrationExecutionListener(true);
-    ConverterProperties properties = ConverterPropertiesFactory.getInstance().merge(modified);
-
-    DiagramCheckResult result = loadAndCheck("java-delegate-class-c7.bpmn", properties);
-
-    ElementCheckResult startEvent = result.getResult("StartEvent_1");
-    assertNotNull(startEvent);
-    assertThat(startEvent.getMessages()).hasSize(1);
-    ElementCheckMessage message = startEvent.getMessages().get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Added execution listener '=if legacyId != null then \"migrator\" else \"noop\"' to blank start event 'startEvent' to be used by Camunda 7 Data Migrator.");
   }
 
   @Test
@@ -201,17 +183,6 @@ public class DiagramConverterTest {
     assertThat(message.getMessage())
         .isEqualTo(
             "Input parameter 'inputParameterName': Please review transformed expression: '' -> '=null'.");
-  }
-
-  @Test
-  void testExecutionListenerWithoutImpl() {
-    DiagramCheckResult result = loadAndCheck("execution-listener-no-impl.bpmn");
-    List<ElementCheckMessage> messages = result.getResult("ListenerWithoutImplTask").getMessages();
-    assertThat(messages).hasSize(1);
-    ElementCheckMessage message = messages.get(0);
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Listener at 'start' with implementation 'null' can be transformed to a job worker. Please adjust the job type.");
   }
 
   @Test
@@ -509,16 +480,4 @@ public class DiagramConverterTest {
     assertThat(historyTimeToLive.getChildElements()).isEmpty();
   }
 
-  @Test
-  void shouldNotTransformTakeListener() {
-    DiagramCheckResult diagramCheckResult = loadAndCheck("take-listener.bpmn");
-    ElementCheckResult takeListenerFlow = diagramCheckResult.getResult("takeListenerFlow");
-    assertThat(takeListenerFlow).isNotNull();
-    assertThat(takeListenerFlow.getMessages()).hasSize(1);
-    ElementCheckMessage message = takeListenerFlow.getMessages().get(0);
-    assertThat(message).isNotNull();
-    assertThat(message.getMessage())
-        .isEqualTo(
-            "Listener at 'take' with implementation 'class' 'abc.def' cannot be transformed.");
-  }
 }

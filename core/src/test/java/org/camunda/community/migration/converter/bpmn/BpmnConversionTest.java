@@ -57,6 +57,8 @@ public class BpmnConversionTest {
 
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
     converter.convert(modelInstance, properties);
+    
+    testCase.replacePlaceholdersFromProperties(properties);
 
     return extractSnippet(modelInstance);
   }
@@ -64,7 +66,6 @@ public class BpmnConversionTest {
   @ParameterizedTest(name = "{0}")
   @MethodSource("loadConversionCases")
   void testBpmnFromYaml(BpmnConversionCase testCase) throws Exception {
-
     String actualBpmn = check(testCase);
 
     logTestCase(testCase, actualBpmn);
