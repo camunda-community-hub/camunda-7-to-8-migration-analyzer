@@ -47,7 +47,7 @@ public class TaskListenerVisitor extends AbstractListenerVisitor {
         SemanticVersion.parse(context.getProperties().getPlatformVersion());
     return (semanticVersion.ordinal() >= SemanticVersion._8_8.ordinal())
         && eventType.isPresent()
-        && !eventType.isEmpty();
+        && eventType.get().isMapped();
   }
 
   @Override

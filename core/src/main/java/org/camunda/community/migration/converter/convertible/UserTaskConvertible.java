@@ -192,6 +192,10 @@ public class UserTaskConvertible extends AbstractActivityConvertible
       public static Optional<EventType> fromName(String name) {
         return Arrays.stream(values()).filter(e -> e.name().equalsIgnoreCase(name)).findFirst();
       }
+
+      public boolean isMapped() {
+        return (camunda8Name != null);
+      }
     }
   }
 }

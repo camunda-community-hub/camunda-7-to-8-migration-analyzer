@@ -149,10 +149,10 @@ categories:
         </bpmn:extensionElements>       
       </bpmn:userTask>
     expectedMessages: |
-      <conversion:message severity="WARNING">Task Listener at 'create' with implementation 'class' 'com.camunda.consulting.TaskListenerExample' cannot be transformed. Task Listeners require 8.8.</conversion:message>
-      <conversion:message severity="WARNING">Task Listener at 'assignment' with implementation 'delegateExpression' '${taskListenerExample}' cannot be transformed. Task Listeners require 8.8.</conversion:message>
-      <conversion:message severity="WARNING">Task Listener at 'complete' with implementation 'expression' '${delegateTask.setName("my expression name")}' cannot be transformed. Task Listeners require 8.8.</conversion:message>
-      <conversion:message severity="WARNING">Task Listener at 'delete' with implementation 'script' 'javascript' cannot be transformed. Task Listeners require 8.8.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'create' with implementation 'class' 'com.camunda.consulting.TaskListenerExample' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'assignment' with implementation 'delegateExpression' '${taskListenerExample}' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'complete' with implementation 'expression' '${delegateTask.setName("my expression name")}' cannot be transformed.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'delete' with implementation 'script' 'javascript' cannot be transformed.</conversion:message>
       <conversion:message severity="WARNING">Element 'script' cannot be transformed. Script 'delegateTask.setName("my script name");' with format 'javascript' on 'taskListener'.</conversion:message>
   - name: User Task Listeners >= 8.8
     properties:
@@ -160,7 +160,14 @@ categories:
     givenBpmn: |
       <bpmn:userTask id="UserTaskUseJavaClass" name="Use java class">
         <bpmn:extensionElements>
-          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="create" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="create" id="listenerCreate"/>
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="assignment" id="listenerAssign" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="complete" id="listenerComplete" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="delete" id="listenerDelete" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="update" id="listenerUpdate" />
+          <camunda:taskListener class="com.camunda.consulting.TaskListenerExample" event="timeout" id="listenerTimeout">
+            <bpmn:timerEventDefinition id="TimerEventDefinition_1ds6cl2" />
+          </camunda:taskListener>
         </bpmn:extensionElements>
       </bpmn:userTask>
     expectedBpmn: |
@@ -169,11 +176,20 @@ categories:
           <zeebe:userTask/>
           <zeebe:taskListeners>
             <zeebe:taskListener eventType="creating" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="assigning" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="completing" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="canceling" type="com.camunda.consulting.TaskListenerExample" />
+            <zeebe:taskListener eventType="updating" type="com.camunda.consulting.TaskListenerExample" />
           </zeebe:taskListeners>
         </bpmn:extensionElements>
       </bpmn:userTask>
     expectedMessages: |
       <conversion:message severity="TASK">Task Listener at 'create' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'assignment' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'complete' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'delete' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="TASK">Task Listener at 'update' with implementation 'com.camunda.consulting.TaskListenerExample' can be transformed to a job worker. Please adjust the job type.</conversion:message>
+      <conversion:message severity="WARNING">Task Listener at 'timeout' with implementation 'class' 'com.camunda.consulting.TaskListenerExample' cannot be transformed.</conversion:message>
 - category: service tasks
   cases:
   - name: Service Task with class
