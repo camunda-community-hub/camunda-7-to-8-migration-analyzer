@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.camunda.community.migration</groupId>
     <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
-    <version>0.13.3</version>
+    <version>0.13.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>camunda-7-to-8-migration-analyzer-core</artifactId>
