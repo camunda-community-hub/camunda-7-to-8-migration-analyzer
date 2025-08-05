@@ -517,4 +517,12 @@ public class MessageFactoryTest {
             "Added execution listener '%s' to blank start event '%s' to be used by Camunda 7 Data Migrator.",
             listenerJobType, elementLocalName);
   }
+
+  @Test
+  void shouldBuildAllInSignalEvent() {
+    Message message = allInSignalEvent();
+    assertThat(message).isNotNull();
+    assertThat(message.getMessage())
+        .isEqualTo("Propagating all variables into a signal event is not possible with Camunda 8.");
+  }
 }

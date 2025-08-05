@@ -18,6 +18,15 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
   private static final String IN = "in";
   private static final String OUT = "out";
 
+  private boolean isCallActivity(DomElementVisitorContext context) {
+    return isOnBpmnElement(context, "callActivity");
+  }
+
+  private boolean isSignalThrowEvent(DomElementVisitorContext context) {
+    return isOnBpmnElement(context, "signalEventDefinition")
+        && isOnBpmnElement(context, "intermediateThrowEvent");
+  }
+
   private boolean isIn(DomElement element) {
     return element.getLocalName().equals(IN);
   }
@@ -57,7 +66,9 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
     }
     if (isAll(context.getElement())) {
       if (isIn(context.getElement())) {
-        if (SemanticVersion.parse(context.getProperties().getPlatformVersion()).ordinal()
+        if (isSignalThrowEvent(context)) {
+          return MessageFactory.allInSignalEvent();
+        } else if (SemanticVersion.parse(context.getProperties().getPlatformVersion()).ordinal()
             < SemanticVersion._8_3.ordinal()) {
           return MessageFactory.oldInAllHint();
         } else {
