@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.camunda.community.migration</groupId>
     <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
     <version>0.13.2-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
 
   <artifactId>camunda-7-to-8-migration-analyzer-webapp</artifactId>
   <name>camunda-7-to-8-migration-analyzer-webapp</name>
@@ -59,8 +59,10 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v22.9.0</nodeVersion>  <!-- Specify Node.js version -->
-              <npmVersion>11.0.0</npmVersion>    <!-- Specify npm version -->
+              <nodeVersion>v22.9.0</nodeVersion>
+              <!-- Specify Node.js version -->
+              <npmVersion>11.0.0</npmVersion>
+              <!-- Specify npm version -->
             </configuration>
           </execution>
 
@@ -72,7 +74,8 @@
             </goals>
             <configuration>
               <arguments>install</arguments>
-              <workingDirectory>src/main/javascript</workingDirectory> <!-- Set correct path -->
+              <workingDirectory>src/main/javascript</workingDirectory>
+              <!-- Set correct path -->
             </configuration>
           </execution>
 
@@ -84,7 +87,8 @@
             </goals>
             <configuration>
               <arguments>run package</arguments>
-              <workingDirectory>src/main/javascript</workingDirectory> <!-- Path to frontend -->
+              <workingDirectory>src/main/javascript</workingDirectory>
+              <!-- Path to frontend -->
             </configuration>
           </execution>
         </executions>
@@ -112,8 +116,7 @@
               <image>
                 <tags>
                   <!-- Building all tags here, and only pushing the right one via the Github Action -->
-                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}
-                  </tag>
+                  <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:${project.version}</tag>
                   <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest</tag>
                   <tag>ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:SNAPSHOT</tag>
                   <tag>camundacommunityhub/migration-analyzer:${project.version}</tag>

@@ -610,6 +610,10 @@ public class MessageFactory {
             .build());
   }
 
+  public static Message allInSignalEvent() {
+    return INSTANCE.staticMessage("all-in-signal-event");
+  }
+
   private ComposedMessage composeMessage(String templateName, Map<String, String> context) {
     ComposedMessage message = new ComposedMessage();
     MessageTemplate template = messageTemplateProvider.getMessageTemplate(templateName);

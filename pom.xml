@@ -1,11 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.camunda.community.migration</groupId>
-  <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
-  <name>camunda-7-to-8-migration-analyzer</name>
-  <packaging>pom</packaging>
-  <version>0.13.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.camunda.community</groupId>
@@ -13,12 +8,17 @@
     <version>2.1.0</version>
   </parent>
 
+  <groupId>org.camunda.community.migration</groupId>
+  <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
+  <version>0.13.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>camunda-7-to-8-migration-analyzer</name>
+
   <modules>
     <module>core</module>
     <module>webapp</module>
     <module>cli</module>
   </modules>
-
 
   <properties>
     <encoding>UTF-8</encoding>
@@ -60,15 +60,15 @@
         <groupId>org.camunda.bpm</groupId>
         <artifactId>camunda-bom</artifactId>
         <version>${version.camunda.platform}</version>
-        <scope>import</scope>
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-bom</artifactId>
         <version>${version.zeebe}</version>
-        <scope>import</scope>
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -215,7 +215,6 @@
     </dependencies>
   </dependencyManagement>
 
-
   <build>
     <pluginManagement>
       <plugins>
@@ -302,9 +301,7 @@
             <formats>
               <format>
                 <includes>
-                  <include>*.md</include>
                   <include>.gitignore</include>
-                  <include>pom.xml</include>
                 </includes>
                 <trimTrailingWhitespace />
                 <endWithNewline />
@@ -317,7 +314,43 @@
             <java>
               <googleJavaFormat />
             </java>
-            <pom />
+            <pom>
+              <sortPom>
+                <expandEmptyElements>false</expandEmptyElements>
+                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+              </sortPom>
+            </pom>
+            <markdown>
+              <includes>
+                <include>**/*.md</include>
+              </includes>
+              <excludes>
+                <exclude>src/main/javascript/**/*.md</exclude>
+                <exclude>**/target/**/*.md</exclude>
+              </excludes>
+              <flexmark />
+            </markdown>
+            <json>
+              <includes>
+                <!-- You have to set the target manually -->
+                <include>src/**/*.json</include>
+              </includes>
+              <excludes>
+                <exclude>src/main/javascript/**/*.json</exclude>
+              </excludes>
+              <simple>
+                <indentSpaces>2</indentSpaces>
+              </simple>
+            </json>
+            <yaml>
+              <includes>
+                <include>src/**/*.yaml</include>
+              </includes>
+              <excludes>
+                <exclude>src/main/javascript/**/*.yaml</exclude>
+              </excludes>
+              <prettier />
+            </yaml>
           </configuration>
         </plugin>
         <plugin>
@@ -376,13 +409,13 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
+      <modules>
+        <module>extension-example</module>
+      </modules>
       <properties>
         <!-- we skip the enforcer as the example is built with another parent and therefore has no dependency convergence -->
         <enforcer.skip>true</enforcer.skip>
       </properties>
-      <modules>
-        <module>extension-example</module>
-      </modules>
     </profile>
     <!-- profile to auto format -->
     <profile>

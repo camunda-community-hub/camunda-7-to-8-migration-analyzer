@@ -71,7 +71,6 @@ You can also install the web application locally.
    ```shell
    java -jar camunda-7-to-8-migration-analyzer-webapp.jar
    ```
-
 3. Access the web application at [http://localhost:8080/](http://localhost:8080/).
 
 To run the application on a different port, use the following command:
@@ -89,13 +88,11 @@ You can also run the Migration Analyzer & Diagram Converter using Docker.
    ```shell
    docker pull ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
    ```
-
 2. Run the Docker container and expose port 8080:
 
    ```shell
    docker run -p 8080:8080 ghcr.io/camunda-community-hub/camunda-7-to-8-migration/migration-analyzer:latest
    ```
-
 3. Access the web application at [http://localhost:8080/](http://localhost:8080/).
 
 ### CLI (Command Line Interface)
@@ -111,10 +108,11 @@ The CLI is a standalone Java application.
    java -jar camunda-7-to-8-migration-analyzer-cli.jar --help
    ```
 
-  The typical way is to run it in `local` mode and reference your BPMN model file:
-   ```shell
-   java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn
-   ```
+The typical way is to run it in `local` mode and reference your BPMN model file:
+
+```shell
+java -jar camunda-7-to-8-migration-analyzer-cli.jar local myBpmnModel.bpmn
+```
 
 ### Building from Source
 
