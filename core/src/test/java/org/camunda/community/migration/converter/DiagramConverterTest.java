@@ -46,7 +46,8 @@ public class DiagramConverterTest {
         "form-ref-deployment.bpmn",
         "feel_expr_not_tranformed.bpmn",
         "start-event-form-ref-deployment.bpmn",
-        "task-listener-timeout.bpmn"
+        "task-listener-timeout.bpmn",
+        "signal-throw-in.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
