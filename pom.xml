@@ -10,7 +10,7 @@
 
   <groupId>org.camunda.community.migration</groupId>
   <artifactId>camunda-7-to-8-migration-analyzer</artifactId>
-  <version>0.13.2</version>
+  <version>0.13.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>camunda-7-to-8-migration-analyzer</name>
 
