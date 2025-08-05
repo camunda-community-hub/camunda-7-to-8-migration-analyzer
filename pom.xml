@@ -325,7 +325,7 @@
                 <include>**/*.md</include>
               </includes>
               <excludes>
-                <exclude>src/main/javascript/**/*.md</exclude>
+                <exclude>**/src/main/javascript/**/*.md</exclude>
                 <exclude>**/target/**/*.md</exclude>
               </excludes>
               <flexmark />
