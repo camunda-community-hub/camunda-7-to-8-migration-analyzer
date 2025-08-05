@@ -614,10 +614,6 @@ public class MessageFactory {
     return INSTANCE.staticMessage("all-in-signal-event");
   }
 
-  public static Message noTimeoutListener() {
-    return INSTANCE.staticMessage("no-timeout-listener");
-  }
-
   private ComposedMessage composeMessage(String templateName, Map<String, String> context) {
     ComposedMessage message = new ComposedMessage();
     MessageTemplate template = messageTemplateProvider.getMessageTemplate(templateName);

@@ -15,9 +15,7 @@ public abstract class AbstractTimerExpressionVisitor extends AbstractBpmnElement
 
   @Override
   protected final void visitBpmnElement(DomElementVisitorContext context) {
-    if (isTimeoutListener(context)) {
-      context.addMessage(MessageFactory.noTimeoutListener());
-    } else {
+    if (!isTimeoutListener(context)) {
       ExpressionTransformationResult transformationResult = transformTimer(context);
       context.addConversion(
           AbstractCatchEventConvertible.class,
