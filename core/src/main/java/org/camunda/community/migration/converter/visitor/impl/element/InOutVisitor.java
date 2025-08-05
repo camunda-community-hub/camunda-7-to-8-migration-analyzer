@@ -1,5 +1,7 @@
 package org.camunda.community.migration.converter.visitor.impl.element;
 
+import static org.camunda.community.migration.converter.NamespaceUri.*;
+
 import java.util.Optional;
 import org.camunda.bpm.model.xml.instance.DomElement;
 import org.camunda.community.migration.converter.DomElementVisitorContext;
@@ -18,13 +20,9 @@ public abstract class InOutVisitor extends AbstractCamundaElementVisitor {
   private static final String IN = "in";
   private static final String OUT = "out";
 
-  private boolean isCallActivity(DomElementVisitorContext context) {
-    return isOnBpmnElement(context, "callActivity");
-  }
-
   private boolean isSignalThrowEvent(DomElementVisitorContext context) {
-    return isOnBpmnElement(context, "signalEventDefinition")
-        && isOnBpmnElement(context, "intermediateThrowEvent");
+    return isOnBpmnElement(context, BPMN, "signalEventDefinition")
+        && isOnBpmnElement(context, BPMN, "intermediateThrowEvent");
   }
 
   private boolean isIn(DomElement element) {

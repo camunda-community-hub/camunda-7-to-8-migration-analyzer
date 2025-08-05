@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1xurrx9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.37.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="Process_0kd9ubq" isExecutable="true">
+    <bpmn:userTask id="Activity_003qgwt" name="User task">
+      <bpmn:extensionElements>
+        <camunda:taskListener class="" event="timeout" id="">
+          <bpmn:timerEventDefinition id="TimerEventDefinition_01dgnz6">
+            <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${later()}</bpmn:timeDate>
+          </bpmn:timerEventDefinition>
+        </camunda:taskListener>
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0kd9ubq">
+      <bpmndi:BPMNShape id="Activity_112h1tx_di" bpmnElement="Activity_003qgwt">
+        <dc:Bounds x="160" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

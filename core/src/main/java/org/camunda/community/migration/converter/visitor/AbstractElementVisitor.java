@@ -57,4 +57,17 @@ public abstract class AbstractElementVisitor extends AbstractFilteringVisitor {
   protected String elementNameForMessage(DomElement element) {
     return StringUtils.capitalize(element.getLocalName().replaceAll("([A-Z])", " $1"));
   }
+
+  protected boolean isOnBpmnElement(
+      DomElementVisitorContext context, String namespaceUri, String bpmnElementLocalName) {
+    DomElement element = context.getElement();
+    while (!(element.getLocalName().equals(bpmnElementLocalName)
+        && element.getNamespaceURI().equals(namespaceUri))) {
+      element = element.getParentElement();
+      if (element == null) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

@@ -3,7 +3,6 @@ package org.camunda.community.migration.converter;
 import static org.assertj.core.api.Assertions.*;
 import static org.camunda.community.migration.converter.NamespaceUri.*;
 import static org.camunda.community.migration.converter.TestUtil.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -46,7 +45,9 @@ public class DiagramConverterTest {
         "form-ref-version.bpmn",
         "form-ref-deployment.bpmn",
         "feel_expr_not_tranformed.bpmn",
-        "start-event-form-ref-deployment.bpmn"
+        "start-event-form-ref-deployment.bpmn",
+        "task-listener-timeout.bpmn",
+        "signal-throw-in.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
