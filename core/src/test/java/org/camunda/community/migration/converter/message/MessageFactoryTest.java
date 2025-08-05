@@ -525,4 +525,12 @@ public class MessageFactoryTest {
     assertThat(message.getMessage())
         .isEqualTo("Propagating all variables into a signal event is not possible with Camunda 8.");
   }
+
+  @Test
+  void shouldBuildNoTimeoutListener() {
+    Message message = noTimeoutListener();
+    assertThat(message).isNotNull();
+    assertThat(message.getMessage())
+        .isEqualTo("There is no timeout listener available in Camunda 8.");
+  }
 }

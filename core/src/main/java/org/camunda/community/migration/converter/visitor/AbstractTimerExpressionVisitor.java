@@ -15,15 +15,23 @@ public abstract class AbstractTimerExpressionVisitor extends AbstractBpmnElement
 
   @Override
   protected final void visitBpmnElement(DomElementVisitorContext context) {
-    ExpressionTransformationResult transformationResult = transformTimer(context);
-    context.addConversion(
-        AbstractCatchEventConvertible.class,
-        con -> setNewExpression(con, transformationResult.result()));
-    if (!Objects.equals(transformationResult.result(), transformationResult.juelExpression())) {
-      context.addMessage(
-          MessageFactory.timerExpressionMapped(
-              transformationResult.juelExpression(), transformationResult.result()));
+    if (isTimeoutListener(context)) {
+      context.addMessage(MessageFactory.noTimeoutListener());
+    } else {
+      ExpressionTransformationResult transformationResult = transformTimer(context);
+      context.addConversion(
+          AbstractCatchEventConvertible.class,
+          con -> setNewExpression(con, transformationResult.result()));
+      if (!Objects.equals(transformationResult.result(), transformationResult.juelExpression())) {
+        context.addMessage(
+            MessageFactory.timerExpressionMapped(
+                transformationResult.juelExpression(), transformationResult.result()));
+      }
     }
+  }
+
+  private boolean isTimeoutListener(DomElementVisitorContext context) {
+    return isOnBpmnElement(context, CAMUNDA, "taskListener");
   }
 
   private ExpressionTransformationResult transformTimer(DomElementVisitorContext context) {
