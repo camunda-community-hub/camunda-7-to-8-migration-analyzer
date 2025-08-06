@@ -126,6 +126,36 @@
               </image>
             </configuration>
           </execution>
+          <execution>
+            <id>build-version</id>
+            <goals>
+              <goal>build-image</goal>
+            </goals>
+            <phase>install</phase>
+            <configuration>
+              <image>
+                <env>
+                  <BPE_TZ>Europe/Berlin</BPE_TZ>
+                </env>
+                <name>europe-north1-docker.pkg.dev/camunda-7-to-8-migration/repo/camunda-migration-analyzer:${project.version}</name>
+              </image>
+            </configuration>
+          </execution>
+          <execution>
+            <id>build-latest</id>
+            <goals>
+              <goal>build-image</goal>
+            </goals>
+            <phase>install</phase>
+            <configuration>
+              <image>
+                <env>
+                  <BPE_TZ>Europe/Berlin</BPE_TZ>
+                </env>
+                <name>europe-north1-docker.pkg.dev/camunda-7-to-8-migration/repo/camunda-migration-analyzer</name>
+              </image>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

@@ -1,0 +1,58 @@
+# Inspired by https://github.com/hashicorp/learn-terraform-github-actions/blob/main/.github/workflows/terraform.yml
+# And https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform#updating-your-github-actions-workflow
+name: "Deployment"
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+env:
+  PERFORM_CHANGES: ${{(github.ref == 'refs/heads/main') && github.event_name == 'push'}}
+jobs:
+  build:
+    name: Build and Publish Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      image-digest: ${{ steps.build-and-push.outputs.digest}}
+    steps:
+      - uses: camunda/int-apps-common/actions/build-and-push@main
+        id: build-and-push
+        with:
+          project: "camunda-migration-analyzer"
+          repo: "repo"
+          image: "camunda-migration-analyzer"
+          CAMUNDA_NEXUS_USR: ${{secrets.NEXUS_USR}}
+          CAMUNDA_NEXUS_PSW: ${{secrets.NEXUS_PSW}}
+
+  terraform:
+    name: "Plan/Apply Terraform"
+    runs-on: ubuntu-latest
+    needs: build
+    concurrency: terraform
+    env:
+      # This is a ternary. See https://docs.github.com/en/actions/learn-github-actions/expressions#example
+      ENVIRONMENT_NAME: ${{github.ref == 'refs/heads/main' && github.event_name == 'push' && 'live' || 'stage' }}
+      DIGEST_VALUE: ${{needs.build.outputs.image-digest}}
+    steps:
+      - uses: camunda/int-apps-common/actions/deploy@main
+        id: deploy
+        with:
+          project: "camunda-7-to-8-migration-analyzer"
+          perform_changes: ${{env.PERFORM_CHANGES}}
+          new_state: '{"${{env.ENVIRONMENT_NAME}}": "${{env.DIGEST_VALUE}}"}'
+
+  notify-on-failure:
+    needs: [build, terraform]
+    if: ${{ failure() }}  # only runs if there's a failure in the workflow
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#internal-apps-alerts'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_ALERTS }}
