@@ -1,5 +1,5 @@
 locals {
-  image_url = "${var.region}-docker.pkg.dev/${var.google_project_id}/${google_artifact_registry_repository.camunda-migration-analyzer.repository_id}/slack-connect@${var.image_digest}"
+  image_url = "${var.region}-docker.pkg.dev/${var.google_project_id}/${google_artifact_registry_repository.camunda-migration-analyzer.repository_id}/camunda-migration-analyzer@${var.image_digest}"
 }
 
 resource "google_cloud_run_v2_service" "camunda-migration-analyzer" {
