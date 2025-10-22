@@ -11,7 +11,10 @@ import org.camunda.community.migration.converter.version.SemanticVersion;
 import org.camunda.community.migration.converter.visitor.AbstractEventVisitor;
 
 public class StartEventVisitor extends AbstractEventVisitor {
-  public static boolean isBlankStartEvent(DomElement element) {
+  public static boolean isBlankProcessStartEvent(DomElement element) {
+    if (!element.getParentElement().getLocalName().equals("process")) {
+      return false;
+    }
     if (!"startEvent".equals(element.getLocalName())) {
       return false;
     }
@@ -45,7 +48,7 @@ public class StartEventVisitor extends AbstractEventVisitor {
   @Override
   protected void postCreationVisitor(DomElementVisitorContext context) {
     if (context.getProperties().getAddDataMigrationExecutionListener()
-        && isBlankStartEvent(context.getElement())) {
+        && isBlankProcessStartEvent(context.getElement())) {
       ZeebeExecutionListener executionListener = new ZeebeExecutionListener();
       executionListener.setEventType(EventType.end);
       executionListener.setListenerType(
