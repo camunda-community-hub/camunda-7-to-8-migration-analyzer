@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1xn8u1h" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.40.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <bpmn:process id="Process_0k8uoea" isExecutable="true">
+    <bpmn:startEvent id="ProcessStartedStartEvent" name="Process started">
+      <bpmn:outgoing>Flow_00kf2qq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_00kf2qq" sourceRef="ProcessStartedStartEvent" targetRef="Activity_1fbktjc" />
+    <bpmn:subProcess id="Activity_1fbktjc">
+      <bpmn:incoming>Flow_00kf2qq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0doc75j</bpmn:outgoing>
+      <bpmn:startEvent id="SubprocessStartedStartEvent" name="Subprocess started">
+        <bpmn:outgoing>Flow_15w8qnw</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="SubprocessCompleteEndEvent" name="Subprocess complete">
+        <bpmn:incoming>Flow_15w8qnw</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_15w8qnw" sourceRef="SubprocessStartedStartEvent" targetRef="SubprocessCompleteEndEvent" />
+    </bpmn:subProcess>
+    <bpmn:endEvent id="ProcessCompleteEndEvent" name="Process complete">
+      <bpmn:incoming>Flow_0doc75j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0doc75j" sourceRef="Activity_1fbktjc" targetRef="ProcessCompleteEndEvent" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0k8uoea">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="ProcessStartedStartEvent">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="145" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07foegl_di" bpmnElement="ProcessCompleteEndEvent">
+        <dc:Bounds x="532" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="506" y="145" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q7j4gq_di" bpmnElement="Activity_1fbktjc" isExpanded="true">
+        <dc:Bounds x="295" y="82" width="185" height="128" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1tfopa5_di" bpmnElement="SubprocessStartedStartEvent">
+        <dc:Bounds x="335.3333333333333" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="324" y="145" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1t7na9q_di" bpmnElement="SubprocessCompleteEndEvent">
+        <dc:Bounds x="422" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="411" y="145" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_15w8qnw_di" bpmnElement="Flow_15w8qnw">
+        <di:waypoint x="371" y="120" />
+        <di:waypoint x="422" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00kf2qq_di" bpmnElement="Flow_00kf2qq">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="295" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0doc75j_di" bpmnElement="Flow_0doc75j">
+        <di:waypoint x="480" y="120" />
+        <di:waypoint x="532" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
