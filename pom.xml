@@ -128,11 +128,6 @@
         <version>${version.zeebe}</version>
       </dependency>
       <dependency>
-        <groupId>io.camunda.spring</groupId>
-        <artifactId>spring-boot-starter-camunda-operate</artifactId>
-        <version>8.8.0</version>
-      </dependency>
-      <dependency>
         <groupId>org.camunda.feel</groupId>
         <artifactId>feel-engine</artifactId>
         <version>1.19.3</version>

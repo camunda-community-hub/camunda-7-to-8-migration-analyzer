@@ -47,7 +47,8 @@ public class DiagramConverterTest {
         "feel_expr_not_tranformed.bpmn",
         "start-event-form-ref-deployment.bpmn",
         "task-listener-timeout.bpmn",
-        "signal-throw-in.bpmn"
+        "signal-throw-in.bpmn",
+        "subprocess-with-start-event.bpmn"
       })
   public void shouldConvertBpmn(String bpmnFile) {
     DiagramConverter converter = DiagramConverterFactory.getInstance().get();
@@ -479,5 +480,30 @@ public class DiagramConverterTest {
         bpmnModelInstance.getDocument().getElementById("HistoryTimeToLive");
     assertThat(historyTimeToLive).isNotNull();
     assertThat(historyTimeToLive.getChildElements()).isEmpty();
+  }
+
+  @Test
+  void testShouldAppendDataMigrationListenerOnlyOnProcessStartEvent() {
+    DefaultConverterProperties properties = new DefaultConverterProperties();
+    properties.setAddDataMigrationExecutionListener(true);
+    ConverterProperties converterProperties =
+        ConverterPropertiesFactory.getInstance().merge(properties);
+    BpmnModelInstance bpmnModelInstance =
+        loadAndConvert("subprocess-with-start-event.bpmn", converterProperties);
+    DomElement processStartEvent =
+        bpmnModelInstance.getDocument().getElementById("ProcessStartedStartEvent");
+    DomElement subprocessStartEvent =
+        bpmnModelInstance.getDocument().getElementById("SubprocessStartedStartEvent");
+    assertThat(
+            processStartEvent
+                .getChildElementsByNameNs(BPMN, "extensionElements")
+                .get(0)
+                .getChildElementsByNameNs(ZEEBE, "executionListeners")
+                .get(0)
+                .getChildElements()
+                .get(0)
+                .getAttribute("type"))
+        .isEqualTo("=if legacyId != null then \"migrator\" else \"noop\"");
+    assertThat(subprocessStartEvent.getChildElementsByNameNs(BPMN, "extensionElements")).isEmpty();
   }
 }
