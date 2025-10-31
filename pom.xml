@@ -34,7 +34,7 @@
     <version.spring-boot>3.5.7</version.spring-boot>
     <version.picocli>4.7.7</version.picocli>
     <version.commons-io>2.20.0</version.commons-io>
-    <version.slack-api-client>1.45.4</version.slack-api-client>
+    <version.slack-api-client>1.46.0</version.slack-api-client>
     <version.opencsv>5.12.0</version.opencsv>
     <version.grpc>1.76.0</version.grpc>
     <version.protobuf>3.25.8</version.protobuf>
