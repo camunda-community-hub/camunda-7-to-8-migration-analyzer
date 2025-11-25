@@ -49,22 +49,23 @@ public class ConvertEngineCommandTest {
     assertThat(tempDir.listFiles()).hasSize(1);
   }
 
-    @Test
-    void shouldConvertSingleFileWithMultipleProcessesAndExportExcel(@TempDir File tempDir) throws Exception {
-        processEngine
-                .getRepositoryService()
-                .createDeployment()
-                .name("test")
-                .addClasspathResource("multiple-processes.bpmn")
-                .deploy();
-        ConvertEngineCommand command = new ConvertEngineCommand();
-        command.targetDirectory = tempDir;
-        command.xlsx = true;
-        command.url = "http://localhost:" + randomServerPort + "/engine-rest";
-        command.call();
-        assertThat(tempDir.listFiles()).hasSize(2);
-        assertThat(tempDir.listFiles()[1].getName()).isEqualTo("analysis-results.xlsx");
-    }
+  @Test
+  void shouldConvertSingleFileWithMultipleProcessesAndExportExcel(@TempDir File tempDir)
+      throws Exception {
+    processEngine
+        .getRepositoryService()
+        .createDeployment()
+        .name("test")
+        .addClasspathResource("multiple-processes.bpmn")
+        .deploy();
+    ConvertEngineCommand command = new ConvertEngineCommand();
+    command.targetDirectory = tempDir;
+    command.xlsx = true;
+    command.url = "http://localhost:" + randomServerPort + "/engine-rest";
+    command.call();
+    assertThat(tempDir.listFiles()).hasSize(2);
+    assertThat(tempDir.listFiles()[1].getName()).isEqualTo("analysis-results.xlsx");
+  }
 
   @Test
   void shouldConvertManyFilesWithSameName(@TempDir File tempDir) throws Exception {
