@@ -65,7 +65,7 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
       names = {"--xlsx"},
       description =
           "If enabled, a XLSX file will be created containing the results for the analysis")
-  boolean xslx;
+  boolean xlsx;
 
   @Option(
       names = {"--md", "--markdown"},
@@ -149,13 +149,13 @@ public abstract class AbstractConvertCommand implements Callable<Integer> {
         returnCode = 1;
       }
     }
-    if (xslx) {
-      File xslxFile = determineFileName(new File(targetDirectory(), "analysis-results.xslx"));
-      try (FileOutputStream fos = new FileOutputStream(xslxFile)) {
+    if (xlsx) {
+      File xlsxFile = determineFileName(new File(targetDirectory(), "analysis-results.xlsx"));
+      try (FileOutputStream fos = new FileOutputStream(xlsxFile)) {
         new ExcelWriter().writeResultsToExcel(converter.createLineItemDTOList(results), fos);
-        LOG_CLI.info("Created {}", xslxFile);
+        LOG_CLI.info("Created {}", xlsxFile);
       } catch (IOException e) {
-        LOG_CLI.error("Error while creating xslx results: {}", createMessage(e));
+        LOG_CLI.error("Error while creating xlsx results: {}", createMessage(e));
         returnCode = 1;
       }
     }

@@ -3,6 +3,7 @@ package org.camunda.community.migration.converter.cli;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
+import java.util.Arrays;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
@@ -47,6 +48,28 @@ public class ConvertEngineCommandTest {
     command.url = "http://localhost:" + randomServerPort + "/engine-rest";
     command.call();
     assertThat(tempDir.listFiles()).hasSize(1);
+  }
+
+  @Test
+  void shouldConvertSingleFileWithMultipleProcessesAndExportExcel(@TempDir File tempDir)
+      throws Exception {
+    processEngine
+        .getRepositoryService()
+        .createDeployment()
+        .name("test")
+        .addClasspathResource("multiple-processes.bpmn")
+        .deploy();
+    ConvertEngineCommand command = new ConvertEngineCommand();
+    command.targetDirectory = tempDir;
+    command.xlsx = true;
+    command.url = "http://localhost:" + randomServerPort + "/engine-rest";
+    command.call();
+    assertThat(tempDir.listFiles()).hasSize(2);
+    assertThat(
+            Arrays.stream(tempDir.listFiles())
+                .filter(file -> file.getName().endsWith(".xlsx"))
+                .count())
+        .isEqualTo(1);
   }
 
   @Test

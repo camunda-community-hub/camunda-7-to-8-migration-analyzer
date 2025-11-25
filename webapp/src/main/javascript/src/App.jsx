@@ -66,7 +66,7 @@ function App() {
                     // Mark wit the same color everytime for the moment
                     //canvas.addMarker(el.elementId, `highlight-${severity.toLowerCase()}`);
                     canvas.addMarker(el.elementId, `highlight-info`);
-                  }          
+                  }
               }
             });
 
@@ -76,10 +76,10 @@ function App() {
     }, [isPreviewOpen, previewbpmnXml]);
 
     function getMostSevere(messages) {
-      const severityOrder = ['WARNING', 'TASK', 'REVIEW', 'INFO']; 
-    
+      const severityOrder = ['WARNING', 'TASK', 'REVIEW', 'INFO'];
+
       let mostSevere = 'INFO';
-    
+
       for (const msg of messages) {
         if (
           severityOrder.indexOf(msg.severity) >
@@ -88,10 +88,10 @@ function App() {
           mostSevere = msg.severity;
         }
       }
-    
+
       return mostSevere;
     }
-  
+
   function createFormData(files) {
     const formData = new FormData();
 
@@ -102,7 +102,7 @@ function App() {
       // Append each file, optionally using indexed keys if needed
       formData.append("file", file);
     });
-    
+
     if (configOptions.defaultJobType !== undefined)
       formData.append("defaultJobType", configOptions.defaultJobType);
 
@@ -122,7 +122,7 @@ function App() {
 
   async function analyzeAndConvert() {
     setStep(2);
-    setFileResults(files.map(() => ({ status: "uploading" })));    
+    setFileResults(files.map(() => ({ status: "uploading" })));
 
     const uploadResults = await Promise.all(
       files.map(async (file, idx) => {
@@ -132,7 +132,7 @@ function App() {
           body: formData,
           method: "POST",
           headers: {
-             "Accept": "application/json" 
+             "Accept": "application/json"
           },
         });
         const checkResponseJson = await checkResponse.json();
@@ -167,13 +167,13 @@ function App() {
         }
 
         // Convert response to blob
-        const blob = await convertResponse.blob();        
+        const blob = await convertResponse.blob();
 
         result = {
           status: checkResponse.ok && convertResponse.ok ? "success" : "error",
           originalModelXml: originalModelXml,
           checkResponseJson: checkResponseJson,
-          convertedFileBlob: blob, 
+          convertedFileBlob: blob,
           filename
         };
 
@@ -241,7 +241,7 @@ function App() {
       { key: 'message', header: 'Message' },
       { key: 'link', header: 'Link' },
     ]);
-    
+
     setPreviewTableRows(
       response.checkResponseJson?.[0]?.results.flatMap((element, elementIdx) =>
         element.messages.map((message, msgIdx) => ({
@@ -256,7 +256,7 @@ function App() {
             : '-',
         }))
       ) || []);
-    
+
 
     setPreviewCheckJson(response.checkResponseJson);
     setPreviewbpmnXml(response.originalModelXml);
@@ -271,8 +271,8 @@ function App() {
   }
 
   async function download1(filename, response) {
-    doDownload(filename, await response.blob());    
-  }    
+    doDownload(filename, await response.blob());
+  }
 
   async function doDownload(filename, blob) {
     const url = URL.createObjectURL(blob);
@@ -308,7 +308,7 @@ function App() {
                   .
                 </p>
               </div>
-            )}            
+            )}
             {isSaaS && (
               <div>
                 <p>
@@ -380,7 +380,7 @@ function App() {
 
             <Form className="configBox">
               <h4>
-                <Settings style={{ marginRight: '0.5rem' }} /> 
+                <Settings style={{ marginRight: '0.5rem' }} />
                 Advanced Configuration Options
                 <Button
                   kind="ghost"
@@ -404,7 +404,7 @@ function App() {
                         addDataMigrationExecutionListener: checked,
                       }))
                     }
-                  />  
+                  />
                   <TextInput
                     id="dataMigrationExecutionListenerJobType"
                     labelText="Execution Listener Job Type"
@@ -429,7 +429,7 @@ function App() {
                         keepJobTypeBlank: checked,
                       }))
                     }
-                  /> 
+                  />
                   <div className="form-spacer" />
                   <Checkbox
                     id="defaultJobTypeEnabled"
@@ -487,7 +487,7 @@ function App() {
               />
             </section>
             */}
-           
+
             <section>
               <h3>Your Models</h3>
               <p>
@@ -536,7 +536,7 @@ function App() {
                     Download XLSX
                   </Button>
                   <p>
-                    Microsoft Excel file (XSLX) containing results and prepared
+                    Microsoft Excel file (XLSX) containing results and prepared
                     analysis.
                   </p>
                 </div>
@@ -554,7 +554,7 @@ function App() {
                     Comma Separated Values (CSV) file containing plain results to
                     import into your favorite tooling.
                   </p>
-                  </div>  
+                  </div>
                 </div>
               <p>
                 For more information on the analysis results,{" "}
@@ -585,7 +585,7 @@ function App() {
           </>
         )}
 
-{isPreviewOpen && (    
+{isPreviewOpen && (
   <div className="modal-backdrop">
     <div className="modal">
       <div className="modal-header">
@@ -603,7 +603,7 @@ function App() {
           </Button>
         </div>
       </div>
-     
+
       <div id="bpmnDiagram" className="diagram-container"></div>
       <DataTable rows={previewTableRows} headers={previewTableHeader}>
   {({ rows, headers, getHeaderProps, getRowProps }) => (
