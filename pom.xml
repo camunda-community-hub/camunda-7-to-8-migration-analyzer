@@ -42,7 +42,7 @@
     <version.error_prone_annotations>2.45.0</version.error_prone_annotations>
     <version.java-jwt>4.5.0</version.java-jwt>
     <version.archunit>1.4.1</version.archunit>
-    <version.apache-poi>5.5.0</version.apache-poi>
+    <version.apache-poi>5.5.1</version.apache-poi>
 
     <plugin.version.maven-enforcer-plugin>3.6.2</plugin.version.maven-enforcer-plugin>
     <plugin.version.maven-surefire-plugin>3.5.4</plugin.version.maven-surefire-plugin>
