@@ -614,6 +614,14 @@ public class MessageFactory {
     return INSTANCE.staticMessage("all-in-signal-event");
   }
 
+  public static Message modelerTemplate() {
+    return INSTANCE.staticMessage("modeler-template");
+  }
+
+  public static Message modelerTemplateVersion() {
+    return INSTANCE.staticMessage("modeler-template-version");
+  }
+
   private ComposedMessage composeMessage(String templateName, Map<String, String> context) {
     ComposedMessage message = new ComposedMessage();
     MessageTemplate template = messageTemplateProvider.getMessageTemplate(templateName);

@@ -2,6 +2,7 @@ package org.camunda.community.migration.converter.convertible;
 
 public abstract class AbstractActivityConvertible extends AbstractDataMapperConvertible {
   private BpmnMultiInstanceLoopCharacteristics bpmnMultiInstanceLoopCharacteristics;
+  private ZeebeElementTemplate elementTemplate;
 
   public BpmnMultiInstanceLoopCharacteristics getBpmnMultiInstanceLoopCharacteristics() {
     return bpmnMultiInstanceLoopCharacteristics;
@@ -14,6 +15,45 @@ public abstract class AbstractActivityConvertible extends AbstractDataMapperConv
   public void initializeLoopCharacteristics() {
     if (bpmnMultiInstanceLoopCharacteristics == null) {
       bpmnMultiInstanceLoopCharacteristics = new BpmnMultiInstanceLoopCharacteristics();
+    }
+  }
+
+  public void setZeebeModelerTemplate(String modelerTemplate) {
+    if (elementTemplate == null) {
+      this.elementTemplate = new ZeebeElementTemplate();
+    }
+    elementTemplate.setModelerTemplate(modelerTemplate);
+  }
+
+  public void setZeebeModelerTemplateVersion(String modelerTemplateVersion) {
+    if (elementTemplate == null) {
+      this.elementTemplate = new ZeebeElementTemplate();
+    }
+    elementTemplate.setModelerTemplateVersion(modelerTemplateVersion);
+  }
+
+  public ZeebeElementTemplate getZeebeElementTemplate() {
+    return elementTemplate;
+  }
+
+  public static final class ZeebeElementTemplate {
+    private String modelerTemplate;
+    private String modelerTemplateVersion;
+
+    public String getModelerTemplate() {
+      return modelerTemplate;
+    }
+
+    public void setModelerTemplate(String modelerTemplate) {
+      this.modelerTemplate = modelerTemplate;
+    }
+
+    public String getModelerTemplateVersion() {
+      return modelerTemplateVersion;
+    }
+
+    public void setModelerTemplateVersion(String modelerTemplateVersion) {
+      this.modelerTemplateVersion = modelerTemplateVersion;
     }
   }
 
