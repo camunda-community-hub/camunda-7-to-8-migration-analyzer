@@ -1,3 +1,18 @@
+> [!IMPORTANT]
+> **This project has moved!**
+>
+> The **Migration Analyzer & Diagram Converter** tooling has been integrated into the official [camunda-7-to-8-migration-tooling](https://github.com/camunda/camunda-7-to-8-migration-tooling) repository.
+>
+> **What this means for you:**
+> - ✅ **Official support**: Now officially maintained by Camunda, ensuring long-term stability and updates.
+>
+> **Please visit the new repository for:**
+> - Latest source code and documentation
+> - Issue reporting and feature requests
+> - Contributing to the codebase
+>
+> This repository is now archived.
+
 # Migration Analyzer & Diagram Converter
 
 The Migration Analyzer & Diagram Converter:
