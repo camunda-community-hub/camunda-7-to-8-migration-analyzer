@@ -157,3 +157,5 @@ org.camunda.community.migration.converter.visitor.impl.dmn.LiteralExpressionVisi
 org.camunda.community.migration.converter.visitor.impl.dmn.OutputValuesVisitor
 org.camunda.community.migration.converter.visitor.impl.dmn.InputValuesVisitor
 org.camunda.community.migration.converter.visitor.impl.dmn.VariableVisitor
+org.camunda.community.migration.converter.visitor.impl.attribute.ModelerTemplateVisitor
+org.camunda.community.migration.converter.visitor.impl.attribute.ModelerTemplateVersionVisitor
